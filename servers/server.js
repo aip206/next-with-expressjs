@@ -7,18 +7,28 @@ const port = parseInt(process.env.PORT, 10) || 3000
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
+const db = require('./db/config')
+const passport = require('passport')
+const departement = require('./routes/departementRoute')
+const auth = require('./routes/authenticateRoute')
+
 
 function errorCallback(err, req, res, next) {
-        res.status(400);
+        res.status(500);
         res.send({msg:err.message});
      }
 
 app.prepare().then(() => {
-    const server = express();     
+    const server = express();  
+    db.authenticate()
+        .then(() => console.log('Database connected...'))
+        .catch(err => console.log('Error: ' + err))   
     
     server.use(bodyParser.urlencoded({ extended: true }));
     server.use(bodyParser.json()); 
-
+    server.use(passport.initialize());
+    departement(server);
+    auth(server);
     server.get('*', (req, res) => {
         return handle(req, res)
       })

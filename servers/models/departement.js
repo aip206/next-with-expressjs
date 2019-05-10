@@ -52,6 +52,10 @@ const Departement = db.define('departements', {
     type: Sequelize.BOOLEAN,
     defaultValue: false
   },
+  isActive: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false
+  },
   createdAt:{
     type: Sequelize.DATE,
     defaultValue: Sequelize.NOW

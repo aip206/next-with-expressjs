@@ -14,13 +14,34 @@ exports.getById = (req,res) => {
     .findOne({
         where:{
             id:req.params.id
-        }
+        },
+        order: [
+            [req.params.sortBy, req.params.sort],
+        ],
+        attributes: ['id', 'name', 'login', 'email', 'role','isActive','createdAt'],
+        limit: req.params.limit,
+        offset: req.params.page
     })
     .then(data => res.json({data:data}))
     .catch(err => { console.log(err) 
                 res.status(400);
                 res.json({ error: err })
             })
+}
+
+exports.delete = (req, res) => {
+    Departement.update({isDelete: true},{
+        where:{
+            id:req.params.id
+        }}).then(result =>
+             res.json({data:result})
+          )
+          .catch(err =>
+            {
+                res.status(400);
+                res.json({ error: err })
+            }
+          )
 }
 
 exports.create = (req,res) => {
@@ -54,7 +75,5 @@ exports.create = (req,res) => {
                     res.json({ error: err })
                 })
     }
-
-
-
 }
+

@@ -1,5 +1,16 @@
-function Home() {
-    return <div>Welcome to Next.js!</div>;
+import { Component } from 'react';
+import { withAuthSync } from '../utils/auth'
+import cookie from 'js-cookie'
+import Layout from '../components/Layout';
+
+class Dashboard extends Component {
+  render () {
+    return (
+     <Layout>
+        <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>Dashboard</h3>
+      </Layout>
+      )
   }
+}
   
-export default Home;
+export default withAuthSync(Dashboard);

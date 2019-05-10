@@ -21,5 +21,7 @@ exports.authenticate = (req,res) =>{
           console.log(err);
         res.status(401).json({ msg: 'User Not Found' });  
       })
+    }else{
+      res.status(400).json({ msg: 'Username/Password Harus Di isi' });
     }
 }

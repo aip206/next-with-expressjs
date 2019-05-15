@@ -72,17 +72,20 @@ const Departement = db.define('departements', {
       const salt = bcrypt.genSaltSync();
       user.password = bcrypt.hashSync(user.password, salt);
     }
+  },
+  classMethods:{
+    count: function() {
+      return this.findAll()
+              .then(function(departement) {
+                return departement.length;
+              })
+    }
   }
 });
 
 Departement.prototype.comparePassword = async function(p) {
   return await bcrypt.compareSync(p, this.password);
 };
-
-
-db.sync()
-    .then(() => console.log('users table has been successfully created, if one doesn\'t exist'))
-    .catch(error => console.log('This error occured', error));
 
 
 module.exports = Departement;

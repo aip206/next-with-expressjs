@@ -6,7 +6,6 @@ import { logins } from '../utils/auth';
 class Login extends Component {
   static getInitialProps ({ req }) {
     const protocol = process.env.NODE_ENV === 'production' ? 'http' : 'http'
-    console.log(req.headers)
     const apiUrl = process.browser
       ? `${protocol}://${window.location.hostname}:3001/api/v1/signIn`
       : `${protocol}://${req.headers.host}/api/v1/signIn`
@@ -45,8 +44,9 @@ class Login extends Component {
         body: JSON.stringify({ login:login, password: password })
       })
       if (response.ok) {
-        const { token } = await response.json()
-        logins({ token })
+        const { token, data } = await response.json()
+        console.log(data);
+        logins({ token, data })
       } else {
         console.log('Login failed. ,' + response)
         let error = new Error(response.msg)

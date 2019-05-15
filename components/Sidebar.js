@@ -3,14 +3,10 @@ const Sidebar = () => (
     <nav className="sidebar border-right">
 		<ul className="nav flex-column">
 			<li className="nav-item">
-                <Link>
-				    <a className="nav-link" href="/">Dashboard</a>
-                </Link>
+				<a className="nav-link" href="/">Dashboard</a>
 			</li>
 			<li className="nav-item">
-                <Link>
-				    <a className="nav-link" href="/departement/list">Departemen</a>
-                </Link>
+				<a className="nav-link" href="/departement/list">Departemen</a>
 			</li>
 			<li className="nav-item">
 				<a className="nav-link" href="matrix.html">Matriks Dokumen</a>

@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 
+
 module.exports =  new Sequelize('temp', 'root', '1234abcd', {
   host: 'localhost',
   dialect: 'mysql',
@@ -12,3 +13,9 @@ module.exports =  new Sequelize('temp', 'root', '1234abcd', {
     idle: 10000
   },
 });
+
+
+const Departement = require('../models/departement');
+const Document = require('../models/documents');
+
+Document.belongsToMany(Departement, { as: 'departement', through: 'document_departements'})

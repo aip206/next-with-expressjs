@@ -11,6 +11,9 @@ const db = require('./db/config')
 const passport = require('passport')
 const departement = require('./routes/departementRoute')
 const auth = require('./routes/authenticateRoute')
+const document = require('./routes/documentRoute')
+const order = require('./routes/orderRoute')
+
 
 
 function errorCallback(err, req, res, next) {
@@ -29,6 +32,8 @@ app.prepare().then(() => {
     server.use(passport.initialize());
     departement(server);
     auth(server);
+    document(server);
+    order(server);
     server.get('*', (req, res) => {
         return handle(req, res)
       })
@@ -37,6 +42,14 @@ app.prepare().then(() => {
     server.listen(port, err => {
     if (err) throw err
         console.log(`> Ready on http://localhost:${port}`)
+    
+    db.sync({force: false})
+    .then(message => {
+        console.log('...and db is synced!');
+    })
+    .catch(function(err) {
+        throw err;
+    });
     })
 
 })

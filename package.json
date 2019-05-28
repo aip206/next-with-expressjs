@@ -8,7 +8,7 @@
     "build": "next build",
     "start-next": "next",
     "seed:associations": "node ./servers/db/seed.js",
-    "start": "cross-env NODE_ENV=development node ./servers/server.js"
+    "start": "cross-env NODE_ENV=production node ./servers/server.js"
   },
   "keywords": [],
   "author": "Aip",

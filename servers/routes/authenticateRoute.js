@@ -5,4 +5,6 @@ module.exports = (app) =>{
 
     app.route('/api/v1/signIn')
     .post(auth.authenticate)
+    app.route('/api/v1/reset-password')
+    .post(auth.resetPassword)
 }

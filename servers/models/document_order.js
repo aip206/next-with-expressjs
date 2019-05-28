@@ -21,6 +21,13 @@ const DocOrder = db.define('document_orders', {
       },
       pathFile:{
         type: Sequelize.STRING
+      },
+      status:{
+        type: Sequelize.STRING,
+        defaultValue: "DELIVER"
       }
-    })
+    });
+
+const RawDocOrder = db.query("SELECT ord.order_invoice, dor.status FROM document_orders dor LEFT JOIN orders ord on ord.id = dor.orderId LEFT JOIN documents dc on dc.id = dor.documentId LEFT JOIN document_departements dd on dd.documentId = dc.id where dd.departementId = 1 "
+,{raw: true,type: Sequelize.QueryTypes.SELECT})
 module.exports = DocOrder;

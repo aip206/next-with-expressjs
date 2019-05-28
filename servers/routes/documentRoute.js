@@ -5,9 +5,13 @@ module.exports = (app) =>{
     const document = require('../controllers/documentResource');
     const docFile = require('../controllers/documentFileResource');
     app.route('/api/v1/documents')
-    .get(document.getAll)
-    .post(document.create)
-    app.route('/api/v1/document/:id').get(document.getById);
+    .get(passport.authenticate('jwt', { session: false }),document.getAll)
+    .post(passport.authenticate('jwt', { session: false }),document.create)
+    
+    app.route('/api/v1/document/:id').get(passport.authenticate('jwt', { session: false }),document.getById)
+    .delete(document.delete)
+    .put(document.update);
+    app.route('/api/v1/document-lookup').get(document.getDokumenMatrix)
     // passport.authenticate('jwt', { session: false }),
-    app.route('/api/v1/document-files').post(docFile.create);
+    app.route('/api/v1/document-files').post(passport.authenticate('jwt', { session: false }),docFile.create);
 }

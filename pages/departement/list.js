@@ -1,11 +1,19 @@
-import { Component } from 'react';
+import { Component, Fragment } from 'react';
 import { withAuthSync } from '../../utils/auth'
 import cookie from 'js-cookie'
-import fetch from 'isomorphic-unfetch';
 import Layout from '../../components/Layout';
-import ReactTable from "react-table";
-import "react-table/react-table.css";
-import Modal from 'react-modal';
+import axioss from 'axios';
+import swal from 'sweetalert';
+import Router from 'next/router';
+import Link from 'next/link';
+import BootstrapTable from 'react-bootstrap-table-next';
+import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+import Breadcrumb from 'react-bootstrap/Breadcrumb'
+const divRight = {
+  position : "absolute",
+  right:"5%"
+}
 
 const customStyles = {
   content : {
@@ -16,134 +24,188 @@ const customStyles = {
     transform             : 'translate(-50%, -50%)'
   }
 };
-Modal.setAppElement('#root');
+const parameter = {
+  "sortBy":"createdAt","sort":"ASC","limit":"10","page":0
+}
 class Departement extends Component {
   constructor(props) {
     super(props);
+    this.deleteRow = this.deleteRow.bind(this);
     this.state = {
       data: [],
-      modalIsOpen: false,
-      departement: {}
+      defaultSorted : [{
+        dataField: 'createdAt',
+        order: 'desc'
+      }],
+      columns:[
+        {
+          dataField: 'id',
+          text: 'No',
+          formatter: (cell, row, rowIndex, extraData) => (
+            rowIndex + 1
+        )
+      },
+      {
+        dataField: 'name',
+        text: 'Nama Departemen',
+        sort: true
+      },
+      {
+        dataField: 'email',
+        text: 'Email Departemen',
+        sort: true
+      },
+      {
+        dataField: 'department_pics[0].nama',
+        text: 'Nama Penanggung Jawab',
+        sort: true
+      },
+      {
+        dataField: 'department_pics[0].phone',
+        text: 'Nomor Telepon',
+        sort: true,
+        formatter: (cell, row, rowIndex, extraData) => (
+          <Fragment>
+            +62 <span>{row.department_pics[0].phone}</span>
+          </Fragment>
+      )
+
+      },
+      
+      {
+        dataField: 'no',
+        text: 'Action',
+        formatter: (cell, row, rowIndex, extraData) => (
+            <Fragment><div className="btn-group btn-group-sm">
+								<Link href={`/departement/edit?id=${row.id}`}><a href="department-edit.html" className="btn btn-outline-primary" >Ubah</a></Link>
+            </div>
+            </Fragment>
+        ),
+      }
+    ]
     };
-    this.openModal = this.openModal.bind(this);
-    this.afterOpenModal = this.afterOpenModal.bind(this);
-    this.closeModal = this.closeModal.bind(this);
+    
   }
+  
 
-
- 
-  openModal() {
-    this.setState({modalIsOpen: true});
-  }
- 
-  afterOpenModal(id) {
-    // references are now sync'd and can be accessed.
-    fetch('http://localhost:3001/api/v1/departement/'+id)
-    .then(response => response.json())
-    .then(data =>{ 
-      this.setState({ departement : data.data })
+  deleteRow(e) {
+    swal({
+      title: "Apakah Anda yakin akan menghapus data ini?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
     })
-    .catch(err => console.log(err))
-  }
- 
-  closeModal() {
-    this.setState({modalIsOpen: false});
-  }
-
+    .then((willDelete) => {
+      if (willDelete) {
+        axioss.delete('/api/v1/departement/'+e.data.id,{   
+          headers: {
+            'Authorization': cookie.get('token')
+          } 
+        })
+        .then(response =>{
+          swal("Menghapus Data Berhasil", {
+            icon: "success",
+          });
+        })
+        .catch(err =>{
+          swal({
+            title: "Error",
+            text: "Error => " + err,
+            icon: "error",
+            button: "Ok",
+          })
+        })
+      } 
+    });  }
 
  componentDidMount () {
-  fetch('http://localhost:3001/api/v1/departements')
-  .then(response => response.json())
-  .then(data =>{ 
-    this.setState({ data : data.data })
+  axioss.get('/api/v1/departements',{
+    params:parameter,   
+    headers: {
+      'Authorization': cookie.get('token')
+    } 
   })
-  .catch(err => console.log(err))
- }
-  render () {
+  .then(response => response.data.data)
+  .then(data =>{ 
+    this.setState({ data : data.rows})
+  })
+  .catch(err => 
+    swal({
+      title: "Error",
+      text: "Error => " + err,
+      icon: "error",
+      button: "Ok",
+    })
+  )}
+
+  onGridReady = params => {
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+    this.gridApi.serverSide = 'infinite';
+    var dataSource = {
+      rowCount: 3, // for example
+      getRows: function (params) { 
+              params.successCallback(10, 20);
+      }
+    }
+
+    this.gridApi.setDatasource(dataSource);
     
-const columns = [
-  {
-    Header: "No",
-    accessor: "row",
-    maxWidth: 100,
-    filterable: false,
-    Cell: (row) => {
-        return <div>{row.index + 1}</div>;
-    }
-  },
-  {
-    Header: "Nama",
-    accessor: "name",
-    minWidth: 100
-  },
-  {
-    Header: "Login",
-    accessor: "login",
-    minWidth: 100
-  },
-  {
-    Header: "Role",
-    accessor: "role",
-    minWidth: 100
-  },
-  {
-    Header: "Action",
-    minWidth: 100,
-    Cell: (row) => {
-      console.log(row)
-      return <button className="btn btn-sm btn-outline-primary" onClick={this.openModal} ><i className="fas fa-eye fa-fw mr-1"></i>Detail</button>
-    }
   }
-];
+
+  render () {
+    const { SearchBar } = Search;
+
     return (
      <Layout>
+       {/* <Breadcrumb>
+                <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+                <Breadcrumb.Item active >Departement</Breadcrumb.Item>
+            </Breadcrumb> */}
         <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>Departement</h3>
-        <ReactTable
-          data = {this.state.data}
-          columns={columns}
-          className="-striped -highlight"
-          />
-            <Modal
-              isOpen={this.state.modalIsOpen}
-              onAfterOpen={this.afterOpenModal}
-              onRequestClose={this.closeModal}
-              ariaHideApp={false}
-              contentLabel="Example Modal"
-              style={customStyles}
-            >
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Detail Departemen</h5>
-                  <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div className="modal-body">
-                  <dl className="row">
-                    <small className="col-sm-12">Departemen</small>
-                    <dt className="col-sm-4">Nama</dt>
-                    <dd className="col-sm-8">: Departemen Lorem</dd>
-                    <dt className="col-sm-4">Email</dt>
-                    <dd className="col-sm-8">: departmentemail@gmail.com</dd>
-                  </dl>
-                  <dl className="row">
-                    <small className="col-sm-12">Penanggung Jawab</small>
-                    <dt className="col-sm-4">Nama</dt>
-                    <dd className="col-sm-8">: John Doe</dd>
-                    <dt className="col-sm-4">Nomor Telepon</dt>
-                    <dd className="col-sm-8">: +62 81321123321</dd>
-                  </dl>
-                </div>
-                <div className="modal-footer justify-content-between">
-                  <button type="button" className="btn btn-link" data-dismiss="modal">Tutup</button>
-                  <div>
-                    <button type="button" className="btn btn-outline-danger" id="btnDelete">Hapus</button>
-                    <button type="button" className="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#modalEdit">Ubah</button>
+      
+        <ToolkitProvider
+          
+          keyField='id' 
+          data={this.state.data} 
+          columns={ this.state.columns }
+          noDataIndication="Table is Empty"
+          search
+        >
+          {
+            props => (
+              <div>
+                <div className="row">
+                <div className="col">
+                  <SearchBar { ...props.searchProps } />
+                  </div>
+                  <div className="col" >
+                    <Link href="/departement/create" className="div-right">
+                    <button className="btn btn-primary" style={divRight}>Tambah Departemen</button>
+                    </Link>
                   </div>
                 </div>
+                <hr />
+                <BootstrapTable
+                  { ...props.baseProps }
+                  defaultSorted={ this.state.defaultSorted } 
+                  bootstrap4
+                  striped
+                  hover
+                  condensed
+                  pagination={ paginationFactory() } 
+                />
               </div>
-    
-            </Modal>
+            )
+          }
+        </ToolkitProvider>
+        <style jsx>{`
+            .div-right: {
+              position: absolute;
+              right: 0;
+            }
+            
+          `}</style>
       </Layout>
       )
   }

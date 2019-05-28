@@ -32,13 +32,9 @@ const Document = db.define('documents', {
       description: {
         type: Sequelize.STRING
       },
-      documentFileId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {         
-          model: 'document_files',
-          key: 'id'
-        }
+      path: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
       isDelete: {
         type: Sequelize.BOOLEAN,

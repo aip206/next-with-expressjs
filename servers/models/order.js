@@ -39,11 +39,29 @@ const Order = db.define('orders', {
       customer_address: {
         type: Sequelize.STRING,
       },
-      email: {
+      customer_email: {
         type: Sequelize.STRING,
       },
-      phone_number: {
+      customer_provinsi: {
         type: Sequelize.STRING,
+      },
+      customer_kecamatan: {
+        type: Sequelize.STRING,
+      },
+      customer_kabupaten: {
+        type: Sequelize.STRING,
+      },
+      customer_phone: {
+        type: Sequelize.STRING,
+      },
+      id_provinsi: {
+        type: Sequelize.INTEGER,
+      },
+      id_kecamatan: {
+        type: Sequelize.INTEGER,
+      },
+      id_kabupaten: {
+        type: Sequelize.INTEGER,
       },
       isDelete: {
         type: Sequelize.BOOLEAN,
@@ -60,5 +78,7 @@ const Order = db.define('orders', {
         type: Sequelize.DATE,
       }
 })
-
+const getLastNumber = db.query("SELECT ROW_NUMBER() OVER(ORDER BY createdAt DESC) AS number FROM orders \
+              where  createdAt >= '2019-05-23' AND createdAt <= '2019-05-25'\
+              ORDER BY number DESC ",{raw: true,type: Sequelize.QueryTypes.SELECT})
 module.exports = Order;

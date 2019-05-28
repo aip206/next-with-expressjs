@@ -5,8 +5,10 @@ import cookie from 'js-cookie'
 
 export const logins = async ({ token,data }) => {
   cookie.set('token', token, { expires: 1 })
-  window.localStorage.setItem('myData', data);
-  Router.push('/')
+  window.localStorage.setItem('myData', JSON.stringify(data))
+  
+    Router.push('/')
+  
 }
 
 export const logout = () => {

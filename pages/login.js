@@ -1,7 +1,10 @@
 import { Component } from 'react';
-import fetch from 'isomorphic-unfetch';
 import Head from 'next/head';
 import { logins } from '../utils/auth';
+import axioss from 'axios';
+import Router from 'next/router';
+import { withRouter } from 'next/router';
+import swal from 'sweetalert';
 
 class Login extends Component {
   static getInitialProps ({ req }) {
@@ -16,14 +19,14 @@ class Login extends Component {
   constructor (props) {
     super(props)
 
-    this.state = { login: '', password: '', error: '' }
+    this.state = { email: '', password: '', error: '' }
     this.handleChange = this.handleChange.bind(this)
     this.handleChangePassword = this.handleChangePassword.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   handleChange (event) {
-    this.setState({ login: event.target.value })
+    this.setState({ email: event.target.value })
   }
 
   handleChangePassword (event) {
@@ -33,32 +36,50 @@ class Login extends Component {
   async handleSubmit (event) {
     event.preventDefault()
     this.setState({ error: '' })
-    const login = this.state.login
+    const email  = this.state.email
     const password = this.state.password
     const url = this.props.apiUrl
 
     try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ login:login, password: password })
+     const response = axioss.post('/api/v1/signIn',{ email:email, password: password },{
+        headers: { 'Content-Type': 'application/json' }
       })
-      if (response.ok) {
-        const { token, data } = await response.json()
-        console.log(data);
-        logins({ token, data })
-      } else {
-        console.log('Login failed. ,' + response)
-        let error = new Error(response.msg)
-        error.response = response
-        throw error
-      }
+      response
+      .then((response)=>{
+         const { token, data } = response.data
+         
+        logins({ token, data: data })
+      })
+      .catch((err)=>{
+        swal({
+          title: "Error",
+          text:  err.response.data.msg,
+          icon: "error",
+          button: "Ok",
+        })
+      })
+      // if (response.ok) {
+        // const { token, data } = await response.json()
+        // logins({ token, data })
+        
+      // } else {
+      //   console.log('Login failed. ,' + response.msg)
+      //   let error = new Error(response.msg)
+      //   error.response = response.msg
+      //   throw error
+      // }
     } catch (error) {
       console.error(
         'You have an error in your code or there are Network issues.',
         error
       )
       this.setState({ error: error.msg })
+      swal({
+        title: "Error",
+        text: "Error => " + error,
+        icon: "error",
+        button: "Ok",
+      })
     }
   }
 
@@ -69,7 +90,7 @@ class Login extends Component {
           <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
           <link rel="stylesheet" href="/static/fonts/roboto/stylesheet.css" rel="stylesheet"/>
           <link rel="stylesheet" href="/static/style.css"rel="stylesheet"/>
-          <title></title>
+          <title>Login</title>
         </Head> 
         <main className="container">
           <div className="row align-items-center justify-content-center auth-container">
@@ -81,20 +102,20 @@ class Login extends Component {
                 <form onSubmit={this.handleSubmit}>
                   <div className="card-body">
                     <div className="form-group">
-                      <label for="loginEmail">Username</label>
+                      <label for="loginEmail">Email</label>
                       <input
                         type='text'
-                        id='login'
+                        id='email'
                         className="form-control"
-                        name='login'
-                        value={this.state.login}
+                        name='email'
+                        value={this.state.email}
                         onChange={this.handleChange}
                       />
                     </div>
                     <div className="form-group">
                       <label for="loginPassword">Password</label>
                       <input
-                        type='text'
+                        type='password'
                         className="form-control"
                         id='password'
                         name='password'
@@ -104,7 +125,7 @@ class Login extends Component {
                     </div>
                   </div>
                   <div className="card-footer bg-white d-flex justify-content-between">
-                    <a href="forgot-password.html" className="btn btn-link">Lupa sandi?</a>
+                    <a href="/forgot-password" className="btn btn-link">Lupa sandi?</a>
                     <button type="submit" className="btn btn-primary">Masuk</button>
                   </div>
                 </form>
@@ -117,4 +138,4 @@ class Login extends Component {
   }
 }
 
-export default Login
+export default withRouter(Login);

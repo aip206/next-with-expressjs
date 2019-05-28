@@ -6,6 +6,8 @@ const Customer = require('../models/customer');
 const DepartementPic = require('../models/departement_pic');
 const DocFile = require('../models/document_file');
 const DocOrder = require('../models/document_order');
+const DepOrder = require('../models/departement_order');
+const ResetPassword = require('../models/reset_password');
 
 let allDocument,
     allDepartement,
@@ -13,7 +15,9 @@ let allDocument,
     allCustomer,
     allDepartementPic,
     allDocFile,
-    allDocOrder;
+    allDocOrder,
+    allDepOrder,
+    resetPassword;
 
 // array of promises to find all the db data
 // and store it in outer-scoped variables, so
@@ -26,6 +30,8 @@ let findAllPromises = [
     DepartementPic.findAll().then(resp => allDepartementPic = resp),
     DocFile.findAll().then(resp => allDocFile = resp),
     DocOrder.findAll().then(resp => allDocOrder = resp),
+    DepOrder.findAll().then(resp => allDepOrder = resp),
+    ResetPassword.findAll().then(resp => resetPassword = resp),
 ]
 
 

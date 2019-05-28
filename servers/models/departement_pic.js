@@ -7,11 +7,11 @@ const DepartementPic = db.define('department_pics', {
         autoIncrement: true,
         primaryKey: true
       },
-      code: {
+      nama: {
         type: Sequelize.STRING,
         allowNull: false,
         validate: {
-          notNull: { msg: 'The code is required' }
+          notNull: { msg: 'The Name is required' }
         }
       },
       phone: {

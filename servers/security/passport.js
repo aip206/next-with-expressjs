@@ -9,9 +9,9 @@ module.exports = (passport) => {
     opts.secretOrKey = config.key.salt
     passport.use(new JwtStrategy(opts, (jwt_payload, done)=>{
         Departement.findOne({where:{id:jwt_payload.id}}).then((dept) => {
-            done(null,true)
+           return done(null,dept)
         }).catch((err) => {
-            done(err,false) 
+            return done(err,false) 
         })
     }))
 }

@@ -2,6 +2,7 @@ import { Component } from 'react';
 import { withAuthSync } from '../utils/auth'
 import cookie from 'js-cookie'
 import Layout from '../components/Layout';
+import { withRouter } from 'next/router';
 
 class Dashboard extends Component {
   render () {
@@ -13,4 +14,4 @@ class Dashboard extends Component {
   }
 }
   
-export default withAuthSync(Dashboard);
+export default withAuthSync(withRouter(Dashboard));

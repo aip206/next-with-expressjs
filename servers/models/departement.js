@@ -16,14 +16,6 @@ const Departement = db.define('departements', {
     }
 
   },
-  login: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    validate: {
-      notNull: { msg: 'The login is required' }
-    }
-
-  },
   password: {
     type: Sequelize.STRING,
     allowNull: false,
@@ -42,7 +34,7 @@ const Departement = db.define('departements', {
   },
   role: {
     type: Sequelize.ENUM,
-    values: ['admin', 'departemen'],
+    values: ['admin', 'departement'],
     allowNull: false,
     validate: {
       notNull: { msg: 'The role is required' }

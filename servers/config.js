@@ -18,7 +18,8 @@ var config = {
       tls:true,
       username:"oms.butternut1@gmail.com",
       password:"hajiabun14"
-    }
+    },
+    url:"http://165.22.99.204:3001"
   },
   default: {
     key:{

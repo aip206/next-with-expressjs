@@ -69,7 +69,7 @@ exports.create = (req,res) => {
     const tahun = date.getFullYear().toString().substr(-2);
     const month = ((date.getMonth()+1) < 10 ? '0' : '') + (date.getMonth()+1)
     const day = (date.getDate() < 10 ? '0' : '') + date.getDate()
-    db.query("SELECT ROW_NUMBER() OVER(ORDER BY createdAt DESC) AS number FROM orders where  createdAt >= CURDATE() AND createdAt <= CURDATE() + INTERVAL 1 DAY ORDER BY number DESC ",
+    db.query("select count(*) as number from orders where DATE(createdAt) = CURDATE()",
     { raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
         let order_invoice = "OMS-"+tahun+month+day+counter(data)
         Order.create({

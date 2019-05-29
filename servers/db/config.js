@@ -27,7 +27,9 @@ Departement.belongsToMany(Document, { through: 'document_departements'})
 Departement.hasMany(DepartementPic)
 DepOrder.belongsTo( Departement);
 Departement.hasMany( DepOrder);
-// Departement.hasMany(DepOrder, { constraints: false, allowNull:true, defaultValue:null});
+DocOrder.hasMany(DepOrder);
+DepOrder.belongsTo( DocOrder);
+Departement.hasMany(DepOrder, { constraints: false, allowNull:true, defaultValue:null});
 
 Order.belongsToMany(Document, { through: 'document_orders'})
 Order.hasMany(DocOrder)

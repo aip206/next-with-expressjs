@@ -8,7 +8,7 @@ class Dashboard extends Component {
   render () {
     return (
      <Layout>
-        <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>Dashboard</h3>
+        <h3 className="title"><i className="fas fa-home fa-fw mr-2"></i>Dashboard</h3>
       </Layout>
       )
   }

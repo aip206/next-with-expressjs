@@ -6,7 +6,7 @@ const DepartementOrder = db.define('departement_orders', {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
-      }, docOrderID: {
+      }, documentOrderId: {
         type: Sequelize.INTEGER,
         references: {         
             model: 'document_orders',

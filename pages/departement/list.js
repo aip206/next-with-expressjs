@@ -39,7 +39,7 @@ class Departement extends Component {
       }],
       columns:[
         {
-          dataField: 'id',
+          dataField: 'createdAt',
           text: 'No',
           formatter: (cell, row, rowIndex, extraData) => (
             rowIndex + 1
@@ -158,11 +158,11 @@ class Departement extends Component {
 
     return (
      <Layout>
-       {/* <Breadcrumb>
-                <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
-                <Breadcrumb.Item active >Departement</Breadcrumb.Item>
-            </Breadcrumb> */}
-        <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>Departement</h3>
+      <Breadcrumb>
+        <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
+        <Breadcrumb.Item active >Departemen</Breadcrumb.Item>
+      </Breadcrumb>
+        <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>Departemen</h3>
       
         <ToolkitProvider
           

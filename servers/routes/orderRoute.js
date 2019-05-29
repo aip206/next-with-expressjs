@@ -24,6 +24,9 @@ module.exports = (app) =>{
     app.route('/api/v1/update-progress-dokumen-order/:id').get(depOrder.updateStatusDalamProses)
     app.route('/api/v1/update-sukses-order/:id').post(document.suksesOrder)
     app.route('/api/v1/order/add-dokumen/:id').post(document.addOrderDokumen)
+    app.route('/api/vi/progres-dokumen-order/:id').get(depOrder.getProgresDepartementOrder)
+    app.route('/api/v1/document-orders/:id')
+    .get(document.getDocOrder)
     
     // passport.authenticate('jwt', { session: false }),
 }

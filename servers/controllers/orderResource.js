@@ -21,17 +21,18 @@ exports.getAll = (req,res) => {
 }
 
 exports.getDocOrder = (req,res) => {
-    const date = new Date();
-
-    let addRowNumber =  db.query("SELECT ROW_NUMBER() OVER(ORDER BY createdAt DESC) AS number FROM orders where  createdAt >= CURDATE() AND createdAt <= CURDATE() + INTERVAL 1 DAY ORDER BY number DESC ",
-    { replacements: { start: date , end : date.addDays(1) },raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
-        console.log(date.addDays(1));
-        return data
-    }).catch((err)=>{
+    DocOrder.findAll({
+        where:{
+            orderId:req.params.id
+        },
+        include: [{
+            model: DepOrder,
+            as: 'departement_orders', through: 'departement_orders',
+            attributes: ['id','status']
+        }]
+    }).then(data => res.json({data:data})).catch(err => {
         console.log(err)
-        return ""
-    })
-    res.json({data:"data"})
+        res.json({ msg: err })})   
 }
 
 exports.getById =(req,res) =>{
@@ -99,7 +100,7 @@ exports.create = (req,res) => {
                     console.log(data);
                     x.departements.forEach((xm)=>{
                         DepOrder.create({
-                            docOrderID: data.id,
+                            documentOrderId: data.id,
                             departementId: xm.document_departements.departementId
                         })           
                     })
@@ -160,7 +161,7 @@ exports.update = (req, res) => {
 }
 
 exports.batalDokumen = (req,res) =>{
-    DepOrder.destroy({where: {"docOrderId":req.params.id}})
+    DepOrder.destroy({where: {"documentOrderId":req.params.id}})
     DocOrder
     .destroy({where:{id:req.params.id}}).then(()=>{
         res.json({data:true})
@@ -201,7 +202,7 @@ exports.addOrderDokumen =(req, res) => {
     .then(data => {
         departements.forEach((xm)=>{
             DepOrder.create({
-                docOrderID: data.id,
+                documentOrderId: data.id,
                 departementId: xm.document_departements.departementId
             })           
         })

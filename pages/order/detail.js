@@ -16,6 +16,8 @@ import {storage} from '../../utils/firebase';
 import Modal from 'react-bootstrap/Modal';
 import Select from 'react-select';
 import moment from 'moment';
+import Breadcrumb from 'react-bootstrap/Breadcrumb';
+
 
 class OrderDetail extends React.Component {
     constructor(props){
@@ -52,11 +54,7 @@ class OrderDetail extends React.Component {
                 dataField: 'progres',
                 text: 'Progress',
                 formatter: (cell, row, rowIndex, extraData) => (
-                  <Fragment>
-                    <div class="progress">
-										  <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" >75%</div>
-									  </div>  
-                  </Fragment>
+                  <ProgresDepOrder id={row}/>
               )
               },
               {
@@ -81,6 +79,7 @@ class OrderDetail extends React.Component {
         this.upload = this.upload.bind(this);
         
     }
+
     upload = e => {
       if (e.target.files[0]) {
           const image = e.target.files[0];
@@ -233,7 +232,6 @@ class OrderDetail extends React.Component {
             return response.data.data
         })
         .then(data =>{ 
-          console.log(data);
             this.setState({data})
             this.setState({documents:data.documents})
             this.setState({doc_order:data.documents.document_orders})
@@ -280,6 +278,11 @@ class OrderDetail extends React.Component {
         const { SearchBar } = Search;
         return (
         <Layout>
+          <Breadcrumb>
+          <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
+          <Breadcrumb.Item href="/order/list" >Pemesanan</Breadcrumb.Item>
+          <Breadcrumb.Item active >{this.state.data.order_invoice}</Breadcrumb.Item>
+      </Breadcrumb>  
             <h3 className="title"><i className="fas fa-shopping-cart fa-fw mr-2"></i>Detail Pemesanan</h3>
 			<div className="card shadow">
 				<div className="card-body">
@@ -330,7 +333,6 @@ class OrderDetail extends React.Component {
                 </dl>
                 
             <ToolkitProvider
-                defaultSorted={ this.state.defaultSorted } 
                 keyField='id' 
                 data={this.state.documents} 
                 columns={ this.state.columns }
@@ -448,16 +450,6 @@ class OrderDetail extends React.Component {
                 
                 <div className="form-group">
                   <label for="addDocExample">Contoh Dokumen</label>
-                  {/* <div className="custom-file">
-                        <input type="file" className="custom-file-input" id="addDocExample" value={values.origin} name="origin"  onChange={(e)=>{
-                            handleChange(e)
-                            values.origin = upload(e)
-                        }}/>
-                        <label className="custom-file-label" for="addDocExample">{values.origin}</label>
-                        <input type="hidden" name={values.file} name="filename"/>
-
-                        
-                    </div> */}
                   <div className="custom-file">
                     {selected == "Tipe PNG" ? 
                      <input type="file" accept="image/*" className="custom-file-input" id="addDocExample" value={values.origin} name="origin"  onChange={(e)=>{
@@ -492,6 +484,37 @@ class OrderDetail extends React.Component {
             </form>
         </Fragment>
     )
+  }
+
+  
+  function ProgresDepOrder (props) {
+    try{
+      var resp = axioss.get('/api/vi/progres-dokumen-order/'+props.id.document_orders.id,{
+        headers: {
+          'Authorization': cookie.get('token')
+        } 
+        })
+      var total = resp.data.total
+      var sukses = resp.data.sukses
+      var rata = (sukses/total) * 100
+        return <div className="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                role="progressbar" aria-valuenow={rata} 
+                aria-valuemin="0" aria-valuemax="100" >{rata}%</div>
+              </div>  
+    } catch(err) {
+      console.log("snguan ", err);
+      return <div class="progress">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" 
+              role="progressbar" aria-valuenow="0" 
+              aria-valuemin="0" aria-valuemax="100" >0%</div>
+            </div>
+    }
+    return (<div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+            role="progressbar" aria-valuenow="0" 
+            aria-valuemin="0" aria-valuemax="100" >0%</div>
+          </div>)
   }
   
   function onSubmit (values, closed) {

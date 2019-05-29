@@ -2,7 +2,6 @@ import Head from 'next/head';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import { withRouter } from 'next/router';
-
 import Breadcrumb from './Breadcrumb'
 const Layout = (props) => {
     
@@ -12,6 +11,7 @@ const Layout = (props) => {
           <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
           <link rel="stylesheet" href="/static/fonts/roboto/stylesheet.css" rel="stylesheet"/>
           <link rel="stylesheet" href="/static/style.css"rel="stylesheet"/>
+          
           <title>Sanguan</title>
         </Head> 
         <Header />
@@ -21,6 +21,8 @@ const Layout = (props) => {
                 {props.children}
             </div>
         </main>
+        <script src="/static/vendors/jquery/jquery.min.js"></script>
+        <script src="/static/vendors/fontawesome/js/all.min.js"/>
     </div>
 )}
 export default withRouter(Layout);

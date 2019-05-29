@@ -21,8 +21,6 @@ exports.getAll = (req,res) => {
         model: DepartementPic,
         attributes: ['nama','phone']
     }]})
-    // limit: parseInt(req.query.limit),
-    // offset: parseInt(req.query.page)})
     .then(data => res.json({data:data})).catch(err => 
         {
             console.log(err);

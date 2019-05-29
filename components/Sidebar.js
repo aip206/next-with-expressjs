@@ -16,7 +16,6 @@ const Sidebar = () =>
 			</li>
 			{data.role == "admin" ? (
 				<Fragment>
-					
 					<li className="nav-item">
 						<Link href="/departement/list">
 						<a className="nav-link" >Departemen</a>

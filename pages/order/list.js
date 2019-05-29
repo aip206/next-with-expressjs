@@ -103,7 +103,11 @@ render () {
   const { SearchBar } = Search;
   return (
     <Layout>
-      <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>Pemesanan</h3>
+      <Breadcrumb>
+          <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
+          <Breadcrumb.Item active >Pemesanan</Breadcrumb.Item>
+      </Breadcrumb>  
+      <h3 className="title"><i className="fas fa-shopping-cart fa-fw mr-2"></i>Pemesanan</h3>
       <ToolkitProvider
           
           keyField='id' 

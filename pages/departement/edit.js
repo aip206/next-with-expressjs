@@ -99,11 +99,11 @@ function EditForm(props) {
         isSubmitting } = props
     return(
         <Layout>
-             {/* <Breadcrumb>
-                <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
-                <Breadcrumb.Item href="/departement/list">Departement</Breadcrumb.Item>
+             <Breadcrumb>
+                <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
+                <Breadcrumb.Item href="/departement/list">Departemen</Breadcrumb.Item>
                 <Breadcrumb.Item active>Ubah</Breadcrumb.Item>
-            </Breadcrumb> */}
+            </Breadcrumb>
             <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>Departemen - Tambah</h3>
             <div className="card shadow">
             <form onSubmit={handleSubmit}>

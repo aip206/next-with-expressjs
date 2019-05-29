@@ -265,6 +265,11 @@ function EditForm(props) {
 
     return(
         <Layout>
+             <Breadcrumb>
+                <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
+                <Breadcrumb.Item href="/order/list" >Pemesanan</Breadcrumb.Item>
+                <Breadcrumb.Item active >Edit</Breadcrumb.Item>
+            </Breadcrumb> 
             <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>Pemesanan - Tambah</h3>
             <div className="card shadow">
             <form onSubmit={handleSubmit}>

@@ -7,7 +7,7 @@ const db = require('../db/config')
 exports.getAll = (req,res) => {
    db.query("SELECT dorders.id,dorders.status, docor.orderId, o.createdAt, o.order_invoice, o.customer_name, dp.`name`, docor.pathFile, dorders.file, documen.dokumen_type FROM `departement_orders` as dorders \
     INNER JOIN departements dp on dp.id = dorders.departementId \
-    INNER JOIN document_orders docor on docor.id = dorders.docOrderID \
+    INNER JOIN document_orders docor on docor.id = dorders.documentOrderId \
     INNER JOIN orders o on o.id = docor.orderId \
     INNER JOIN documents documen on documen.id = docor.documentId \
     WHERE dorders.departementId = :id ",
@@ -27,7 +27,7 @@ exports.getAll = (req,res) => {
 exports.getDetailOrder = (req,res) => {
     db.query("SELECT dorders.id, dorders.status, o.order_invoice, doc.dokumen_name, doc.dokumen_type, dorders.departementId, docor.pathFile, dorders.file  FROM `departement_orders` as dorders \
     INNER JOIN departements dp on dp.id = dorders.departementId \
-    INNER JOIN document_orders docor on docor.id = dorders.docOrderID \
+    INNER JOIN document_orders docor on docor.id = dorders.documentOrderId \
     INNER JOIN documents doc on doc.id = docor.documentId \
     INNER JOIN orders o on o.id = docor.orderId \
     WHERE dorders.departementId = :id and o.id = :orderId ",
@@ -47,7 +47,7 @@ exports.getDetailOrder = (req,res) => {
 exports.getAllByDocumenOrder = (req,res) =>{
     DepOrder.findAll({
         where:{
-            docOrderID: req.query.orderId
+            documentOrderId: req.query.orderId
         },include:[{
             model: Departement,
             attributes: ['name']
@@ -69,4 +69,22 @@ exports.updateStatusDalamProses = (req,res) =>{
     DepOrder
     .update({status:"Dalam Proses"},{where:{id:req.params.id}})
     .then(data => res.json({data:data})).catch(err => res.json({ msg: err }))
+}
+
+exports.getProgresDepartementOrder = (req,res) => {
+    db.query("SELECT count(*) as total, \
+    (SELECT COUNT(*) FROM departement_orders WHERE documentOrderId= :docOdrdeID and `status` = 'Sudah Diproses' ) as sukses\
+    FROM `departement_orders` depder \
+    where depder.documentOrderId = :docOdrdeID",  
+    {replacements: { docOdrdeID: req.params.id},raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+        if(data){
+            res.json({ data: data }) 
+        }else{
+            res.json({ data: [] })
+        }
+    }).catch((err)=>{
+        console.log(err)
+        res.status(400);
+        res.json({ msg: err })
+    })
 }

@@ -43,7 +43,7 @@ class DokumenMatrix extends Component {
       }],
       columns:[
         {
-          dataField: 'id',
+          dataField: 'createdAt',
           text: 'No',
           formatter: (cell, row, rowIndex, extraData) => (
             rowIndex + 1
@@ -178,11 +178,11 @@ render () {
   const { SearchBar } = Search;
   return (
     <Layout>
-      {/* <Breadcrumb>
-                <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
-                <Breadcrumb.Item active >Matriks Dokumen</Breadcrumb.Item>
-            </Breadcrumb>    */}
-      <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>DokumenMatrix</h3>
+      <Breadcrumb>
+          <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
+          <Breadcrumb.Item active >Matriks Dokumen</Breadcrumb.Item>
+      </Breadcrumb>   
+      <h3 className="title"><i className="far fa-file fa-fw mr-2"></i>DokumenMatrix</h3>
       <ToolkitProvider
           
           keyField='id' 

@@ -26,6 +26,17 @@ exports.authenticate = (req,res) =>{
     }
 }
 
+exports.changePassword = (req,res) => {
+  Departement.update({password:req.body.password},{
+    where: {email: req.user.email}
+  }).then((data)=>{
+    res.json({data:true})
+  }).catch((err)=>{
+    res.status(400);
+    res.json({ msg: err })
+  })
+}
+
 exports.forgotPassword = (req,res) => {
   const {email} = req.body;
   const password = crypto.randomBytes(20).toString('hex');

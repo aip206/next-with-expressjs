@@ -28,8 +28,8 @@ var config = {
     database: {
       host     : 'localhost',
       user     : 'root',
-      password : 'mysecretpassword',
-      database : 'omsdb',
+      password : '1234abcd',
+      database : 'temp',
       insecureAuth: true
     },
     mail : {

@@ -143,7 +143,7 @@ exports.changePassword = (req, res) => {
 
  exports.create = async (req,res) => {
     
-    let { name, email, role, code_pic,phone_pic } = req.body;
+    let { name, email, role, nama,phone} = req.body;
     let errors = []
     if(!name) {
         errors.push({msg:"Missing Parameter Name"})
@@ -172,7 +172,7 @@ exports.changePassword = (req, res) => {
                     .then(data => {
                         const departementId = data.id
                         DepartementPic
-                        .create({nama:code_pic,phone:phone_pic,departementId:departementId})
+                        .create({nama:nama,phone:phone,departementId:departementId})
                         .then(()=>{
                             ResetPassword.create(resetPassword).then((data)=>{
                                 sendEmailPassword(data);

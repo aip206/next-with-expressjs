@@ -14,9 +14,9 @@ const getYupValidationSchema = Yup.object().shape({
       .required('E-mail is required!'),
     name: Yup.string()
       .required('Nama Departemen is required!'),
-    code_pic:  Yup.string()
-        .required('No PIC is required!'),
-    phone_pic:  Yup.string()
+    nama:  Yup.string()
+        .required('Nama Penanggung Jawab is required!'),
+    phone:  Yup.string()
         .required('No Telpon is required!')
   })
 const initialValues = {
@@ -24,8 +24,8 @@ const initialValues = {
     password:undefined,
     email:undefined,
     login:undefined,
-    code_pic:undefined,
-    phone_pic:undefined,
+    nama:undefined,
+    phone:undefined,
     role:'departement'
 }
 
@@ -67,8 +67,8 @@ function CreateForm(props) {
 						</div>
                         <div className="form-group">
 							<label for="addNoPIC">Nama Penanggung Jawab</label>
-							<input type="text" className="form-control" value={values.code_pic} onChange={handleChange} name="code_pic" id="addNoPic" />
-                            <ErrorMessage name="code_pic" className="error-message" component='div' />
+							<input type="text" className="form-control" value={values.nama} onChange={handleChange} name="nama" id="addNoPic" />
+                            <ErrorMessage name="nama" className="error-message" component='div' />
 						</div>
                         <div className="form-group">
 							<label for="addPicPhone">Nomor Telepon Penanggung Jawab</label>
@@ -76,13 +76,13 @@ function CreateForm(props) {
 								<div className="input-group-prepend">
 									<span className="input-group-text">+62</span>
 								</div>
-								<input type="text" className="form-control" value={values.phone_pic} onChange={handleChange} name="phone_pic"  id="addPicPhone" />
+								<input type="text" className="form-control" value={values.phone} onChange={handleChange} name="phone"  id="addPicPhone" />
 							</div>
-                            <ErrorMessage name="code_pic" className="error-message" component='div' />
+                            <ErrorMessage name="phone" className="error-message" component='div' />
 						</div>
                     </div>
                     <div className="card-footer">
-                        <button type="submit" disabled= {isSubmitting} className="btn btn-block btn-primary">Tambah Departemen Baru</button>
+                        <button type="submit" className="btn btn-block btn-primary">Tambah Departemen Baru</button>
                     </div>
                 </form>
             </div>

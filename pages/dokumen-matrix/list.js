@@ -3,6 +3,7 @@ import { withAuthSync } from '../../utils/auth'
 import cookie from 'js-cookie'
 import Layout from '../../components/Layout';
 import axioss from 'axios';
+import http from '../../utils/http-service.js';
 import swal from 'sweetalert';
 import Router from 'next/router';
 import Link from 'next/link';
@@ -63,8 +64,13 @@ class DokumenMatrix extends Component {
         dataField: 'departements',
         text: 'Departemen',
         formatter: (cell, row, rowIndex, extraData) => {
-         var a = row.departements.map((x)=>x.name)
-         return a.join("\n");
+        //  var a = row.departements.map((x)=>x.name)
+        //  return a.join("\n");
+         return <ul>
+                  {row.departements.map((x)=>{
+                    return <li>{x.name}</li>
+                    })}
+                </ul>
         }
         
       ,
@@ -159,16 +165,6 @@ class DokumenMatrix extends Component {
     .then(data =>{ 
       this.setState({ data : data.rows})
     })
-    .catch(err => 
-      swal({
-        title: "Error",
-        text: "Error => " + err,
-        icon: "error",
-        button: "Ok",
-      }).then(()=>{
-        Router.push('/login')
-      })
-    )
   }
 
  componentDidMount () {

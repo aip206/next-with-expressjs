@@ -10,21 +10,17 @@ import Router from 'next/router';
 import swal from 'sweetalert';
 import { withRouter } from 'next/router'
 import axioss from 'axios';
+import Breadcrumb from 'react-bootstrap/Breadcrumb';
 
 const getYupValidationSchema = Yup.object().shape({
     email: Yup.string()
       .email('E-mail is not valid!')
       .required('E-mail is required!'),
-    password: Yup.string()
-      .min(6, `Password has to be longer than 6 characters!`)  
-      .required('Password is required!'),
     name: Yup.string()
       .required('Nama Departemen is required!'),
-    login:  Yup.string()
-      .required('Login is required!'),
-    code_pic:  Yup.string()
-        .required('No PIC is required!'),
-    phone_pic:  Yup.string()
+    nama:  Yup.string()
+        .required('Nama Penanggung Jawab is required!'),
+    phone:  Yup.string()
         .required('No Telpon is required!')
   })
 
@@ -40,9 +36,7 @@ class ProfileDepartement extends React.Component {
                         email:'',
                         nama:'',
                         phone:'',
-                        idpic:'',
-                        password:'',
-                        confirmPassword:''
+                        idpic:''
                         }
         }
     }
@@ -82,18 +76,7 @@ class ProfileDepartement extends React.Component {
     render () {
         const MyEnhancedForm = withFormik({
             mapPropsToValues: () => (this.state.initialValues),
-            
-            // Custom sync validation
-            validate: values => {
-              const errors = {};
-          
-              if (!values.name) {
-                errors.name = 'Required';
-              }
-          
-              return errors;
-            },
-          
+            validationSchema:() =>(getYupValidationSchema) ,
             handleSubmit: (values, { setSubmitting }) => {onSubmit(values)},
           
             displayName: 'BasicForm',
@@ -110,24 +93,30 @@ function EditForm(props) {
         isSubmitting } = props
     return(
         <Layout>
-            <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>Profil</h3>
+             <Breadcrumb>
+                <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
+                <Breadcrumb.Item active >Profil</Breadcrumb.Item>
+            </Breadcrumb>
+            <h3 className="title"><i className="fas fa-key fa-fw mr-2"></i>Profil</h3>
             <div className="card shadow">
             <form onSubmit={handleSubmit}>
 				<div className="card-body">
                         <div className="form-group">
 							<label for="addDeptName">Nama Departemen</label>
 							<input type="text" className="form-control" value={values.name} onChange={handleChange} name="name" id="addDeptName" />
-                            <ErrorMessage name="name" />
+                            {errors.name && touched.name ? <div className="error-message">{errors.name}</div> : null}
+
 						</div>
                         <div className="form-group">
 							<label for="addEmail">Email</label>
 							<input type="email" className="form-control" value={values.email} onChange={handleChange} name="email" id="addEmail" />
-                            <ErrorMessage name="email" />
+                            {errors.email && touched.email ? <div className="error-message">{errors.email}</div> : null}
 						</div>
                         <div className="form-group">
 							<label for="addNoPIC">Nama Penanggung Jawab</label>
 							<input type="text" className="form-control" value={values.nama} onChange={handleChange} name="nama" id="addNoPic" />
-                            <ErrorMessage name="nama" />
+                            {errors.nama && touched.nama ? <div className="error-message">{errors.nama}</div> : null}
+                            
 						</div>
                         <div className="form-group">
 							<label for="addPicPhone">Nomor Telepon Penanggung Jawab</label>
@@ -137,15 +126,7 @@ function EditForm(props) {
 								</div>
 								<input type="text" className="form-control" value={values.phone} onChange={handleChange} name="phone"  id="addPicPhone" />
 							</div>
-                            <ErrorMessage name="code_pic" />
-						</div>
-                        <div class="form-group">
-							<label for="editPassword">Sandi</label>
-							<input type="password" class="form-control" value={values.password} onChange={handleChange} name="password" id="editPassword" required/>
-						</div>
-						<div class="form-group">
-							<label for="editPasswordConfirm">Konfirmasi Sandi</label>
-							<input type="password" class="form-control" value={values.confirmPassword} onChange={handleChange} name="confirmPassword" id="editPasswordConfirm" required/>
+                            {errors.phone && touched.phone ? <div className="error-message">{errors.phone}</div> : null}
 						</div>
                     </div>
                     <div className="card-footer">

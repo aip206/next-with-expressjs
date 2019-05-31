@@ -31,7 +31,10 @@ class DetailDokumen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      parameter: {orderId:this.props.router.query.dokOrderId},
+      parameter: {
+        orderId:this.props.router.query.dokOrderId,
+        invoice:this.props.router.query.invoice
+      },
       data: [],
       defaultSorted : [{
         dataField: 'createdAt',
@@ -174,11 +177,13 @@ class DetailDokumen extends Component {
 
     return (
      <Layout>
-          {/* <Breadcrumb>
-                <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
-                <Breadcrumb.Item href="/order/list" >Pemesanan</Breadcrumb.Item>
-                <Breadcrumb.Item active >Detail Dokumen Pemesanan</Breadcrumb.Item>
-            </Breadcrumb>    */}
+         <Breadcrumb>
+            <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
+            <Breadcrumb.Item href="/order/list" >Pemesanan</Breadcrumb.Item>
+            <Breadcrumb.Item href={`/order/detail?id=${this.props.router.query.orderId}`} >{this.props.router.query.invoice}</Breadcrumb.Item>
+            <Breadcrumb.Item active >Detail Dokumen Pemesanan</Breadcrumb.Item>
+          </Breadcrumb>  
+          
         <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>Detail Dokumen Pemesanan</h3>
       
         <ToolkitProvider

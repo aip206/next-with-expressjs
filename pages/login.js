@@ -5,6 +5,7 @@ import axioss from 'axios';
 import Router from 'next/router';
 import { withRouter } from 'next/router';
 import swal from 'sweetalert';
+import cookie from 'js-cookie'
 
 class Login extends Component {
   static getInitialProps ({ req }) {
@@ -23,6 +24,22 @@ class Login extends Component {
     this.handleChange = this.handleChange.bind(this)
     this.handleChangePassword = this.handleChangePassword.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.goBack = this.goBack.bind(this); // i think you are missing this
+
+  }
+
+  componentDidMount(){
+    if(cookie.get("token")){
+      console.log("sanguan  ")
+      this.goBack();
+    }else{
+      console.log("euh waluh")
+    }
+  }
+
+  goBack(){
+    this.props.router.back();
+    console.log(this.props)
   }
 
   handleChange (event) {
@@ -58,16 +75,6 @@ class Login extends Component {
           button: "Ok",
         })
       })
-      // if (response.ok) {
-        // const { token, data } = await response.json()
-        // logins({ token, data })
-        
-      // } else {
-      //   console.log('Login failed. ,' + response.msg)
-      //   let error = new Error(response.msg)
-      //   error.response = response.msg
-      //   throw error
-      // }
     } catch (error) {
       console.error(
         'You have an error in your code or there are Network issues.',

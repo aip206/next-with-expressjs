@@ -15,12 +15,15 @@ import moment from 'moment';
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
 
 
-const getYupValidationSchema = Yup.object().shape({initialValues:{
-    dokumen_name: Yup.string()
-      .required('E-mail is required!'),
-    dokumen_type: Yup.string()
-      .required('Password is required!')
-    }
+const getYupValidationSchema = Yup.object({
+    initialValues:Yup.object({
+        dokumen_name: Yup.string()
+        .required('Nama Dokumen is required!'),
+        dokumen_type: Yup.string()
+        .required('Tipe Dokumen is required!')
+        
+    })
+    
   })
 
 class DokumenMatrixEdit extends React.Component {
@@ -132,7 +135,7 @@ class DokumenMatrixEdit extends React.Component {
 
 function EditForm(props) {
     const { values,errors, form, handleChange, handleSubmit,
-        isSubmitting,optional, typeDok, setFieldValue} = props
+        isSubmitting,optional, typeDok,touched, setFieldValue} = props
     const [fileName, setFileName] = useState("");
     const [progress, setProgress] = useState(0);
     const [selected, setSelected] = useState("");
@@ -165,7 +168,7 @@ function EditForm(props) {
                 <Breadcrumb.Item href="/dokumen-matrix/list" >Matriks Dokumen</Breadcrumb.Item>
                 <Breadcrumb.Item active >Ubah</Breadcrumb.Item>
             </Breadcrumb>   
-            <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>Matriks Dokumen - Tambah</h3>
+            <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>Matriks Dokumen - Ubah</h3>
             <div className="card shadow">
             <form onSubmit={handleSubmit}>
 				<div className="card-body">
@@ -173,6 +176,8 @@ function EditForm(props) {
 							<label for="addDeptName">Nama Dokumen</label>
 							<input type="text" className="form-control" value={values.initialValues.dokumen_name}  onChange={handleChange} name="initialValues.dokumen_name" id="addDeptName"/>
                             <ErrorMessage name="initialValues.dokumen_name" />
+                            {/* {errors.dokumen_name && touched.dokumen_name ? <div className="error-message">{errors.dokumen_name}</div> : null} */}
+
 						</div>
                 
                         <div className="form-group">
@@ -243,7 +248,7 @@ function EditForm(props) {
 						</div>
                     </div>
                     <div className="card-footer">
-                        <button type="submit"  className="btn btn-block btn-primary">Tambah Departemen Baru</button>
+                        <button type="submit"  className="btn btn-block btn-primary">Ubah Matrix Dokumen</button>
                     </div>
                 </form>
             </div>

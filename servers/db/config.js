@@ -33,3 +33,7 @@ Departement.hasMany(DepOrder, { constraints: false, allowNull:true, defaultValue
 
 Order.belongsToMany(Document, { through: 'document_orders'})
 Order.hasMany(DocOrder)
+
+
+Document.hasMany(DocOrder,{foreignKey: 'documentId'})
+DocOrder.belongsTo(Document,{foreignKey: 'documentId'})

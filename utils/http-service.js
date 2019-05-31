@@ -1,31 +1,45 @@
 import axios from 'axios';
-import izitoast from 'izitoast';
+// import izitoast from 'izitoast';
+import Router from 'next/router'
+import nextCookie from 'next-cookies'
+import cookie from 'js-cookie'
 
-export const configureHttp = function() {
+const instance = axios.create({
+  timeout: 10000,
+  params: {} // do not remove this, its added to add params later in the config
+});
+
+// export const configureHttp = function() {
  
 
   //handling error
-  axios.interceptors.request.use(function (config) {
+  instance.interceptors.request.use(function (config) {
     return config;
   }, function (error) {
-    izitoast.error({title: 'Warning', message: error})
+    // izitoast.error({title: 'Warning', message: error})
     return Promise.reject(error);
   });
 
   // Add a response interceptor
-  axios.interceptors.response.use(function (response) {
+  instance.interceptors.response.use(function (response) {
+    console.log("sanguan")
     return response;
   }, function (error, b, c) {
     var err = error.message;
     var title = 'Warning';
-    if(error.response) {
-      if(error.response.data) {
-        err = error.response.data.error_description;
-        if(error.response.data.message)  err = error.response.data.message;
-        if(error.response.data.detail) err = error.response.data.detail
-        if(error.response.data.title) title = error.response.data.title
-      }
-    }
+    if(401 === error.response.status) {
+      swal({
+        title: "Error",
+        text: "Error => " + err,
+        icon: "error",
+        button: "Ok",
+      }).then(()=>{
+        cookie.remove('token');
+        window.localStorage.removeItem('myData');
+        Router.push('/login')
+      })
+      return Promise.reject(error);
+    }})
 
     // var arrayContainUserMe = error.config.url.split('user/me')
     // if(arrayContainUserMe.length > 1){
@@ -34,9 +48,9 @@ export const configureHttp = function() {
     //   izitoast.show({title: title, message: err, theme: 'dark'})    
     // }
   
-    return Promise.reject(error);
-  });
-}
+    
+//   });
+// }
 
 
-export default axios;
+export default instance;

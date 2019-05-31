@@ -25,11 +25,7 @@ exports.getDocOrder = (req,res) => {
         where:{
             orderId:req.params.id
         },
-        include: [{
-            model: DepOrder,
-            as: 'departement_orders', through: 'departement_orders',
-            attributes: ['id','status']
-        }]
+        include: [DepOrder,Document]
     }).then(data => res.json({data:data})).catch(err => {
         console.log(err)
         res.json({ msg: err })})   
@@ -163,7 +159,8 @@ exports.update = (req, res) => {
 exports.batalDokumen = (req,res) =>{
     DepOrder.destroy({where: {"documentOrderId":req.params.id}})
     DocOrder
-    .destroy({where:{id:req.params.id}}).then(()=>{
+    .destroy({where:{id:req.params.id}}).then((data)=>{
+        
         res.json({data:true})
     }).catch((e)=>{
         res.status(400);

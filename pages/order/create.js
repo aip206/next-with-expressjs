@@ -8,10 +8,14 @@ import Layout from '../../components/Layout';
 import { Formik, FieldArray, Field,ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import Router from 'next/router';
+import {withRouter} from 'next/router';
 import swal from 'sweetalert';
 import {storage} from '../../utils/firebase';
 import moment from 'moment';
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
+import Breadcrumb from 'react-bootstrap/Breadcrumb';
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 const getYupValidationSchema = Yup.object().shape({
     customer_name: Yup.string()
@@ -27,13 +31,13 @@ const getYupValidationSchema = Yup.object().shape({
       .required('Kabupaten is required!'),
       customer_provinsi: Yup.string()
       .required('Provinsi is required!'),
-      order_deadline: Yup.string()
+      order_deadline: Yup.date()
       .required('Tanggal Batas Akhir is required!'),
   })
 const initialValues = { 
      order_invoice:"",
      order_description:"",
-     order_deadline:new Date,
+     order_deadline:"",
      customer_name:"",
      customer_address:"",
      customer_phone:"",
@@ -113,7 +117,7 @@ class OrderCreate extends React.Component {
             }
             }).then(response =>  response.data)
             .then(data => {
-                const newKeys = ["value","label","departements"];
+                const newKeys = ["value","label","dokumen_type","departements"];
                 const renamedObj = renameKeys(data.data, newKeys);
                 this.setState({dokuments: renamedObj})
             }).catch((e)=>{
@@ -144,11 +148,22 @@ class OrderCreate extends React.Component {
   }
 
 function CreateForm(props) {
-    const { values,errors, handleChange, handleSubmit, setFieldValue,
+    const { values,errors, touched,handleChange, handleSubmit, setFieldValue,
         isSubmitting, optional, provinsi, kabupaten, kecamatan} = props
-    const [docOption, setDocOption] = useState("")
-    const [selected, setSelected] = useState([])
+    const [docOption, setDocOption] = useState([])
+    const [selected, setSelected] = useState("")
     const [progress, setProgress] = useState(0);
+    const cekDokumen =()=> {
+       
+            if(docOption.length > 0){
+                docOption.forEach((doc)=>{
+                    optional.dokuments = optional.dokuments.filter((e)=>e.label != doc)
+            })
+            } else{
+                return optional.dokuments
+            }
+        
+    }
     const upload = e => {
             if (e.target.files[0]) {
             const image = e.target.files[0];
@@ -174,9 +189,6 @@ function CreateForm(props) {
             }
             return ""
         }
-    useEffect(() => {
-        setSelected(docOption);
-      }, []);
     return(
         <Layout>
             <Breadcrumb>
@@ -192,14 +204,14 @@ function CreateForm(props) {
                     <div className="form-group">
                         <label for="addCustName">Nama</label>
                         <input type="text" className="form-control" value={values.customer_name} id="addCustName" name="customer_name"
-                        onChange={handleChange}
+                        onChange={handleChange} 
                         />
-                        <ErrorMessage name="customer_name" name="error-message" component='div' />
+                        {errors.customer_name && touched.customer_name ? <div className="error-message">{errors.customer_name}</div> : null}
                     </div>
                     <div className="form-group">
                         <label for="addCustEmail">Email</label>
-                        <input onChange={handleChange} type="email" className="form-control" name="customer_email" value={values.customer_email} id="addCustEmail" />
-                        <ErrorMessage name="customer_email" name="error-message" component='div'/>
+                        <input onChange={handleChange} type="email" className="form-control" name="customer_email" value={values.customer_email} id="addCustEmail"/>
+                        {errors.customer_email && touched.customer_email ? <div className="error-message">{errors.customer_email}</div> : null}
                     </div>
                     <div className="form-group">
                         <label for="addCustPhone">Nomor Telepon</label>
@@ -208,7 +220,7 @@ function CreateForm(props) {
                                 <span className="input-group-text">+62</span>
                             </div>
                             <input onChange={handleChange} type="text" className="form-control" name="customer_phone" value={values.customer_phone} id="addCustPhone" />
-                            <ErrorMessage name="customer_phone" name="error-message" component='div'/>
+                            {errors.customer_phone && touched.customer_phone ? <div className="error-message">{errors.customer_phone}</div> : null}
                         </div>
                     </div>
                     <div className="row">
@@ -225,7 +237,9 @@ function CreateForm(props) {
                                         kabupaten(e.value,this)
                                     }}
                                     />
-                                <ErrorMessage name="customer_provinsi" name="error-message" component='div' />
+                                {/* <ErrorMessage name="customer_provinsi" name="error-message" component='div' /> */}
+                                {errors.customer_provinsi && touched.customer_provinsi ? <div className="error-message">{errors.customer_provinsi}</div> : null}
+
                             </div>
                         </div>
                         <div className="col-sm-4">
@@ -241,7 +255,9 @@ function CreateForm(props) {
                                         kecamatan(e.value,this)
                                     }}
                                     />
-                                <ErrorMessage name="customer_kabupaten" name="error-message" component='div' />
+                                {/* <ErrorMessage name="customer_kabupaten" name="error-message" component='div' /> */}
+                                {errors.customer_kabupaten && touched.customer_kabupaten ? <div className="error-message">{errors.customer_kabupaten}</div> : null}
+
                             </div>
                         </div>
                         <div className="col-sm-4">
@@ -257,7 +273,9 @@ function CreateForm(props) {
                                         
                                     }}
                                 />
-                                <ErrorMessage name="customer_kecamatan" name="error-message" component='div' />
+                                {/* <ErrorMessage name="customer_kecamatan" name="error-message" component='div' /> */}
+                                {errors.customer_kecamatan && touched.customer_kecamatan ? <div className="error-message">{errors.customer_kecamatan}</div> : null}
+
                             </div>
                         </div>
                     </div>
@@ -268,15 +286,31 @@ function CreateForm(props) {
                         <ErrorMessage name="customer_address" name="error-message" component='div' />
                     </div>
                     <p className="small font-weight-bold text-uppercase mb-0">Pesanan</p>
-                    
+                  
                     <div className="form-group">
                         <label for="addOrderDesc">Deskripsi</label>
                         <textarea onChange={handleChange} className="form-control" id="addOrderDesc" name="order_description" value={values.order_description} rows="2" ></textarea>
                     </div>
                     <div className="form-group">
 							<label for="addOrderEndDate">Tanggal Batas Akhir</label>
-							<input type="date" onChange={handleChange} className="form-control" id="addOrderEndDate" value={values.order_deadline} name="order_deadline"/>
-                            <ErrorMessage name="order_deadline" name="error-message" component='div' />
+                            <DatePicker
+                            className="form-control"
+                                    selected={values.order_deadline}
+                                    name="order_deadline"
+                                    onChange={(e)=> {
+                                        values.order_deadline = e
+                                        setFieldValue("order_deadline",e)
+                                        handleChange(e)
+                                        
+                                    }}
+                                    dateFormat="dd/MM/yyyy"
+                                    
+                                />
+                            {/* <input type="date"  onChange={handleChange} className="form-control" id="addOrderEndDate" value={values.order_deadline} name="order_deadline"/> */}
+                            {errors.order_deadline && touched.order_deadline ? <div className="error-message">{errors.order_deadline}</div> : null}
+
+
+                            {/* <ErrorMessage name="order_deadline" name="error-message" component='div' /> */}
 						</div>
                     <p className="small font-weight-bold text-uppercase mb-0">Dokumen</p>
                     <div id="addOrderDocField">
@@ -290,42 +324,54 @@ function CreateForm(props) {
                                 values.dokuments.map((friend, index) => (
                                     <Fragment key={index} >
                                     <div className="form-group row">
-                                    <label className="col-sm-2 col-form-label">Tambah Dokumen</label>
+                                    <label className="col-sm-2 col-form-label">Tambah Dokumen {index}</label>
                                         <div className="col-sm-4">
                                             <Select
                                             name={`dokuments[${index}].id`} 
                                             id="addOrderDocName"
                                             options={optional.dokuments}
                                             onChange={(e) =>{
+                                                setDocOption([
+                                                    ... docOption,
+                                                    e.label
+                                                ])
                                                 values.dokuments[index].id = e.value
                                                 values.dokuments[index].departements = e.departements
+                                                if(e.dokumen_type == "Tipe Dokumen"){
+                                                    setSelected(".pdf,.doc,.csv")
+                                                }else{
+                                                    setSelected("image/*")
+                                                }
                                                 
-                                                setDocOption(e)
+                                                
                                             }}
                                         />
                                         </div>
                                         <div className="col-sm-4">
                                             <div className="custom-file">
-                                                <input type="file" className="custom-file-input" id="addDocExample" value={values.dokuments[index].file} name={`dokuments[${index}].file`}  onChange={(e)=>{
+                                           
+                                                 <input type="file" accept={selected} id={`addDocExample${index}`} value={values.dokuments[index].file} name={`dokuments[${index}].file`}  onChange={(e)=>{ 
                                                     handleChange(e)
                                                     values.dokuments[index].origin = upload(e)
                                                 }}/>
-                                                <label className="custom-file-label" for="addDocExample">{values.dokuments[index].origin}</label>
                                                 
+                                                <label className="custom-file-label" for={`addDocExample${index}`}>{values.dokuments[index].origin} {index} </label>
                                             </div>
                                         </div>
+
+                                        
                                         {index == 0 ? (
                                             <div className="col-sm-2">
                                                 <button type="button" className="btn btn-block btn-success" id="addNewDocField"
                                                 onClick={() => {
                                                     var data = {
                                                         id:"",
-                                                        file:""}      
-                                                        
+                                                        file:null}      
                                                         if(values.dokuments[index].id != ""){
+                                                            cekDokumen();
                                                             arrayHelpers.push(data)
+                                                            
                                                         }  
-                                                    optional.dokuments = optional.dokuments.filter((x)=> x.label != docOption.label)
                                                 }}
                                                 >Tambah</button>
                                             </div>
@@ -335,8 +381,8 @@ function CreateForm(props) {
                                                 type="button"
                                                 className="btn btn-block btn-danger remove_field"
                                                 onClick={() =>{ 
-                                                    console.log()
                                                     if(values.dokuments.length > 1)
+                                                        cekDokumen();
                                                         arrayHelpers.remove(index)}
                                                     } 
                                             >
@@ -372,14 +418,17 @@ function CreateForm(props) {
     )
 }
 
-
 function onSubmit (values,actions) {
-    console.log(values);
+    
+    let data = { ... values,
+        order_deadline : moment(values.order_deadline).format('YYYY-MM-DD')
+    }
+    // console.log(data);
     var headers = {
         'Content-Type': 'application/json',
         'Authorization': cookie.get('token')
     }
-    axioss.post('/api/v1/orders',values,{'headers':headers})
+    axioss.post('/api/v1/orders',data,{'headers':headers})
     .then(response => {
         swal({
             title: "Tersimpan",
@@ -412,4 +461,4 @@ function renameKeys(arrayObject, newKeys, index = false) {
     return newArray;
 }
 
-export default withAuthSync(OrderCreate);
+export default withAuthSync(withRouter(OrderCreate));

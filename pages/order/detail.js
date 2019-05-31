@@ -26,6 +26,7 @@ class OrderDetail extends React.Component {
             show: false,
             data:{},
             doc_order:[],
+            dokumenOrder:[],
             progress:0,
             acceptUpload:"",
             addDokumen:{
@@ -46,7 +47,7 @@ class OrderDetail extends React.Component {
                 )
               },
               {
-                dataField: 'dokumen_name',
+                dataField: 'document.dokumen_name',
                 text: 'Dokumen',
                 sort: true
               },
@@ -54,7 +55,7 @@ class OrderDetail extends React.Component {
                 dataField: 'progres',
                 text: 'Progress',
                 formatter: (cell, row, rowIndex, extraData) => (
-                  <ProgresDepOrder id={row}/>
+                  <ProgresDepOrder id={row.departement_orders}/>
               )
               },
               {
@@ -64,7 +65,7 @@ class OrderDetail extends React.Component {
                     <Fragment>
                       <div className="btn-group btn-group-sm">
                             <button type="button" onClick={this.download.bind(this,row)} className="btn btn-sm btn-outline-success"><i className="fas fa-download mr-2"></i>Unduh</button>
-                            <Link href={`/order/detail-dokumen?dokOrderId=${row.id}`}><a href="order-document-detail.html" className="btn btn-outline-primary"><i className="fas fa-eye mr-2"></i>Detail</a></Link>
+                            <Link href={{pathname: '/order/detail-dokumen', query: {orderId:this.state.data.id ,dokOrderId: row.id,invoice:this.state.data.order_invoice}}}><a href="order-document-detail.html" className="btn btn-outline-primary"><i className="fas fa-eye mr-2"></i>Detail</a></Link>
                             <button type="button" onClick={this.batal.bind(this,row.id)} className="btn btn-outline-danger btn-delete"><i className="fas fa-times mr-2"></i>Batal</button>
                         </div>  
                     </Fragment>
@@ -140,15 +141,20 @@ class OrderDetail extends React.Component {
     }
 
     batal (id) {
+      
         axioss.delete('/api/v1/order-delete-dokumen/'+id,{
             headers: {
               'Authorization': cookie.get('token')
             } 
           })
           .then(resp =>{ 
-              console.log(resp)
               if(resp.data){
-                  console.log("berhasil", resp.data)
+                swal({
+                  title: "Batal Dokumen",
+                  text: "Batal Dokumen Berhasil dilakukan " ,
+                  icon: "succsess",
+                  button: "Ok",
+                })
               }else{
                 swal({
                     title: "Batal Dokumen",
@@ -164,39 +170,44 @@ class OrderDetail extends React.Component {
               text: "Error => " + err,
               icon: "error",
               button: "Ok",
-            }).then(()=>{
-              Router.push('/login')
             })
           })
     }
     selesai (id) {
-      
-      axioss.post('/api/v1/update-sukses-order/'+id,{order_invoice:this.state.data.order_invoice},{
-        headers: {
-          'Authorization': cookie.get('token')
-        } 
-      })
-      .then(response => {
-        console.log(response)
-        swal({
-          title: "Status Finish",
-          text: "Pesanan Telah Selesai",
-          icon: "success",
-          button: "Ok",
-        }).then(()=>{
-          Router.push('/order/list')
-        });
-      })
-      .catch(err => {
+      if(this.state.progress == 100){
+        axioss.post('/api/v1/update-sukses-order/'+id,{order_invoice:this.state.data.order_invoice},{
+          headers: {
+            'Authorization': cookie.get('token')
+          } 
+        })
+        .then(response => {
+          console.log(response)
+          swal({
+            title: "Status Finish",
+            text: "Pesanan Telah Selesai",
+            icon: "success",
+            button: "Ok",
+          }).then(()=>{
+            Router.push('/order/list')
+          });
+        })
+        .catch(err => {
+          swal({
+            title: "Error",
+            text: "Error => " + err,
+            icon: "error",
+            button: "Ok",
+          })
+        })
+      }else{
         swal({
           title: "Error",
-          text: "Error => " + err,
+          text: "Progres Status Harus 100%",
           icon: "error",
           button: "Ok",
-        }).then(()=>{
-          Router.push('/login')
         })
-      })
+      }
+      
     }
     
 
@@ -221,7 +232,7 @@ class OrderDetail extends React.Component {
               })
         });
       }
-    
+      
     componentDidMount () {
         axioss.get('/api/v1/order/'+this.props.router.query.id,{
           headers: {
@@ -243,11 +254,10 @@ class OrderDetail extends React.Component {
             text: "Error => " + err,
             icon: "error",
             button: "Ok",
-          }).then(()=>{
-            Router.push('/login')
           })
         })
         this.lookUpDokumen();
+        this.lookUpDokumenOrder(this.props.router.query.id)
     }
     lookUpDokumen(){
       axioss.get('/api/v1/document-lookup',{   
@@ -260,15 +270,37 @@ class OrderDetail extends React.Component {
               const renamedObj = renameKeys(data.data, newKeys);
               this.setState({documentSelect:renamedObj })
           }).catch((e)=>{
-              // Router.push('/login')
-              console.log(e)
+            swal({
+              title: "Error",
+              text: "Error => " + err,
+              icon: "error",
+              button: "Ok",
+            })
+          })
+    }
+    lookUpDokumenOrder(id){
+      axioss.get('/api/v1/document-orders/'+id,{   
+          headers: {
+          'Authorization': cookie.get('token')
+          }
+          }).then(response =>  response.data)
+          .then(data => {
+            this.setState({dokumenOrder:data.data})
+          }).catch((err)=>{
+            swal({
+              title: "Error",
+              text: "Error => " + err,
+              icon: "error",
+              button: "Ok",
+            })
           })
     }
       
     hitungProgres() {
       const dokumenlength = this.state.documents.length 
       const persentase = this.state.documents.filter((x)=>x.document_orders.status == "FINISH").length
-      
+      console.log(dokumenlength)
+      console.log(persentase)
       const progresTotal = (persentase / dokumenlength) * 100
       this.setState({progress:progresTotal})
 
@@ -279,10 +311,10 @@ class OrderDetail extends React.Component {
         return (
         <Layout>
           <Breadcrumb>
-          <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
-          <Breadcrumb.Item href="/order/list" >Pemesanan</Breadcrumb.Item>
-          <Breadcrumb.Item active >{this.state.data.order_invoice}</Breadcrumb.Item>
-      </Breadcrumb>  
+            <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
+            <Breadcrumb.Item href="/order/list" >Pemesanan</Breadcrumb.Item>
+            <Breadcrumb.Item active >{this.state.data.order_invoice}</Breadcrumb.Item>
+          </Breadcrumb>  
             <h3 className="title"><i className="fas fa-shopping-cart fa-fw mr-2"></i>Detail Pemesanan</h3>
 			<div className="card shadow">
 				<div className="card-body">
@@ -334,7 +366,7 @@ class OrderDetail extends React.Component {
                 
             <ToolkitProvider
                 keyField='id' 
-                data={this.state.documents} 
+                data={this.state.dokumenOrder} 
                 columns={ this.state.columns }
                 noDataIndication="Table is Empty"
                 search
@@ -352,7 +384,6 @@ class OrderDetail extends React.Component {
                         <BootstrapTable
                         { ...props.baseProps }
                         bootstrap4
-                        striped
                         hover
                         condensed 
                         />
@@ -365,7 +396,7 @@ class OrderDetail extends React.Component {
             <div className="card-footer">
 					<div className="row">
 						<div className="col">
-							<button type="button" onClick={this.selesai.bind(this,this.props.router.query.id)} className="btn btn-block btn-outline-success" id="btnDone" >Selesai</button>
+							<button type="button" onClick={this.selesai.bind(this,this.props.router.query.id)} className="btn btn-block btn-outline-success" disabled={this.state.progress != 100} >Selesai</button>
 						</div>
 						<div className="col">
                         <Link href={`/order/edit?id=${this.props.router.query.id}`}>
@@ -488,33 +519,17 @@ class OrderDetail extends React.Component {
 
   
   function ProgresDepOrder (props) {
-    try{
-      var resp = axioss.get('/api/vi/progres-dokumen-order/'+props.id.document_orders.id,{
-        headers: {
-          'Authorization': cookie.get('token')
-        } 
-        })
-      var total = resp.data.total
-      var sukses = resp.data.sukses
-      var rata = (sukses/total) * 100
-        return <div className="progress">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                role="progressbar" aria-valuenow={rata} 
-                aria-valuemin="0" aria-valuemax="100" >{rata}%</div>
-              </div>  
-    } catch(err) {
-      console.log("snguan ", err);
-      return <div class="progress">
-              <div class="progress-bar progress-bar-striped progress-bar-animated" 
-              role="progressbar" aria-valuenow="0" 
-              aria-valuemin="0" aria-valuemax="100" >0%</div>
-            </div>
-    }
-    return (<div class="progress">
+   const dokumenlength = props.id.length 
+      const persentase = props.id.filter((x)=>x.status == "Sudah Diproses").length
+      console.log(dokumenlength)
+      console.log(persentase)
+      const progresTotal = (persentase / dokumenlength) * 100
+  return <div class="progress">
             <div class="progress-bar progress-bar-striped progress-bar-animated" 
-            role="progressbar" aria-valuenow="0" 
-            aria-valuemin="0" aria-valuemax="100" >0%</div>
-          </div>)
+            role="progressbar" aria-valuenow="100" 
+            aria-valuemin="0" aria-valuemax="100" 
+            style={{width:progresTotal+"%"}} >{progresTotal}%</div>
+      </div>
   }
   
   function onSubmit (values, closed) {

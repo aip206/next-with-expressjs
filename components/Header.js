@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import {Component} from 'react'
 import { logout } from '../utils/auth';
+import swal from 'sweetalert';
+
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton'
 export default class Navbar extends Component {
 	constructor(props) {
 		super(props);
@@ -18,7 +22,17 @@ export default class Navbar extends Component {
 		}
 	}
 	logout () {
-		logout();
+		swal({
+			title: "Apakah Anda yakin akan keluar dari Applikasi?",
+			icon: "warning",
+			buttons: true,
+			dangerMode: true,
+		  }).then((e)=>{
+			if (e) {
+				logout();
+			}
+		  })
+		
 	}
 	render () {
 		return (
@@ -27,9 +41,15 @@ export default class Navbar extends Component {
 				<button type="button" className="btn btn-link text-dark" id="sidebarToggle"><i className="fas fa-bars"></i></button>
 				<a className="navbar-brand" href="/">{this.state.nama}</a>
 			</div>
-			<div className="ml-auto">
-				<button className="btn btn-outline-danger" onClick={this.logout}>Keluar</button>
-			</div>
+			<div class="d-flex ml-auto">
+				<div class="dropdown">
+				<DropdownButton id="dropdown-basic-button" title={this.state.nama} className="super-colors" >
+					<Dropdown.Item className="dropdown-item" href="/user/profile">Ubah Profil</Dropdown.Item>
+					<Dropdown.Item className="dropdown-item" href="/user/password">Ubah Password</Dropdown.Item>
+				</DropdownButton>
+				</div>
+			<button class="btn btn-outline-danger" onClick={this.logout}>Keluar</button>
+		</div>
 		</nav>
 	)}
 	

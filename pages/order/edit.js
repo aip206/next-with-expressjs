@@ -13,11 +13,27 @@ import {storage} from '../../utils/firebase';
 import moment from 'moment';
 import {withRouter} from 'next/router';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
-const getYupValidationSchema = Yup.object().shape({
-    dokumen_name: Yup.string()
-      .required('E-mail is required!'),
-    dokumen_type: Yup.string()
-      .required('Password is required!')
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+const getYupValidationSchema = Yup.object({
+    initialValues:Yup.object({
+        customer_name: Yup.string()
+        .required('Nama Pelanggan is required!'),
+        customer_email: Yup.string()
+        .email('E-mail tidak valid!')
+        .required('Email Pelanggan is required!'),
+        customer_phone: Yup.string()
+        .required('Telepon Pelanggan is required!'),
+        customer_kecamatan: Yup.string()
+        .required('Kecamatan is required!'),
+        customer_kabupaten: Yup.string()
+        .required('Kabupaten is required!'),
+        customer_provinsi: Yup.string()
+        .required('Provinsi is required!'),
+        order_deadline: Yup.date()
+        .required('Tanggal Batas Akhir is required!')
+        })
   })
 const initialValues = { 
      order_invoice:"",
@@ -108,14 +124,14 @@ class OrderEdit extends React.Component {
               return response.data.data
           })
           .then(data =>{ 
-              
+              console.log(moment(data.order_deadline))
             const newKeys = ["value","label"];
             
               this.setState({initialValues :{ ... this.state.initialValues,
                     id:data.id,
                     order_invoice:data.order_invoice,
                     order_description:data.order_description,
-                    order_deadline:data.order_deadline.split("T",1),
+                    order_deadline:new Date(data.order_deadline),
                     customer_name:data.customer_name,
                     customer_address:data.customer_address,
                     customer_phone:data.customer_phone,
@@ -193,6 +209,8 @@ class OrderEdit extends React.Component {
     render(){
         const MyEnhancedForm = withFormik({
             mapPropsToValues: () => (this.state),
+            validationSchema:() =>(getYupValidationSchema) ,
+
             // validate: values => {
             //     const {initialValues} = values
             //     const errors = {};
@@ -359,8 +377,22 @@ function EditForm(props) {
                         <textarea onChange={handleChange} className="form-control" id="addOrderDesc" name="order_description" value={values.initialValues.order_description} rows="2" ></textarea>
                     </div>
                     <div className="form-group">
+                    
 							<label for="addOrderEndDate">Tanggal Batas Akhir</label>
-							<input type="date" onChange={handleChange} className="form-control" id="addOrderEndDate" value={values.initialValues.order_deadline} name="initialValues.order_deadline"/>
+                            <DatePicker
+                            className="form-control"
+                                    selected={values.initialValues.order_deadline}
+                                    name="initialValues.order_deadline"
+                                    onChange={(e)=> {
+                                        values.initialValues.order_deadline = e
+                                        setFieldValue("initialValues.order_deadline",e)
+                                        handleChange(e)
+                                        
+                                    }}
+                                    dateFormat="dd/MM/yyyy"
+                                    
+                                />
+							{/* <input type="date" onChange={handleChange} className="form-control" id="addOrderEndDate" value={values.initialValues.order_deadline} name="initialValues.order_deadline"/> */}
 						</div>
                     
                 </div>
@@ -377,11 +409,11 @@ function EditForm(props) {
 
 
 function onSubmit (values,actions) {
-    console.log(values);
+  
     const data = {
         order_invoice: values.initialValues.order_invoice,
         order_description: values.initialValues.order_description,
-        order_deadline : values.initialValues.order_deadline,
+        order_deadline :   moment(values.initialValues.order_deadline).format('YYYY-MM-DD'),
         customer_name : values.initialValues.customer_name,
         customer_address: values.initialValues.customer_address,
         customer_email: values.initialValues.customer_email,

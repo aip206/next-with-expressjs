@@ -21,7 +21,7 @@ const getYupValidationSchema = Yup.object().shape({
     departements: Yup.string()
       .required('Departement is required!')
   })
-const typeDokumen = [{label:"Tipe PNG",value:"Tipe PNG"},{label:"Tipe Dokumen",value:"Tipe Dokumen"}, {label:"Tipe PDF",value:"Tipe PDF"}]
+const typeDokumen = [{label:"Tipe Gambar",value:"Tipe Gambar"},{label:"Tipe Dokumen",value:"Tipe Dokumen"}]
 const initialValues = {
     dokumen_name:undefined,
     dokumen_type:undefined,
@@ -132,16 +132,11 @@ function CreateForm(props) {
                         <div className="form-group">
 							<label for="addDocExample">Contoh Dokumen <p>{values.dokumen_type}</p></label>
 							<div className="custom-file">
-                                {selected == "Tipe PNG" ?  <input type="file" accept=".png" id="addDocExample" value={values.file} name="file"  onChange={(e)=>{ 
+                                {selected == "Tipe Gambar" ?  <input type="file" accept="image/*" id="addDocExample" value={values.file} name="file"  onChange={(e)=>{ 
                                     handleChange(e)
                                     upload(e)
                                 }}/> : ""}
                                 {selected == "Tipe Dokumen" ?  <input type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" id="addDocExample" value={values.file} name="file"  onChange={(e)=>{ 
-                                    handleChange(e)
-                                    upload(e)
-                                }}/> : ""}
-                                
-                                {selected == "Tipe PDF" ?  <input type="file" accept=".pdf" id="addDocExample" value={values.file} name="file"  onChange={(e)=>{ 
                                     handleChange(e)
                                     upload(e)
                                 }}/> : ""}
@@ -176,7 +171,7 @@ function CreateForm(props) {
 						</div>
                     </div>
                     <div className="card-footer">
-                        <button type="submit" disabled= {isSubmitting} className="btn btn-block btn-primary">Tambah Departemen Baru</button>
+                        <button type="submit" disabled= {isSubmitting} className="btn btn-block btn-primary">Tambah Matrix Dokumen</button>
                     </div>
                 </form>
             </div>

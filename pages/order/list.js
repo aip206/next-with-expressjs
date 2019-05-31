@@ -12,6 +12,8 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import {storage} from '../../utils/firebase';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import dateFormat from 'dateformat';
+import http from '../../utils/http-service.js';
+
 const divRight = {
   position : "absolute",
   right:"5%"
@@ -74,7 +76,7 @@ class Order extends Component {
  
 
   refreshData(){
-    axioss.get('/api/v1/orders',{
+    http.get('/api/v1/orders',{
       params:parameter,   
       headers: {
         'Authorization': cookie.get('token')
@@ -84,16 +86,6 @@ class Order extends Component {
     .then(data =>{ 
       this.setState({ data : data.rows})
     })
-    .catch(err => 
-      swal({
-        title: "Error",
-        text: "Error => " + err,
-        icon: "error",
-        button: "Ok",
-      }).then(()=>{
-        Router.push('/login')
-      })
-    )
   }
 
  componentDidMount () {

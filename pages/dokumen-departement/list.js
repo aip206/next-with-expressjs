@@ -15,6 +15,7 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb'
 import dateFormat from 'dateformat';
 import Modal from 'react-bootstrap/Modal';
 import moment from 'moment';
+import http from '../../utils/http-service';
 
 const divRight = {
   position : "absolute",
@@ -182,7 +183,7 @@ class DepartementOrder extends Component {
   }
 
   refreshData(){
-    axioss.get('/api/v1/departement-order/by-user',{
+    http.get('/api/v1/departement-order/by-user',{
       params:parameter,   
       headers: {
         'Authorization': cookie.get('token')
@@ -192,16 +193,6 @@ class DepartementOrder extends Component {
     .then(data =>{ 
       this.setState({ data : data})
     })
-    .catch(err => 
-      swal({
-        title: "Error",
-        text: "Error => " + err,
-        icon: "error",
-        button: "Ok",
-      }).then(()=>{
-        Router.push('/login')
-      })
-    )
   }
 
  componentDidMount () {
@@ -211,10 +202,10 @@ render () {
   const { SearchBar } = Search;
   return (
     <Layout>
-       {/* <Breadcrumb>
-                <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+       <Breadcrumb>
+                <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
                 <Breadcrumb.Item active >Pemesanan</Breadcrumb.Item>
-        </Breadcrumb> */}
+        </Breadcrumb>
       <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>Pemesanan</h3>
       <ToolkitProvider
            

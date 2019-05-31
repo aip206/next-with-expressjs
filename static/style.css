@@ -6,7 +6,12 @@ dl small {
 
 main {
   min-height: calc(100vh - 57px);
+  padding-left: 15rem;
+  padding-top: 4.5rem;
   position: relative;
+}
+main.full {
+  padding-left: 0;
 }
 
 footer {
@@ -24,8 +29,12 @@ footer {
   padding: 4.5rem 1rem;
   position: fixed;
   top: 0;
+  transform: translateX(-100%);
   width: 15rem;
   z-index: 1020;
+}
+.sidebar.show {
+  transform: translateX(0);
 }
 .sidebar .active {
   background-color: #bbdefb;
@@ -41,11 +50,6 @@ footer {
   align-items: center;
   display: flex;
   justify-content: center;
-}
-
-.dashboard {
-  padding-left: 15rem;
-  padding-top: 4.5rem;
 }
 
 .title {
@@ -66,6 +70,10 @@ footer {
   border-left-color: transparent;
 }
 
+.custom-file-label {
+  z-index: unset !important;
+}
+
 .dataTables_wrapper .dataTables_filter input {
   margin-left: 0 !important;
 }
@@ -81,6 +89,11 @@ footer {
 }
 .select2-container--bootstrap .select2-results__option[aria-selected=true] {
   background-color: #e3f2fd;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 0.75rem;
 }
 
 /*!
@@ -1974,7 +1987,7 @@ select.form-control:focus::-ms-value {
 .col-form-label-sm {
   padding-top: calc(0.25rem + 1px);
   padding-bottom: calc(0.25rem + 1px);
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 
@@ -1998,7 +2011,7 @@ select.form-control:focus::-ms-value {
 .form-control-sm {
   height: calc(1.5em + 0.5rem + 2px);
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   line-height: 1.5;
   border-radius: 0.25rem;
 }
@@ -2088,7 +2101,7 @@ textarea.form-control {
   max-width: 100%;
   padding: 0.25rem 0.5rem;
   margin-top: 0.1rem;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   line-height: 1.5;
   color: #fafafa;
   background-color: rgba(76, 175, 80, 0.9);
@@ -2199,7 +2212,7 @@ textarea.form-control {
   max-width: 100%;
   padding: 0.25rem 0.5rem;
   margin-top: 0.1rem;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   line-height: 1.5;
   color: #fafafa;
   background-color: rgba(244, 67, 54, 0.9);
@@ -2830,7 +2843,7 @@ fieldset:disabled a.btn {
 
 .btn-sm, .btn-group-sm > .btn {
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   line-height: 1.5;
   border-radius: 0.25rem;
 }
@@ -3099,7 +3112,7 @@ input[type=button].btn-block {
   display: block;
   padding: 0.5rem 1.5rem;
   margin-bottom: 0;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: #757575;
   white-space: nowrap;
 }
@@ -3356,7 +3369,7 @@ input[type=button].btn-block {
 .input-group-sm > .input-group-prepend > .btn,
 .input-group-sm > .input-group-append > .btn {
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   line-height: 1.5;
   border-radius: 0.25rem;
 }
@@ -3558,7 +3571,7 @@ input[type=button].btn-block {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   padding-left: 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
 }
 
 .custom-select-lg {
@@ -4488,7 +4501,7 @@ input[type=button].btn-block {
 
 .pagination-sm .page-link {
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 .pagination-sm .page-item:first-child .page-link {
@@ -5393,7 +5406,7 @@ a.close.disabled {
   word-spacing: normal;
   white-space: normal;
   line-break: auto;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   word-wrap: break-word;
   opacity: 0;
 }
@@ -5495,7 +5508,7 @@ a.close.disabled {
   word-spacing: normal;
   white-space: normal;
   line-break: auto;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   word-wrap: break-word;
   background-color: #ffffff;
   background-clip: padding-box;

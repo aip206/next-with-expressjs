@@ -145,10 +145,6 @@ class DokumenMatrix extends Component {
             text: "Error => " + err,
             icon: "error",
             button: "Ok",
-          }).then(()=>{
-            if(err.status == "401"){
-              Router.push('/login')
-            }
           })
         }
       } 

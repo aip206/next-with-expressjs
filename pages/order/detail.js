@@ -17,6 +17,7 @@ import Modal from 'react-bootstrap/Modal';
 import Select from 'react-select';
 import moment from 'moment';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
+import dateFormat from 'dateformat';
 
 
 class OrderDetail extends React.Component {
@@ -325,9 +326,9 @@ class OrderDetail extends React.Component {
 								<dt className="col-sm-4">Invoice</dt>
 								<dd className="col-sm-8">: {this.state.data.order_invoice}</dd>
 								<dt className="col-sm-4">Tanggal</dt>
-								<dd className="col-sm-8">: {this.state.data.createdAt}</dd>
+								<dd className="col-sm-8">: {dateFormat(this.state.data.createdAt,"dd/mm/yyyy")}</dd>
 								<dt className="col-sm-4">Batas Akhir</dt>
-								<dd className="col-sm-8">: {this.state.data.order_deadline}</dd>
+								<dd className="col-sm-8">: {dateFormat(this.state.data.order_deadline,"dd/mm/yyyy")}</dd>
 								<dt className="col-sm-4">Perkembangan</dt>
 								<dd className="col-sm-8 pb-lg-2">
 									<div className="progress">

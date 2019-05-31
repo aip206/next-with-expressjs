@@ -39,16 +39,17 @@ export default class Navbar extends Component {
 		<nav className="navbar fixed-top navbar-light bg-light shadow">
 			<div className="d-flex align-items-center">
 				<button type="button" className="btn btn-link text-dark" id="sidebarToggle"><i className="fas fa-bars"></i></button>
-				<a className="navbar-brand" href="/">{this.state.nama}</a>
+				<a className="navbar-brand" href="/">Order Management System — Departemen
+				</a>
 			</div>
 			<div class="d-flex ml-auto">
 				<div class="dropdown">
 				<DropdownButton id="dropdown-basic-button" title={this.state.nama} className="super-colors" >
-					<Dropdown.Item className="dropdown-item" href="/user/profile">Ubah Profil</Dropdown.Item>
-					<Dropdown.Item className="dropdown-item" href="/user/password">Ubah Password</Dropdown.Item>
+					<Dropdown.Item className="dropdown-item" href="/user/profile">Profil</Dropdown.Item>
+					<Dropdown.Item className="dropdown-item" href="/user/password">Sandi</Dropdown.Item>
+					<Dropdown.Item className="dropdown-item" onClick={this.logout}>Keluar</Dropdown.Item>
 				</DropdownButton>
 				</div>
-			<button class="btn btn-outline-danger" onClick={this.logout}>Keluar</button>
 		</div>
 		</nav>
 	)}

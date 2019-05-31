@@ -50,8 +50,6 @@ class DokumenMatrixCreate extends React.Component {
                 const newKeys = ["value","label"];
                 const renamedObj = renameKeys(data.data, newKeys);
                 this.setState({departements: renamedObj})
-            }).catch((e)=>{
-                Router.push('/login')
             })
     }
     render(){

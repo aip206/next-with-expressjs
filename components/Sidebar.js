@@ -17,7 +17,7 @@ const Sidebar = () =>
 			return false
 		}
 	}
-   return <nav className="sidebar border-right">
+   return <nav className="sidebar border-right show">
 
 		<ul className="nav flex-column">
 			<li className="nav-item">

@@ -368,7 +368,6 @@ function CreateForm(props) {
                                                         id:"",
                                                         file:null}      
                                                         if(values.dokuments[index].id != ""){
-                                                            cekDokumen();
                                                             arrayHelpers.push(data)
                                                             
                                                         }  
@@ -382,7 +381,6 @@ function CreateForm(props) {
                                                 className="btn btn-block btn-danger remove_field"
                                                 onClick={() =>{ 
                                                     if(values.dokuments.length > 1)
-                                                        cekDokumen();
                                                         arrayHelpers.remove(index)}
                                                     } 
                                             >

@@ -397,7 +397,7 @@ function EditForm(props) {
                     
                 </div>
                 <div className="card-footer">
-                    <button type="submit"  className="btn btn-block btn-primary">Edit Pesanan</button>
+                    <button type="submit"  className="btn btn-block btn-primary">Ubah Pesanan</button>
                 </div>
                 </form>
             </div>

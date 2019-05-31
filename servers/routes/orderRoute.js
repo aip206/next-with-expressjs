@@ -27,6 +27,7 @@ module.exports = (app) =>{
     app.route('/api/vi/progres-dokumen-order/:id').get(depOrder.getProgresDepartementOrder)
     app.route('/api/v1/document-orders/:id')
     .get(document.getDocOrder)
-    
+    app.route('/api/v1/order/check-progress/:id')
+    .get(document.checkProgress)
     // passport.authenticate('jwt', { session: false }),
 }

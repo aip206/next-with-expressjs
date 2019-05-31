@@ -62,7 +62,6 @@ exports.updateStatusSudahProses = (req,res) =>{
     DepOrder
     .update({status:"Sudah Diproses",file:req.body.file},{where:{id:req.params.id}})
     .then(data => res.json({data:data})).catch(err =>{
-         console.log(err) 
         res.json({ msg: err })})
 }
 exports.updateStatusDalamProses = (req,res) =>{

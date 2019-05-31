@@ -338,7 +338,7 @@ function CreateForm(props) {
                                                 values.dokuments[index].id = e.value
                                                 values.dokuments[index].departements = e.departements
                                                 if(e.dokumen_type == "Tipe Dokumen"){
-                                                    setSelected(".pdf,.doc,.csv")
+                                                    setSelected(".pdf,.csv, .doc,.docx,.xlsx, .xls,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                                                 }else{
                                                     setSelected("image/*")
                                                 }

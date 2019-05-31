@@ -11,12 +11,8 @@ exports.getAll = (req,res) => {
         where:{
             isDelete:false
         },
-        subQuery: false,
-        include: [{
-            model: Document,
-            as: 'documents', through: 'document_orders',
-            attributes: ['id','dokumen_name']
-        }]})
+        subQuery: false
+        })
         .then(data => res.json({data:data})).catch(err => res.json({ msg: err }))
 }
 
@@ -39,9 +35,7 @@ exports.getById =(req,res) =>{
             
         },
         include: [{
-            model: Document,
-            as: 'documents', through: 'document_orders',
-            attributes: ['id','dokumen_name','path']
+            model: DocOrder
         }]
     }).then(data => res.json({data:data})).catch(err => {
         console.log(err)
@@ -210,6 +204,30 @@ exports.addOrderDokumen =(req, res) => {
         res.status(400);
         res.json({ msg: err })
         })
+}
+
+exports.checkProgress = (req,res) => {
+    db.query("    SELECT count(*) as total, (\
+        SELECT count(*) FROM `orders` o \
+        INNER JOIN document_orders docder on docder.orderId = o.id\
+        INNER JOIN departement_orders depder on depder.documentOrderId = docder.id\
+        where o.id = :orderId and depder.`status` = 'Sudah Diproses'\
+        ) as totalDepartement FROM `orders` o \
+        INNER JOIN document_orders docder on docder.orderId = o.id\
+        INNER JOIN departement_orders depder on depder.documentOrderId = docder.id\
+        where o.id = :orderId",  
+    {replacements: { orderId: req.params.id},raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+        if(data){
+            res.json({ data: data }) 
+        }else{
+            res.json({ data: [] })
+        }
+    }).catch((err)=>{
+        console.log(err)
+        res.status(400);
+        res.json({ msg: err })
+    })
+
 }
 
 

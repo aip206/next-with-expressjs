@@ -4,7 +4,6 @@ import Link from './ActiveLink';
 
 const Sidebar = (props) => 
 {
-	console.log(props)
 	let data = {}
 	let path = ""
 	if(process.browser){

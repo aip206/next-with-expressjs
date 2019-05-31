@@ -58,6 +58,7 @@ class DetailDokumen extends Component {
         text: 'Status',
         sort: true,
         formatter: (cell, row, rowIndex, extraData) => {
+          console.log(row.status)
           if(row.status == "Ditempatkan"){
             return <span className="badge badge-pill badge-secondary">Ditempatkan</span>
           }else if(row.status == "Dalam Proses"){

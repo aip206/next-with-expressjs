@@ -71,7 +71,7 @@ function CreateForm(props) {
                     </div>
                 </div>
                     <div className="card-footer">
-                        <button type="submit" disabled= {isSubmitting} className="btn btn-block btn-primary">Perbarui Departemen</button>
+                        <button type="submit"  className="btn btn-block btn-primary">Ubah Sandi</button>
                     </div>
                 </form>
             </div>

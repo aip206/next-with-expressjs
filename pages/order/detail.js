@@ -182,7 +182,6 @@ class OrderDetail extends React.Component {
           } 
         })
         .then(response => {
-          console.log(response)
           swal({
             title: "Status Finish",
             text: "Pesanan Telah Selesai",
@@ -213,13 +212,13 @@ class OrderDetail extends React.Component {
     
 
     download (data) {
-        var starsRef = storage.ref('orders').child(data.document_orders.pathFile);
+        var starsRef = storage.ref('orders').child(data.pathFile);
         starsRef.getDownloadURL().then(function(url) {
           
           const link = document.createElement('a');
           link.setAttribute('href', url);          
           link.setAttribute('target', "_blank");
-          link.setAttribute('download', data.document_orders.pathFile);
+          link.setAttribute('download', data.pathFile);
           document.body.appendChild(link);
           
           link.click();
@@ -246,7 +245,6 @@ class OrderDetail extends React.Component {
         .then(data =>{ 
             this.setState({data})
             this.setState({documents:data.documents})
-            this.setState({doc_order:data.documents.document_orders})
             this.hitungProgres()
         })
         .catch(err => {
@@ -298,12 +296,26 @@ class OrderDetail extends React.Component {
     }
       
     hitungProgres() {
-      const dokumenlength = this.state.documents.length 
-      const persentase = this.state.documents.filter((x)=>x.document_orders.status == "FINISH").length
-      console.log(dokumenlength)
-      console.log(persentase)
-      const progresTotal = (persentase / dokumenlength) * 100
-      this.setState({progress:progresTotal})
+      axioss.get('/api/v1/order/check-progress/'+this.props.router.query.id,{   
+        headers: {
+        'Authorization': cookie.get('token')
+        }
+        }).then(response =>  response.data.data)
+        .then(data => {
+          if(data[0]){
+            let progresTotal = 0
+            if(data[0].total != 0){
+              progresTotal = (data[0].totalDepartement / data[0].total) * 100
+            }
+            console.log(progresTotal)
+            this.setState({progress:progresTotal})
+          }
+        })
+      // console.log(this.state)
+      // const dokumenlength = this.state.data.document_orders.length 
+      // const persentase = this.state.data.document_orders.filter((x)=>x.status == "FINISH").length
+      // const progresTotal = (persentase / dokumenlength) * 100
+      // this.setState({progress:progresTotal})
 
     }
             
@@ -483,23 +495,17 @@ class OrderDetail extends React.Component {
                 <div className="form-group">
                   <label for="addDocExample">Contoh Dokumen</label>
                   <div className="custom-file">
-                    {selected == "Tipe PNG" ? 
+                    {selected == "Tipe Gambar" ? 
                      <input type="file" accept="image/*" className="custom-file-input" id="addDocExample" value={values.origin} name="origin"  onChange={(e)=>{
                       handleChange(e)
                       values.origin = upload(e)
                       }}/>
                     : ""}
                     {selected == "Tipe Dokumen" ? 
-                    <input type="file" accept=".csv" className="custom-file-input"  id="addDocExample" name="origin"  value={values.origin} onClick={(e)=>{
+                    <input type="file" accept=".pdf,.csv, .doc,.docx,.xlsx, .xls,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" className="custom-file-input"  id="addDocExample" name="origin"  value={values.origin} onClick={(e)=>{
                       handleChange(e)
                       values.origin =upload(e)
-                    }}/> : ""}                               
-                      {selected == "Tipe PDF" ? 
-                     <input type="file" accept="application/pdf" className="custom-file-input" id="addDocExample" value={values.origin} name="origin"  onChange={(e)=>{
-                      handleChange(e)
-                      values.origin = upload(e)
-                      }}/>
-                    : ""}
+                    }}/> : ""}                                                   
                     <label className="custom-file-label" for="addDocExample">{values.origin}</label>
                         <input type="hidden" name={values.file} name="filename"/>         
                   </div>
@@ -509,7 +515,7 @@ class OrderDetail extends React.Component {
                 {/* <button variant="secondary" onClick={handleClose}>
                   Close
                 </button> */}
-                <button >
+                <button type="submit"  className="btn btn-block btn-primary" >
                   Save Changes
                 </button>
             </Modal.Footer>

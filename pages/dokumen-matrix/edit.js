@@ -20,7 +20,9 @@ const getYupValidationSchema = Yup.object({
         dokumen_name: Yup.string()
         .required('Nama Dokumen is required!'),
         dokumen_type: Yup.string()
-        .required('Tipe Dokumen is required!')
+        .required('Tipe Dokumen is required!'),
+        departements: Yup.string()
+          .required('Nama Departemen is required!')
         
     })
     
@@ -60,12 +62,10 @@ class DokumenMatrixEdit extends React.Component {
             }, 
             (error) => {
                 // error function ....
-            console.log(error);
             }, 
         () => {
             // complete function ....
             storage.ref('images').child(namaFile).getDownloadURL().then(url => {
-                console.log(url);
                 this.setState({url});
             })
         });
@@ -278,7 +278,6 @@ function onSubmit (values,actions) {
             icon: "success",
             button: "Ok",
           }).then(()=>{
-              console.log("a");
             Router.push('/dokumen-matrix/list')
           });
     })

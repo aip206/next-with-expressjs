@@ -14,14 +14,13 @@ import moment from 'moment';
 import {withRouter} from 'next/router';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 
 const getYupValidationSchema = Yup.object({
     initialValues:Yup.object({
         customer_name: Yup.string()
         .required('Nama Pelanggan is required!'),
         customer_email: Yup.string()
-        .email('E-mail tidak valid!')
+        .email('Email Pelanggan tidak valid!')
         .required('Email Pelanggan is required!'),
         customer_phone: Yup.string()
         .required('Telepon Pelanggan is required!'),
@@ -106,7 +105,6 @@ class OrderEdit extends React.Component {
         () => {
             // complete function ....
             storage.ref('images').child(namaFile).getDownloadURL().then(url => {
-                console.log(url);
                 this.setState({url});
             })
         });
@@ -124,7 +122,6 @@ class OrderEdit extends React.Component {
               return response.data.data
           })
           .then(data =>{ 
-              console.log(moment(data.order_deadline))
             const newKeys = ["value","label"];
             
               this.setState({initialValues :{ ... this.state.initialValues,
@@ -139,7 +136,7 @@ class OrderEdit extends React.Component {
                     customer_kecamatan:{label:data.customer_kecamatan, value:data.id_kecamatan},
                     customer_kabupaten:{label:data.customer_kabupaten, value:data.id_kabupaten},
                     customer_provinsi:{label:data.customer_provinsi, value:data.id_provinsi},
-                    dokuments:renameKeys(data.documents,newKeys)
+                    dokuments:renameKeys(data.document_orders,newKeys)
               } })
               this.getKabupaten(this.state.initialValues.customer_provinsi.value);
               this.getKecamatan(this.state.initialValues.customer_kabupaten.value);
@@ -160,8 +157,6 @@ class OrderEdit extends React.Component {
             const newKeys = ["value","label"];
             const renamedObj = renameKeys(data.data, newKeys);
             this.setState({provinsi: renamedObj})
-        }).catch((e)=>{
-            console.log(e)
         })
     }
      getKabupaten = id =>{
@@ -169,8 +164,6 @@ class OrderEdit extends React.Component {
             const newKeys = ["value","label"];
             const renamedObj = renameKeys(data.data, newKeys);
             this.setState({kabupaten: renamedObj})
-        }).catch((e)=>{
-            console.log(e)
         })
     }
      getKecamatan = id =>{
@@ -178,8 +171,6 @@ class OrderEdit extends React.Component {
             const newKeys = ["value","label"];
             const renamedObj = renameKeys(data.data, newKeys);
             this.setState({kecamatan: renamedObj})
-        }).catch((e)=>{
-            console.log(e)
         })
     }
     
@@ -194,9 +185,6 @@ class OrderEdit extends React.Component {
                 const newKeys = ["value","label","departements"];
                 const renamedObj = renameKeys(data.data, newKeys);
                 this.setState({dokuments: renamedObj})
-            }).catch((e)=>{
-                // Router.push('/login')
-                console.log(e)
             })
     }
 
@@ -244,8 +232,6 @@ function EditForm(props) {
             const newKeys = ["value","label"];
             const renamedObj = renameKeys(data.data, newKeys);
             setKabupaten(renamedObj)
-        }).catch((e)=>{
-            console.log(e)
         })
     }
     const getKecamatan = id =>{
@@ -253,9 +239,6 @@ function EditForm(props) {
             const newKeys = ["value","label"];
             const renamedObj = renameKeys(data.data, newKeys);
             setKecamatan(renamedObj)
-            console.log(kecamatan)
-        }).catch((e)=>{
-            console.log(e)
         })
     }
     const upload = (e,index) => {
@@ -377,8 +360,7 @@ function EditForm(props) {
                         <textarea onChange={handleChange} className="form-control" id="addOrderDesc" name="order_description" value={values.initialValues.order_description} rows="2" ></textarea>
                     </div>
                     <div className="form-group">
-                    
-							<label for="addOrderEndDate">Tanggal Batas Akhir</label>
+							<label for="addOrderEndDate">Tanggal Batas Akhir</label><br></br>
                             <DatePicker
                             className="form-control"
                                     selected={values.initialValues.order_deadline}
@@ -389,10 +371,10 @@ function EditForm(props) {
                                         handleChange(e)
                                         
                                     }}
+                                    minDate={new Date()}
                                     dateFormat="dd/MM/yyyy"
                                     
                                 />
-							{/* <input type="date" onChange={handleChange} className="form-control" id="addOrderEndDate" value={values.initialValues.order_deadline} name="initialValues.order_deadline"/> */}
 						</div>
                     
                 </div>

@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const config = require('../config').get(process.env.NODE_ENV)
 const ResetPassword = require('../models/reset_password');
 const bcrypt = require('bcrypt');
+const crypto = require("crypto");
+const nodemailer = require('nodemailer');
 
 exports.authenticate = (req,res) =>{
     const { email, password } = req.body;
@@ -27,7 +29,9 @@ exports.authenticate = (req,res) =>{
 }
 
 exports.changePassword = (req,res) => {
-  Departement.update({password:req.body.password},{
+  const salt = bcrypt.genSaltSync();
+  const hashPass = bcrypt.hashSync(req.body.password, salt);
+  Departement.update({password:hashPass},{
     where: {email: req.user.email}
   }).then((data)=>{
     res.json({data:true})
@@ -48,6 +52,7 @@ exports.forgotPassword = (req,res) => {
     sendEmailPassword(data);
     res.json({data:true})
 }).catch((err) => {
+  console.log(err)
     res.status(400);
     res.json({ msg: err })
 })
@@ -60,10 +65,8 @@ exports.resetPassword = (req,res) =>{
     email: email,
     token: token
   }}).then((resp)=>{
-    console.log(email);
     const salt = bcrypt.genSaltSync();
     const hashPass = bcrypt.hashSync(password, salt);
-    console.log(hashPass);
     Departement.update({
       password: hashPass
     },{where: {

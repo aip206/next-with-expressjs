@@ -58,7 +58,6 @@ class DetailDokumen extends Component {
         text: 'Status',
         sort: true,
         formatter: (cell, row, rowIndex, extraData) => {
-          console.log(row.status)
           if(row.status == "Ditempatkan"){
             return <span className="badge badge-pill badge-secondary">Ditempatkan</span>
           }else if(row.status == "Dalam Proses"){
@@ -124,7 +123,6 @@ class DetailDokumen extends Component {
     })
     .then(response => response.data.data)
     .then(data =>{ 
-      console.log(data)
       this.setState({ data : data})
     })
     .catch(err => 
@@ -146,7 +144,6 @@ class DetailDokumen extends Component {
   })
   .then(response => response.data.data)
   .then(data =>{ 
-    console.log(data)
     this.setState({ data : data})
   })
   .catch(err => 

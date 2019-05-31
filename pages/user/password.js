@@ -14,7 +14,7 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb';
 
 const getYupValidationSchema = Yup.object().shape({
     password: Yup.string()
-      .min(8, `Password has to be longer than 6 characters!`)  
+      .min(8, `Password has to be longer than 8 characters!`)  
       .required('Password is required!'),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref('password'), null], 'Passwords must match')
@@ -80,7 +80,6 @@ function CreateForm(props) {
 }
 
 function onSubmit (values,actions) {
-    console.log(values)
     var headers = {
         'Content-Type': 'application/json',
         'Authorization': cookie.get('token')
@@ -93,7 +92,8 @@ function onSubmit (values,actions) {
             icon: "success",
             button: "Ok",
           }).then(()=>{
-            Router.push('/')
+            cookie.remove('token');
+            Router.push('/login')
           });
     })
     .catch(err => {

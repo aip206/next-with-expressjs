@@ -41,27 +41,32 @@ class Departement extends Component {
         {
           dataField: 'createdAt',
           text: 'No',
+          headerAlign: 'center',
           formatter: (cell, row, rowIndex, extraData) => (
             rowIndex + 1
         )
       },
       {
         dataField: 'name',
+        headerAlign: 'center',
         text: 'Nama Departemen',
         sort: true
       },
       {
         dataField: 'email',
+        headerAlign: 'center',
         text: 'Email Departemen',
         sort: true
       },
       {
         dataField: 'department_pics[0].nama',
+        headerAlign: 'center',
         text: 'Nama Penanggung Jawab',
         sort: true
       },
       {
         dataField: 'department_pics[0].phone',
+        headerAlign: 'center',
         text: 'Nomor Telepon',
         sort: true,
         formatter: (cell, row, rowIndex, extraData) => (
@@ -74,6 +79,7 @@ class Departement extends Component {
       
       {
         dataField: 'no',
+        headerAlign: 'center',
         text: 'Action',
         formatter: (cell, row, rowIndex, extraData) => (
             <Fragment><div className="btn-group btn-group-sm">

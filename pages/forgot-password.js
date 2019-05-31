@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import { withRouter } from 'next/router';
 import Router from 'next/router';
 import axioss from 'axios';
+import cookie from 'js-cookie'
 
 const getYupValidationSchema =Yup.object({
     email: Yup.string().required('Email is required')
@@ -91,6 +92,8 @@ function onSubmit (values,actions) {
             icon: "success",
             button: "Ok",
           }).then(()=>{
+            cookie.remove('token');
+
             Router.push('/login')
           });
     })

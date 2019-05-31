@@ -44,6 +44,7 @@ class DokumenMatrix extends Component {
       columns:[
         {
           dataField: 'createdAt',
+          headerAlign: 'center',
           text: 'No',
           formatter: (cell, row, rowIndex, extraData) => (
             rowIndex + 1
@@ -51,16 +52,19 @@ class DokumenMatrix extends Component {
       },
       {
         dataField: 'dokumen_name',
+        headerAlign: 'center',
         text: 'Nama',
         sort: true
       },
       {
         dataField: 'dokumen_type',
+        headerAlign: 'center',
         text: 'Tipe',
         sort: true
       },
       {
         dataField: 'departements',
+        headerAlign: 'center',
         text: 'Departemen',
         formatter: (cell, row, rowIndex, extraData) => {
         //  var a = row.departements.map((x)=>x.name)

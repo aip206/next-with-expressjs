@@ -55,8 +55,8 @@ export default class Navbar extends Component {
 				<a className="navbar-brand" href="/">Order Management System — Departemen
 				</a>
 			</div>
-			<div class="d-flex ml-auto">
-				<div class="dropdown">
+			<div className="d-flex ml-auto">
+				<div className="dropdown">
 				<DropdownButton id="dropdown-basic-button" title={this.state.nama} className="super-colors" >
 					<Dropdown.Item className="dropdown-item" href="/user/profile">Profil</Dropdown.Item>
 					<Dropdown.Item className="dropdown-item" href="/user/password">Sandi</Dropdown.Item>

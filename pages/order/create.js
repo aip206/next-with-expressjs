@@ -20,7 +20,7 @@ const getYupValidationSchema = Yup.object().shape({
     customer_name: Yup.string()
       .required('Nama Pelanggan is required!'),
       customer_email: Yup.string()
-      .email('E-mail tidak valid!')
+      .email('Email Pelanggan tidak valid!')
       .required('Email Pelanggan is required!'),
       customer_phone: Yup.string()
       .required('Telepon Pelanggan is required!'),
@@ -76,18 +76,13 @@ class OrderCreate extends React.Component {
             const newKeys = ["value","label"];
             const renamedObj = renameKeys(data.data, newKeys);
             this.setState({provinsi: renamedObj})
-        }).catch((e)=>{
-            console.log(e)
         })
     }
     getKabupaten(id){
-        console.log(id);
         axioss.get('/api/v1/utiliti/kabupaten/'+id).then(data => {
             const newKeys = ["value","label"];
             const renamedObj = renameKeys(data.data, newKeys);
             this.setState({kabupaten: renamedObj})
-        }).catch((e)=>{
-            console.log(e)
         })
     }
     getKecamatan(id){
@@ -95,8 +90,6 @@ class OrderCreate extends React.Component {
             const newKeys = ["value","label"];
             const renamedObj = renameKeys(data.data, newKeys);
             this.setState({kecamatan: renamedObj})
-        }).catch((e)=>{
-            console.log(e)
         })
     }
     getKelurahan(id){
@@ -104,8 +97,6 @@ class OrderCreate extends React.Component {
             const newKeys = ["value","label"];
             const renamedObj = renameKeys(data.data, newKeys);
             this.setState({kelurahan: renamedObj})
-        }).catch((e)=>{
-            console.log(e)
         })
     }
 
@@ -173,13 +164,8 @@ function CreateForm(props) {
                 }, 
                 (error) => {
                     // error function ....
-                console.log(error);
                 }, 
             () => {
-                // complete function ....
-                storage.ref('orders').child(namaFile).getDownloadURL().then(url => {
-                    console.log(url);
-                })
             });
             return namaFile;
             }
@@ -288,7 +274,7 @@ function CreateForm(props) {
                         <textarea onChange={handleChange} className="form-control" id="addOrderDesc" name="order_description" value={values.order_description} rows="2" ></textarea>
                     </div>
                     <div className="form-group">
-							<label for="addOrderEndDate">Tanggal Batas Akhir</label>
+							<label for="addOrderEndDate">Tanggal Batas Akhir</label><br></br>
                             <DatePicker
                             className="form-control"
                                     selected={values.order_deadline}
@@ -297,16 +283,12 @@ function CreateForm(props) {
                                         values.order_deadline = e
                                         setFieldValue("order_deadline",e)
                                         handleChange(e)
-                                        
                                     }}
+                                    minDate={new Date()}
                                     dateFormat="dd/MM/yyyy"
                                     
                                 />
-                            {/* <input type="date"  onChange={handleChange} className="form-control" id="addOrderEndDate" value={values.order_deadline} name="order_deadline"/> */}
                             {errors.order_deadline && touched.order_deadline ? <div className="error-message">{errors.order_deadline}</div> : null}
-
-
-                            {/* <ErrorMessage name="order_deadline" name="error-message" component='div' /> */}
 						</div>
                     <p className="small font-weight-bold text-uppercase mb-0">Dokumen</p>
                     <div id="addOrderDocField">
@@ -417,7 +399,6 @@ function onSubmit (values,actions) {
     let data = { ... values,
         order_deadline : moment(values.order_deadline).format('YYYY-MM-DD')
     }
-    // console.log(data);
     var headers = {
         'Content-Type': 'application/json',
         'Authorization': cookie.get('token')

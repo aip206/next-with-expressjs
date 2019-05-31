@@ -198,8 +198,7 @@ exports.changePassword = (req, res) => {
 function sendEmailPassword (data) {
     let link =  config.url+"/reset-password?token="+data.token+"&id="+data.email
     const output = `
-    <p>You have a new contact request</p>
-    <h3>Contact Details</h3>
+    <p>Silahkan Klik Link di bawah untuk berpindah kehalaman Ubah Sandi</p>
     <a href=${link}>Click Here</a>
   `;
 
@@ -219,10 +218,10 @@ function sendEmailPassword (data) {
 
   // setup email data with unicode symbols
   let mailOptions = {
-      from: '"Nodemailer Contact" <your@email.com>', // sender address
+      from: 'Order Management System', // sender address
       to: data.email, // list of receivers
       subject: 'Reset Password', // Subject line
-      text: 'Hello world?', // plain text body
+      text: 'Pergantian Sandi', // plain text body
       html: output // html body
   };
 

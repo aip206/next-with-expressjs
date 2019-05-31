@@ -87,7 +87,6 @@ class OrderDetail extends React.Component {
           const image = e.target.files[0];
           const namaFile = moment().valueOf()+"_"+image.name;
           const uploadTask = storage.ref(`orders/${namaFile}`).put(image);
-          console.log(this.state);
     
           this.setState({... this.state,
             addDokumen:{ 
@@ -307,7 +306,6 @@ class OrderDetail extends React.Component {
             if(data[0].total != 0){
               progresTotal = (data[0].totalDepartement / data[0].total) * 100
             }
-            console.log(progresTotal)
             this.setState({progress:progresTotal})
           }
         })
@@ -448,7 +446,6 @@ class OrderDetail extends React.Component {
       const upload = e => {
         if (e.target.files[0]) {
             const image = e.target.files[0];
-            console.log(image);
             const namaFile = moment().valueOf()+"_"+image.name;
             const uploadTask = storage.ref(`orders/${namaFile}`).put(image);
             uploadTask.on('state_changed', 
@@ -528,8 +525,6 @@ class OrderDetail extends React.Component {
   function ProgresDepOrder (props) {
    const dokumenlength = props.id.length 
       const persentase = props.id.filter((x)=>x.status == "Sudah Diproses").length
-      console.log(dokumenlength)
-      console.log(persentase)
       const progresTotal = (persentase / dokumenlength) * 100
   return <div class="progress">
             <div class="progress-bar progress-bar-striped progress-bar-animated" 
@@ -540,7 +535,6 @@ class OrderDetail extends React.Component {
   }
   
   function onSubmit (values, closed) {
-    console.log(closed);
     let data = {
       departements: values.departements,
       documentId: values.documentId,

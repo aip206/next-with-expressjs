@@ -19,7 +19,7 @@ const getYupValidationSchema = Yup.object().shape({
     dokumen_type: Yup.string()
       .required('Tipe Dokumen required!'),
     departements: Yup.string()
-      .required('Departement is required!')
+      .required('Nama Departemen is required!')
   })
 const typeDokumen = [{label:"Tipe Gambar",value:"Tipe Gambar"},{label:"Tipe Dokumen",value:"Tipe Dokumen"}]
 const initialValues = {
@@ -87,7 +87,6 @@ function CreateForm(props) {
                 }, 
                 (error) => {
                     // error function ....
-                console.log(error);
                 }, 
             () => {
                 storage.ref('dokumen-matrix').child(namaFile).getDownloadURL().then(url => {
@@ -194,7 +193,6 @@ function onSubmit (values,actions) {
             icon: "success",
             button: "Ok",
           }).then(()=>{
-              console.log("a");
             Router.push('/dokumen-matrix/list')
           });
     })

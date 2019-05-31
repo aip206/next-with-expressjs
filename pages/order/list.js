@@ -34,6 +34,7 @@ class Order extends Component {
         {
           dataField: 'id',
           text: 'No',
+          headerAlign: 'center',
           formatter: (cell, row, rowIndex, extraData) => (
             rowIndex + 1
         )
@@ -42,6 +43,7 @@ class Order extends Component {
         dataField: 'createdAt',
         text: 'Tanggal',
         sort: true,
+        headerAlign: 'center',
         formatter: (cell, row, rowIndex, extraData) => (
           dateFormat(row.createdAt,"dd/mm/yyyy")
       )
@@ -49,16 +51,19 @@ class Order extends Component {
       {
         dataField: 'order_invoice',
         text: 'Invoice',
+        headerAlign: 'center',
         sort: true
       },
       {
         dataField: 'customer_name',
+        headerAlign: 'center',
         text: 'Nama Pelanggan',
       },
          
       {
         dataField: 'no',
         text: 'Action',
+        headerAlign: 'center',
         formatter: (cell, row, rowIndex, extraData) => (
             <Fragment>
               <div className="btn-group btn-group-sm">

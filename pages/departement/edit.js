@@ -21,7 +21,7 @@ const getYupValidationSchema = Yup.object().shape({
     name: Yup.string()
         .required('Nama Departemen is required!'),
     phone:  Yup.string()
-        .required('No Telpon is required!')
+        .required('Nomor Telepon Penanggung Jawab  is required!')
   })
 
 

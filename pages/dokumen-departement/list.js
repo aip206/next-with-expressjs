@@ -41,6 +41,7 @@ class DepartementOrder extends Component {
       columns:[
         {
           dataField: 'id',
+          headerAlign: 'center',
           text: 'No',
           formatter: (cell, row, rowIndex, extraData) => (
             rowIndex + 1
@@ -48,6 +49,7 @@ class DepartementOrder extends Component {
       },
       {
         dataField: 'createdAt',
+        headerAlign: 'center',
         text: 'Tanggal',
         sort: true,
         formatter: (cell, row, rowIndex, extraData) => (
@@ -56,11 +58,13 @@ class DepartementOrder extends Component {
       },
       {
         dataField: 'order_invoice',
+        headerAlign: 'center',
         text: 'Invoice',
         sort: true
       },
       {
         dataField: 'customer_name',
+        headerAlign: 'center',
         text: 'Nama Pelanggan',
       },
          
@@ -146,7 +150,6 @@ class DepartementOrder extends Component {
         document.body.removeChild(link);
       })
     }catch(error){
-      console.log(error)
       swal({
         title: "Error",
         text: "Error => " + error.code,
@@ -170,7 +173,6 @@ class DepartementOrder extends Component {
         document.body.removeChild(link);
       })
     }catch(error){
-      console.log(error)
       swal({
         title: "Error",
         text: "Error => " + error.code,
@@ -271,7 +273,6 @@ function ModalForm (props) {
     const [fileName, setFileName] = useState("");
 
     const upload = e => {
-      console.log(e.target.files);
       if (e.target.files[0]) {
         const image = e.target.files[0];
         const namaFile = moment().valueOf()+"_"+image.name;
@@ -284,7 +285,6 @@ function ModalForm (props) {
         }, 
         (error) => {
             // error function ....
-        console.log(error);
         }, 
     () => {
        setFieldValue("origin",namaFile)

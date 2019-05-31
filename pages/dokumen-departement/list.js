@@ -2,7 +2,6 @@ import { Component,Fragment ,  useState } from 'react';
 import { withAuthSync } from '../../utils/auth'
 import cookie from 'js-cookie'
 import Layout from '../../components/Layout';
-import axioss from 'axios';
 import swal from 'sweetalert';
 import Router from 'next/router';
 import { Formik, Field,ErrorMessage } from 'formik';
@@ -110,7 +109,7 @@ class DepartementOrder extends Component {
   }
 
   process (id) {
-    axioss.delete('/api/v1/update-progress-dokumen-order/'+id,{
+    http.delete('/api/v1/update-progress-dokumen-order/'+id,{
       headers: {
         'Authorization': cookie.get('token')
       } 
@@ -348,7 +347,7 @@ function onSubmit (values, closed) {
     'Content-Type': 'application/json',
     'Authorization': cookie.get('token')
 }
-axioss.put('/api/v1/update-sukses-dokumen-order/'+values.idDepOrder,data,{'headers':headers})
+http.put('/api/v1/update-sukses-dokumen-order/'+values.idDepOrder,data,{'headers':headers})
 .then(response => {
     swal({
         title: "Tersimpan",

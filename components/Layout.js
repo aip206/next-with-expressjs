@@ -1,10 +1,23 @@
+import {useState } from 'react';
 import Head from 'next/head';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import { withRouter } from 'next/router';
 import Breadcrumb from './Breadcrumb'
 const Layout = (props) => {
-    
+    const [yes, setYes] = useState(true)
+    const [show, setShow] = useState("show")
+    const [full, setFull] = useState("")
+    const changeShow = () => {
+        setYes(!yes)
+        if(yes){
+            setShow("show")
+            setFull("")
+        }else{
+            setShow("")
+            setFull("full")
+        }
+      }
   return(
     <div >
         <Head>
@@ -14,9 +27,10 @@ const Layout = (props) => {
           
           <title>Sanguan</title>
         </Head> 
-        <Header />
-        <Sidebar />
-        <main className="dashboard">
+        <Header onClick={changeShow}  />
+        <Sidebar state={show} />
+        <main className={`dashboard ${full}`}>
+        
 		    <div className="container">
                 {props.children}
             </div>

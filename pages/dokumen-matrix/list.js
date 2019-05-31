@@ -2,7 +2,6 @@ import { Component, Fragment } from 'react';
 import { withAuthSync } from '../../utils/auth'
 import cookie from 'js-cookie'
 import Layout from '../../components/Layout';
-import axioss from 'axios';
 import http from '../../utils/http-service.js';
 import swal from 'sweetalert';
 import Router from 'next/router';
@@ -131,7 +130,7 @@ class DokumenMatrix extends Component {
     .then(async (willDelete) => {
       if (willDelete) {
         try{
-          let getDelete = await axioss.delete('/api/v1/document/'+e.data.id,{   
+          let getDelete = await http.delete('/api/v1/document/'+e.data.id,{   
             headers: {
               'Authorization': cookie.get('token')
             } 
@@ -151,7 +150,7 @@ class DokumenMatrix extends Component {
     });  }
 
   refreshData(){
-    axioss.get('/api/v1/documents',{
+    http.get('/api/v1/documents',{
       params:parameter,   
       headers: {
         'Authorization': cookie.get('token')

@@ -10,6 +10,7 @@ import Router from 'next/router';
 import swal from 'sweetalert';
 import { withRouter } from 'next/router'
 import axioss from 'axios';
+import http from '../../utils/http-service';
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
 const getYupValidationSchema = Yup.object().shape({
     email: Yup.string()
@@ -39,7 +40,7 @@ class DepartementEdit extends React.Component {
         }
     }
     componentDidMount () {
-        axioss.get('/api/v1/departement/'+this.props.router.query.id,{
+        http.get('/api/v1/departement/'+this.props.router.query.id,{
           headers: {
             'Authorization': cookie.get('token')
           } 
@@ -144,9 +145,8 @@ function EditForm(props) {
 }
 
 function onSubmit (values,actions) {
-    fetch('/api/v1/departement/'+values.id,{
-        method: 'PUT', 
-        body: JSON.stringify(values), 
+    http
+    .put('/api/v1/departement/'+values.id,values,{
         headers:{
             'Content-Type': 'application/json',
             'Authorization': cookie.get('token')
@@ -160,14 +160,6 @@ function onSubmit (values,actions) {
             button: "Ok",
           }).then(()=>{
             Router.push('/departement/list')
-          });
-    })
-    .catch(err => {
-        swal({
-            title: "Error",
-            text: "Error => " + err.msg,
-            icon: "error",
-            button: "Ok",
           });
     })
 }

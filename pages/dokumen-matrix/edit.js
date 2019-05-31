@@ -3,7 +3,7 @@ import { withAuthSync } from '../../utils/auth';
 import CreatableSelect from 'react-select/lib/Creatable';
 import Select from 'react-select';
 import cookie from 'js-cookie';
-import axioss from 'axios';
+import http from '../../utils/http-service';
 import Layout from '../../components/Layout';
 import { Formik, Field,ErrorMessage,withFormik } from 'formik';
 import * as Yup from 'yup';
@@ -77,7 +77,7 @@ class DokumenMatrixEdit extends React.Component {
         this.getDokumenMatrix();
     }
     getDokumenMatrix() {
-        axioss.get('/api/v1/document/'+this.props.router.query.id,{
+        http.get('/api/v1/document/'+this.props.router.query.id,{
             headers: {
               'Authorization': cookie.get('token')
             } 
@@ -107,7 +107,7 @@ class DokumenMatrixEdit extends React.Component {
           })
     }
     getDepartement(){
-        axioss.get('/api/v1/departements/by-search',{   
+        http.get('/api/v1/departements/by-search',{   
             headers: {
             'Authorization': cookie.get('token')
             }
@@ -266,12 +266,11 @@ function onSubmit (values,actions) {
             departements: values.initialValues.departements.map((x)=>x.value),
             file:values.initialValues.fileName
     }
-    console.log(data)
     var headers = {
         'Content-Type': 'application/json',
         'Authorization': cookie.get('token')
     }
-    axioss.put('/api/v1/document/'+values.initialValues.id,data,{'headers':headers})
+    http.put('/api/v1/document/'+values.initialValues.id,data,{'headers':headers})
     .then(response => {
         swal({
             title: "Tersimpan",

@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { withAuthSync } from '../../utils/auth'
 import cookie from 'js-cookie'
-import axioss from 'axios';
+import http from '../../utils/http-service';
 import Layout from '../../components/Layout';
 import { Formik, Field,ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -92,7 +92,7 @@ function CreateForm(props) {
 
 async function onSubmit (values,actions) {
     try{
-        let rest = await axioss.post('/api/v1/departements',
+        let rest = await http.post('/api/v1/departements',
                 values,
                 {
                     'Content-Type': 'application/json',

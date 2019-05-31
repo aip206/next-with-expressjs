@@ -190,47 +190,17 @@ exports.changePassword = (req, res) => {
             res.status(400);
             res.json({ valid:false, msg: e })
         }
-            // Departement.findOne({where: {email:email}})
-            // .then(function (foundItem) {
-            //     if (foundItem == null) {
-            //         Departement
-            //         .create( { name, email,password:password, role })
-                    // .then(data => {
-                    //     const departementId = data.id
-                    //     DepartementPic
-                    //     .create({nama:code_pic,phone:phone_pic,departementId:departementId})
-                    //     .then(()=>{
-                    //         ResetPassword.create(resetPassword).then((data)=>{
-                    //             sendEmailPassword(data);
-                    //         }).catch((e)=>{
-                    //             console.log(err)
-                    //         })
-            //             })
-            //             .catch(err => { 
-            //                 console.log(err)
-            //                 res.status(400);
-            //                 res.json({valid:false, msg: err })
-            //             })
-            //             res.json({valid:true, data:req.body})
-            //         })
-            //         .catch(err => { console.log(err) 
-            //                     res.status(400);
-            //                     res.json({valid:false, msg: err })
-            //                 })
-            //     }else{
-                // res.status(400);
-                // res.json({ valid:false, msg: "Email Sudah digunakan" })
-            //     }
-            // })
+         
         
     }
 }
 
 function sendEmailPassword (data) {
+    let link =  config.url+"/reset-password?token="+data.token+"&id="+data.email
     const output = `
     <p>You have a new contact request</p>
     <h3>Contact Details</h3>
-    ${config.url}/reset-password?token=${data.token}&id=${data.email}
+    <a href=${link}>Click Here</a>
   `;
 
   // create reusable transporter object using the default SMTP transport

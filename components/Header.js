@@ -25,7 +25,20 @@ export default class Navbar extends Component {
 		swal({
 			title: "Apakah Anda yakin akan keluar dari Applikasi?",
 			icon: "warning",
-			buttons: true,
+			buttons:{cancel: {
+				text: "Tidak",
+				value: null,
+				visible: true,
+				className: "",
+				closeModal: true,
+			  },
+			  confirm: {
+				text: "Ya",
+				value: true,
+				visible: true,
+				className: "",
+				closeModal: true
+			  }},
 			dangerMode: true,
 		  }).then((e)=>{
 			if (e) {
@@ -38,7 +51,7 @@ export default class Navbar extends Component {
 		return (
 		<nav className="navbar fixed-top navbar-light bg-light shadow">
 			<div className="d-flex align-items-center">
-				<button type="button" className="btn btn-link text-dark" id="sidebarToggle"><i className="fas fa-bars"></i></button>
+				<button type="button" className="btn btn-link text-dark" onClick={this.props.onClick} id="sidebarToggle"><i className="fas fa-bars"></i></button>
 				<a className="navbar-brand" href="/">Order Management System — Departemen
 				</a>
 			</div>

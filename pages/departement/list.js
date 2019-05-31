@@ -2,7 +2,7 @@ import { Component, Fragment } from 'react';
 import { withAuthSync } from '../../utils/auth'
 import cookie from 'js-cookie'
 import Layout from '../../components/Layout';
-import axioss from 'axios';
+import http from '../../utils/http-service';
 import swal from 'sweetalert';
 import Router from 'next/router';
 import Link from 'next/link';
@@ -97,7 +97,7 @@ class Departement extends Component {
     })
     .then((willDelete) => {
       if (willDelete) {
-        axioss.delete('/api/v1/departement/'+e.data.id,{   
+        http.delete('/api/v1/departement/'+e.data.id,{   
           headers: {
             'Authorization': cookie.get('token')
           } 
@@ -107,19 +107,11 @@ class Departement extends Component {
             icon: "success",
           });
         })
-        .catch(err =>{
-          swal({
-            title: "Error",
-            text: "Error => " + err,
-            icon: "error",
-            button: "Ok",
-          })
-        })
       } 
     });  }
 
  componentDidMount () {
-  axioss.get('/api/v1/departements',{
+  http.get('/api/v1/departements',{
     params:parameter,   
     headers: {
       'Authorization': cookie.get('token')
@@ -129,14 +121,7 @@ class Departement extends Component {
   .then(data =>{ 
     this.setState({ data : data.rows})
   })
-  .catch(err => 
-    swal({
-      title: "Error",
-      text: "Error => " + err,
-      icon: "error",
-      button: "Ok",
-    })
-  )}
+  }
 
   onGridReady = params => {
     this.gridApi = params.api;

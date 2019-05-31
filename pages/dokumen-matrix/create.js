@@ -3,7 +3,7 @@ import { withAuthSync } from '../../utils/auth';
 import CreatableSelect from 'react-select/lib/Creatable';
 import Select from 'react-select';
 import cookie from 'js-cookie';
-import axioss from 'axios';
+import http from '../../utils/http-service';
 import Layout from '../../components/Layout';
 import { Formik, Field,ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -41,7 +41,7 @@ class DokumenMatrixCreate extends React.Component {
 
 
     componentDidMount() {
-        axioss.get('/api/v1/departements/by-search',{   
+        http.get('/api/v1/departements/by-search',{   
             headers: {
             'Authorization': cookie.get('token')
             }
@@ -185,8 +185,8 @@ function onSubmit (values,actions) {
         'Authorization': cookie.get('token')
     }
     values.file = values.fileName;
-    console.log(values)
-    axioss.post('/api/v1/documents',values,{'headers':headers})
+    
+    http.post('/api/v1/documents',values,{'headers':headers})
     .then(response => {
         swal({
             title: "Tersimpan",

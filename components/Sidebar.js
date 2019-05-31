@@ -2,8 +2,9 @@ import { Component, Fragment } from 'react'
 
 import Link from './ActiveLink';
 
-const Sidebar = () => 
+const Sidebar = (props) => 
 {
+	console.log(props)
 	let data = {}
 	let path = ""
 	if(process.browser){
@@ -17,7 +18,7 @@ const Sidebar = () =>
 			return false
 		}
 	}
-   return <nav className="sidebar border-right show">
+   return <nav className={`sidebar border-right ${props.state}`}>
 
 		<ul className="nav flex-column">
 			<li className="nav-item">

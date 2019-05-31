@@ -42,7 +42,7 @@ function CreateForm(props) {
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
             <link rel="stylesheet" href="/static/fonts/roboto/stylesheet.css" rel="stylesheet"/>
             <link rel="stylesheet" href="/static/style.css"rel="stylesheet"/>
-            <title>Login</title>
+            <title>Lupa Password</title>
           </Head> 
           <main className="container">
               <div className="row align-items-center justify-content-center auth-container">

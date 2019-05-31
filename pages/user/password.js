@@ -48,7 +48,7 @@ function CreateForm(props) {
     const { values,errors, touched, handleChange, handleSubmit,
         isSubmitting } = props
     return(
-        <Layout>
+        <Layout title="Ubah Sandi">
              <Breadcrumb>
                 <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
                 <Breadcrumb.Item active >Sandi</Breadcrumb.Item>

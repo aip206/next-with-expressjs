@@ -99,7 +99,7 @@ function EditForm(props) {
     const { values,errors, touched, handleChange, handleSubmit,
         isSubmitting } = props
     return(
-        <Layout>
+        <Layout title="Ubah Departemen">
              <Breadcrumb>
                 <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
                 <Breadcrumb.Item href="/departement/list">Departemen</Breadcrumb.Item>

@@ -282,7 +282,7 @@ function EditForm(props) {
         }
 
     return(
-        <Layout>
+        <Layout title="Ubah Pemesanan">
              <Breadcrumb>
                 <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
                 <Breadcrumb.Item href="/order/list" >Pemesanan</Breadcrumb.Item>

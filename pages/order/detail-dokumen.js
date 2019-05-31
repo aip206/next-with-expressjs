@@ -177,7 +177,7 @@ class DetailDokumen extends Component {
     const { SearchBar } = Search;
 
     return (
-     <Layout>
+      <Layout title="Detail Dokumen Pemesanan">
          <Breadcrumb>
             <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
             <Breadcrumb.Item href="/order/list" >Pemesanan</Breadcrumb.Item>

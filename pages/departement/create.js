@@ -45,7 +45,7 @@ function CreateForm(props) {
     const { values,errors, touched, handleChange, handleSubmit,
         isSubmitting } = props
     return(
-        <Layout>
+        <Layout title="Tambah Departemen">
             <Breadcrumb>
                 <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
                 <Breadcrumb.Item href="/departement/list" >Departemen</Breadcrumb.Item>

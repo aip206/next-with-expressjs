@@ -168,7 +168,7 @@ class DokumenMatrix extends Component {
 render () {
   const { SearchBar } = Search;
   return (
-    <Layout>
+    <Layout title="Matrix Dokumen">
       <Breadcrumb>
           <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
           <Breadcrumb.Item active >Matriks Dokumen</Breadcrumb.Item>

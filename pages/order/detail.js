@@ -322,7 +322,7 @@ class OrderDetail extends React.Component {
     render () {
         const { SearchBar } = Search;
         return (
-        <Layout>
+          <Layout title="Detail Pemesanan">
           <Breadcrumb>
             <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
             <Breadcrumb.Item href="/order/list" >Pemesanan</Breadcrumb.Item>

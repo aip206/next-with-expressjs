@@ -94,7 +94,7 @@ class Order extends Component {
 render () {
   const { SearchBar } = Search;
   return (
-    <Layout>
+    <Layout title="Pemesanan">
       <Breadcrumb>
           <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
           <Breadcrumb.Item active >Pemesanan</Breadcrumb.Item>

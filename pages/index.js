@@ -7,7 +7,7 @@ import { withRouter } from 'next/router';
 class Dashboard extends Component {
   render () {
     return (
-     <Layout>
+      <Layout title="Dashboard">
         <h3 className="title"><i className="fas fa-home fa-fw mr-2"></i>Dashboard</h3>
       </Layout>
       )

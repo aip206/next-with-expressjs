@@ -15,7 +15,6 @@ import moment from 'moment';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import DatePicker from "react-datepicker";
 
-import "react-datepicker/dist/react-datepicker.css";
 
 const getYupValidationSchema = Yup.object().shape({
     customer_name: Yup.string()
@@ -120,9 +119,6 @@ class OrderCreate extends React.Component {
                 const newKeys = ["value","label","dokumen_type","departements"];
                 const renamedObj = renameKeys(data.data, newKeys);
                 this.setState({dokuments: renamedObj})
-            }).catch((e)=>{
-                // Router.push('/login')
-                console.log(e)
             })
     }
 
@@ -190,7 +186,7 @@ function CreateForm(props) {
             return ""
         }
     return(
-        <Layout>
+        <Layout title="Tambah Pemesanan">
             <Breadcrumb>
                 <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
                 <Breadcrumb.Item href="/order/list" >Pemesanan</Breadcrumb.Item>

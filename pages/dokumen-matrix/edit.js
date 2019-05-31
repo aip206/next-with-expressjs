@@ -162,7 +162,7 @@ function EditForm(props) {
         }
         }
     return(
-        <Layout>
+        <Layout title="Ubah Matrix Dokumen">
             <Breadcrumb>
                 <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
                 <Breadcrumb.Item href="/dokumen-matrix/list" >Matriks Dokumen</Breadcrumb.Item>

@@ -142,7 +142,7 @@ class Departement extends Component {
     const { SearchBar } = Search;
 
     return (
-     <Layout>
+     <Layout title="Departemen">
       <Breadcrumb>
         <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
         <Breadcrumb.Item active >Departemen</Breadcrumb.Item>

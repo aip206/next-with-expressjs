@@ -127,10 +127,8 @@ class OrderDetail extends React.Component {
 
     handleShow() {
       if(this.state.documents.length > 0){
-        console.log("kadie??")
         this.filterDokumen(this.state.documentSelect, this.state.documents.map((x)=>x.documentId))
       }else{
-        console.log("apa kadie??")
         this.setState({dokSelek:this.state.documentSelect})
       }
       

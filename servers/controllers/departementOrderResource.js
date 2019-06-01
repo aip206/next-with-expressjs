@@ -3,6 +3,23 @@ const Order = require('../models/order');
 const Departement = require('../models/departement');
 const Sequelize = require('sequelize');
 const db = require('../db/config')
+const nodemailer = require('nodemailer');
+const config = require('../config').get(process.env.NODE_ENV)
+ transporter = nodemailer.createTransport({
+    host: config.mail.host,
+    port: config.mail.port,
+    secure: config.mail.tls, // true for 465, false for other ports
+    auth: {
+        user: config.mail.username, // generated ethereal user
+        pass: config.mail.password  // generated ethereal password
+    },
+    tls:{
+      rejectUnauthorized:false
+    }
+  });
+  const path = require('path'),
+  Promise = require('bluebird');
+const EmailTemplate = require('email-templates').EmailTemplate;
 
 exports.getAll = (req,res) => {
    db.query("SELECT dorders.id,dorders.status, docor.orderId, o.createdAt, o.order_invoice, o.customer_name, dp.`name`, docor.pathFile, dorders.file, documen.dokumen_type FROM `departement_orders` as dorders \
@@ -59,10 +76,16 @@ exports.getAllByDocumenOrder = (req,res) =>{
 }
 
 exports.updateStatusSudahProses = (req,res) =>{
-    DepOrder
-    .update({status:"Sudah Diproses",file:req.body.file},{where:{id:req.params.id}})
-    .then(data => res.json({data:data})).catch(err =>{
-        res.json({ msg: err })})
+    try{
+        let update =DepOrder
+        .update({status:"Sudah Diproses",file:req.body.file, link:req.body.link},{where:{id:req.params.id}})
+        kirimKeDiriSendiri(req.user.email,req.body.link)
+        res.json({data:req.body})
+    }catch(e){
+        console.log(e)
+        res.json({ msg: e })
+    }
+    
 }
 exports.updateStatusDalamProses = (req,res) =>{
     DepOrder
@@ -86,4 +109,46 @@ exports.getProgresDepartementOrder = (req,res) => {
         res.status(400);
         res.json({ msg: err })
     })
+}
+
+async function kirimKeDiriSendiri(nama, link){
+  
+    let users = [
+        {
+            email: nama,
+            link: link
+        }
+    ];
+    loadTemplate('mail-self', users).then((results) => {
+        return Promise.all(results.map((result) => {
+            sendEmail({
+                to: result.context.email,
+                from: 'Order Management System',
+                subject: "File Upload",
+                html: result.email.html,
+            });
+        }));
+    }).then(() => {
+        console.log('Yay!');
+    });
+ }
+
+
+function sendEmail(obj){
+    return transporter.sendMail(obj);
+}
+
+function loadTemplate(templateName, contexts){
+    let template = new EmailTemplate(path.join(__dirname, 'template', templateName));
+    return Promise.all(contexts.map((context) => {
+        return new Promise((resolve, reject) => {
+            template.render(context, (err, result) => {
+                if (err) reject(err);
+                else resolve({
+                    email: result,
+                    context,
+                });
+            });
+        });
+    }));
 }

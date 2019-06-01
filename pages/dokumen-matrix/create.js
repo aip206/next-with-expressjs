@@ -92,6 +92,7 @@ function CreateForm(props) {
                 storage.ref('dokumen-matrix').child(namaFile).getDownloadURL().then(url => {
                     
                     setFieldValue("fileName",namaFile)
+                    setFieldValue("link",url)
                 })
             });
             }

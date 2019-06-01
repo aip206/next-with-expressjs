@@ -175,7 +175,9 @@ class OrderDetail extends React.Component {
     }
     selesai (id) {
       if(this.state.progress == 100){
-        axioss.post('/api/v1/update-sukses-order/'+id,{order_invoice:this.state.data.order_invoice},{
+        axioss.post('/api/v1/update-sukses-order/'+id,
+        {order_invoice:this.state.data.order_invoice,
+          customer_email:this.state.data.customer_email},{
           headers: {
             'Authorization': cookie.get('token')
           } 
@@ -309,11 +311,6 @@ class OrderDetail extends React.Component {
             this.setState({progress:progresTotal})
           }
         })
-      // console.log(this.state)
-      // const dokumenlength = this.state.data.document_orders.length 
-      // const persentase = this.state.data.document_orders.filter((x)=>x.status == "FINISH").length
-      // const progresTotal = (persentase / dokumenlength) * 100
-      // this.setState({progress:progresTotal})
 
     }
             
@@ -513,7 +510,7 @@ class OrderDetail extends React.Component {
                   Close
                 </button> */}
                 <button type="submit"  className="btn btn-block btn-primary" >
-                  Save Changes
+                  Tambah Dokumen
                 </button>
             </Modal.Footer>
             </form>

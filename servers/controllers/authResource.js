@@ -5,6 +5,7 @@ const ResetPassword = require('../models/reset_password');
 const bcrypt = require('bcrypt');
 const crypto = require("crypto");
 const nodemailer = require('nodemailer');
+const DepartementPic = require('../models/departement_pic');
 
 exports.authenticate = (req,res) =>{
     const { email, password } = req.body;
@@ -41,21 +42,44 @@ exports.changePassword = (req,res) => {
   })
 }
 
-exports.forgotPassword = (req,res) => {
+exports.forgotPassword = async (req,res) => {
   const {email} = req.body;
   const password = crypto.randomBytes(20).toString('hex');
   const resetPassword = {
     email : email,
     token: password
   }
-  ResetPassword.create(resetPassword).then((data)=>{
-    sendEmailPassword(data);
-    res.json({data:true})
-}).catch((err) => {
-  console.log(err)
+  try{
+    let dep = await Departement.findOne({where:{
+            email:email
+        },attributes: ['id','name','email']
+        })
+    let pic = await DepartementPic.findOne({where:{departementId:dep.id}}) 
+      ResetPassword.create(resetPassword).then((data)=>{
+        sendEmailPassword(data,pic,dep);
+        res.json({data:true})
+        })
+  }catch(err){
+    console.log(err)
     res.status(400);
-    res.json({ msg: err })
-})
+  }
+//  Departement
+//     .findOne({
+//         where:{
+//             email:email
+//         },attributes: ['id','name','email']
+//     }).then((dep)=>{
+//       const pic = DepartementPic.findOne({where:{departementId:dep.id}})    
+//       ResetPassword.create(resetPassword).then((data)=>{
+//           sendEmailPassword(data,pic,dep);
+//           res.json({data:true})
+//       }).catch((err) => {
+//         console.log(err)
+//           res.status(400);
+//           res.json({ msg: err })
+//       })
+//     })
+  
 
 }
 
@@ -81,12 +105,28 @@ exports.resetPassword = (req,res) =>{
   })
 }
 
-function sendEmailPassword (data) {
+function sendEmailPassword (data, pic, departemen) {
+  let link =  config.url+"/reset-password?token="+data.token+"&id="+data.email
   const output = `
-  <p>You have a new contact request</p>
-  <h3>Contact Details</h3>
-  ${config.url}/reset-password?token=${data.token}&id=${data.email}
-`;
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Order Management System</title>
+    </head>
+    <body>
+        <h1 style="margin-bottom: 1rem;">Setel Ulang Sandi</h1>
+        <hr>
+        
+        <p>${pic.nama} - ${departemen.name}</p>
+    
+        <p style="margin-bottom: 1rem"><a href=${link}>Klik disini</a> untuk setel ulang sandi.</p>
+    
+        <p>Terima kasih.</p>
+    
+    </body>
+    
+    </html>
+  `;
 
 // create reusable transporter object using the default SMTP transport
 let transporter = nodemailer.createTransport({
@@ -104,11 +144,10 @@ let transporter = nodemailer.createTransport({
 
 // setup email data with unicode symbols
 let mailOptions = {
-    from: '"Nodemailer Contact" <your@email.com>', // sender address
-    to: data.email, // list of receivers
-    subject: 'Reset Password', // Subject line
-    text: 'Hello world?', // plain text body
-    html: output // html body
+  from: 'Order Management System', // sender address
+  to: data.email, // list of receivers
+  subject: 'Pergantian Sandi', // Subject line
+  html: output // html body
 };
 
 // send mail with defined transport object

@@ -1,10 +1,28 @@
 const Order = require('../models/order');
 const DocOrder = require('../models/document_order');
+const Departement = require('../models/departement');
 const DepOrder = require('../models/departement_order');
 const Document = require('../models/documents');
 const Sequelize = require('sequelize');
 const db = require('../db/config');
+const config = require('../config').get(process.env.NODE_ENV)
+const nodemailer = require('nodemailer'),
+ transporter = nodemailer.createTransport({
+    host: config.mail.host,
+    port: config.mail.port,
+    secure: config.mail.tls, // true for 465, false for other ports
+    auth: {
+        user: config.mail.username, // generated ethereal user
+        pass: config.mail.password  // generated ethereal password
+    },
+    tls:{
+      rejectUnauthorized:false
+    }
+  });
+  const path = require('path'),
+  Promise = require('bluebird');
 
+const EmailTemplate = require('email-templates').EmailTemplate;
 
 exports.getAll = (req,res) => {
     Order.findAndCountAll({
@@ -42,7 +60,7 @@ exports.getById =(req,res) =>{
         res.json({ msg: err })})
 }
 
-exports.create = (req,res) => {
+exports.create = async (req,res) => {
     let { customer_address,customer_email,
         customer_kabupaten,
         customer_kecamatan,
@@ -59,10 +77,11 @@ exports.create = (req,res) => {
     const tahun = date.getFullYear().toString().substr(-2);
     const month = ((date.getMonth()+1) < 10 ? '0' : '') + (date.getMonth()+1)
     const day = (date.getDate() < 10 ? '0' : '') + date.getDate()
-    db.query("select count(*) as number from orders where DATE(createdAt) = CURDATE()",
-    { raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
-        let order_invoice = "OMS-"+tahun+month+day+counter(data)
-        Order.create({
+    try{
+        let linkFirebase=[];
+        let c  = await db.query("select count(*) as number from orders where DATE(createdAt) = CURDATE()",{ raw: true,type: Sequelize.QueryTypes.SELECT})
+        let order_invoice = "OMS-"+tahun+month+day+counter(c)
+        let order = await Order.create({
             order_invoice: order_invoice,
             order_description: order_description,
             order_deadline : order_deadline,
@@ -78,40 +97,19 @@ exports.create = (req,res) => {
             id_kabupaten,
             id_kecamatan,
             id_provinsi
-        }).then(data=>{
-           return dokuments.forEach((x,index) => {
-                let {id, origin } = x
-                DocOrder.create({
-                    orderId : data.id,
-                    documentId : id,
-                    pathFile: origin
-                })
-                .then(data => {
-                    console.log(data);
-                    x.departements.forEach((xm)=>{
-                        DepOrder.create({
-                            documentOrderId: data.id,
-                            departementId: xm.document_departements.departementId
-                        })           
-                    })
-                    res.json({data:req.body})
-                })
-                .catch(err => {
-                    console.log(err);
-                    res.status(400);
-                    res.json({ msg: err })
-                    })
-            });
-        }).catch(err => {
-            res.status(400);
-            res.json({ msg: err })
-            })
-    }).catch(err => {
+        })
+        let dokumen = await saveDokumen(dokuments, order)
+        setTimeout(() => kirimEmailCustomer(customer_email, order,dokumen), 10000);
+        res.json({data:req.body})
+    }catch(err) {
+        console.log(err)
         res.status(400);
         res.json({ msg: err })
-        })
-    
-}
+        }
+
+
+    }
+
 
 exports.update = (req, res) => {
     let { customer_address,customer_email,
@@ -164,7 +162,7 @@ exports.batalDokumen = (req,res) =>{
 }
 
 exports.suksesOrder = (req,res) =>{
-    let {order_invoice} = req.body
+    let {order_invoice, customer_email} = req.body
     const newInvoice = order_invoice.replace("OMS", "DO")
     Order.update({order_status: "Finish",
     order_invoice: newInvoice
@@ -172,6 +170,7 @@ exports.suksesOrder = (req,res) =>{
         where:{
             id:req.params.id
         }}).then(result =>{
+            kirimEmailCustomerFinish(customer_email,req.params.id)
              res.json({data:result})
             })
           .catch(err =>
@@ -184,11 +183,12 @@ exports.suksesOrder = (req,res) =>{
 }
 
 exports.addOrderDokumen =(req, res) => {
-    let {documentId, origin, departements } = req.body;
+    let {documentId, origin, departements,link } = req.body;
     DocOrder.create({
         orderId : req.params.id,
         documentId : documentId,
-        pathFile: origin
+        pathFile: origin,
+        link
     })
     .then(data => {
         departements.forEach((xm)=>{
@@ -230,6 +230,82 @@ exports.checkProgress = (req,res) => {
 
 }
 
+async function kirimEmailCustomerFinish(nama, order){
+   let data = await  db.query("SELECT depor.file,o.customer_email, depor.link FROM `departement_orders` depor\
+   INNER JOIN document_orders  docor on docor.id = depor.documentOrderId\
+   INNER JOIN orders o on o.id = docor.orderId\
+   where o.id = :orderId",  
+{replacements: { orderId: order},raw: true,type: Sequelize.QueryTypes.SELECT})
+   let users = [
+       {
+           email: nama,
+           link: data.map((x)=> x.link)
+       }
+   ];
+   loadTemplate('mail-finish-order', users).then((results) => {
+       return Promise.all(results.map((result) => {
+           sendEmail({
+               to: result.context.email,
+               from: 'Order Management System',
+               subject: "Pesanan Diteruskan",
+               html: result.email.html,
+           });
+       }));
+   }).then(() => {
+       console.log('Yay!');
+   });
+}
+
+
+
+ async function kirimEmailCustomer(nama, order){
+    let data = await DocOrder.findAll({where:{
+        orderId:order.id
+    }})
+    let users = [
+        {
+            email: nama,
+            link: data.map((x)=> x.link)
+        }
+    ];
+    loadTemplate('mail-customer', users).then((results) => {
+        return Promise.all(results.map((result) => {
+            sendEmail({
+                to: result.context.email,
+                from: 'Order Management System',
+                subject: "Pesanan Diteruskan",
+                html: result.email.html,
+            });
+        }));
+    }).then(() => {
+        console.log('Yay!');
+    });
+}
+
+async function kirimEmailDepartement(link, id){
+    let data = await Departement.findOne({where:{
+        id:id
+    }})
+    let users = [
+        {
+            email: data.email,
+            link: link
+        }
+    ];
+    loadTemplate('mail-departement', users).then((results) => {
+        return Promise.all(results.map((result) => {
+            sendEmail({
+                to: result.context.email,
+                from: 'Order Management System',
+                subject: "Pesanan Baru",
+                html: result.email.html,
+            });
+        }));
+    }).then(() => {
+        console.log('Yay!');
+    });
+}
+
 
 function counter(d) {
     if(d[0]){
@@ -237,7 +313,7 @@ function counter(d) {
         if(count < 10){
             return "00"+count
         }
-        else if(count < 100 && d > 9) {
+        else if(count < 100 && count > 9) {
             return "0"+count
         }else{
             return count
@@ -251,4 +327,46 @@ Date.prototype.addDays = function (num) {
     var value = this.valueOf();
     value += 86400000 * num;
     return new Date(value);
+}
+
+
+function sendEmail(obj){
+    return transporter.sendMail(obj);
+}
+
+function loadTemplate(templateName, contexts){
+    let template = new EmailTemplate(path.join(__dirname, 'template', templateName));
+    return Promise.all(contexts.map((context) => {
+        return new Promise((resolve, reject) => {
+            template.render(context, (err, result) => {
+                if (err) reject(err);
+                else resolve({
+                    email: result,
+                    context,
+                });
+            });
+        });
+    }));
+}
+
+async function saveDokumen(dokuments, order){
+    dokuments.forEach(async (x,index) => {
+        let {id, origin,link } = x
+        let emailDep = []
+        const docOrder = await DocOrder.create({
+                orderId : order.id,
+                documentId : id,
+                pathFile: origin,
+                link:link
+            }).then((d)=>{
+                x.departements.forEach(async (xm)=>{
+                    DepOrder.create({
+                        documentOrderId: d.id,
+                        departementId: xm.document_departements.departementId
+                    })
+                    let kirimEmail = await kirimEmailDepartement(link, xm.document_departements.departementId)
+                })  
+            })
+            
+    })
 }

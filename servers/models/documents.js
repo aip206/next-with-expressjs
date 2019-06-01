@@ -36,6 +36,9 @@ const Document = db.define('documents', {
         type: Sequelize.STRING,
         allowNull: false
       },
+      link: {
+        type: Sequelize.STRING
+      },
       isDelete: {
         type: Sequelize.BOOLEAN,
         defaultValue: false

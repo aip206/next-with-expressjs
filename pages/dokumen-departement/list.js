@@ -23,15 +23,19 @@ const divRight = {
 const parameter = {
   "sortBy":"createdAt","sort":"ASC","limit":"10","page":0
 }
+const dataUpload = {
+  file:"",
+  origin:"",
+  link:"",
+  idDepOrder:0
+}
 class DepartementOrder extends Component {
   constructor(props) {
     super(props);
     this.state = {
       initialValues:{
         idDepOrder:0,
-        tipeDokumen:"",
-        file:undefined,
-        origin:""
+        tipeDokumen:""
       },
       data: [],
       defaultSorted : [{
@@ -113,7 +117,7 @@ class DepartementOrder extends Component {
   }
 
   process (id) {
-    http.delete('/api/v1/update-progress-dokumen-order/'+id,{
+    http.get('/api/v1/update-progress-dokumen-order/'+id,{
       headers: {
         'Authorization': cookie.get('token')
       } 
@@ -253,7 +257,7 @@ render () {
         aria-labelledby="example-custom-modal-styling-title"
       >
           <Formik
-          initialValues={this.state.initialValues}
+          initialValues={dataUpload}
           onSubmit={(e)=>onSubmit(e, this.handleClose)}
           render={ props =>{
               return <ModalForm  {...props} parentState={this.state}
@@ -272,25 +276,31 @@ function ModalForm (props) {
     const [progress, setProgress] = useState(0);
     const [fileName, setFileName] = useState("");
 
-    const upload = e => {
+    const upload = (e) => {
       if (e.target.files[0]) {
-        const image = e.target.files[0];
-        const namaFile = moment().valueOf()+"_"+image.name;
-        const uploadTask = storage.ref(`orders-departement/${namaFile}`).put(image);
-        uploadTask.on('state_changed', 
-        (snapshot) => {
-        // progrss function ....
-        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-        setProgress(progress)
-        }, 
-        (error) => {
-            // error function ....
-        }, 
-    () => {
-       setFieldValue("origin",namaFile)
-      })
-    }
-    }
+          const image = e.target.files[0];
+          const namaFile = moment().valueOf()+"_"+image.name
+          const uploadTask = storage.ref(`orders-departement/${namaFile}`).put(image);
+              uploadTask.on('state_changed', 
+              (snapshot) => {
+              // progrss function ....
+              const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+              setProgress(progress);
+              }, 
+              (error) => {
+                  // error function ....
+              }, 
+          () => {
+              storage.ref('orders-departement').child(namaFile).getDownloadURL().then(url => {
+                  setFieldValue("origin",namaFile),
+                  setFieldValue("link",url)
+                  setFieldValue("idDepOrder", parentState.initialValues.idDepOrder)
+
+              })
+          });
+      }
+
+  }
   return(
     <Fragment>
       <form onSubmit={handleSubmit}>
@@ -304,34 +314,32 @@ function ModalForm (props) {
               <div className="form-group">
                 <label for="addDocExample">Upload Dokumen</label>
                 <div className="custom-file">
-                  {values.tipeDokumen == "Tipe PNG" ? 
-                   <input type="file" accept=".png" className="custom-file-input" id="addDocExample" value={values.file} name="file"  onChange={(e)=>{
-                    handleChange(e)
-                    upload(e)
-                    }}/>
-                  : ""}
-                  {values.tipeDokumen == "Tipe Dokumen" ? 
-                  <input type="file" accept=".csv" className="custom-file-input"  id="addDocExample" name="file"  value={values.file} onClick={(e)=>{
-                    handleChange(e)
-                    upload(e)
-                  }}/> : ""}                               
-                    {values.tipeDokumen == "Tipe PDF" ? 
-                   <input type="file" accept="application/pdf" className="custom-file-input" id="addDocExample" value={values.file} name="file"  onChange={(e)=>{
-                    handleChange(e)
-                    upload(e)
-                    }}/>
-                  : ""}
-                  <label className="custom-file-label" for="addDocExample">{values.file}</label>
-                      <input type="hidden" name={values.file} name="filename"/>         
-                </div>
+                {parentState.initialValues.tipeDokumen == "Tipe Dokumen" ? 
+                
+                  <input type="file" accept=".pdf,.csv, .doc,.docx,.xlsx, .xls,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" className="custom-file-input" 
+                      id="addDocExample" value={values.file} name="file"  onChange={(e)=>{
+                        handleChange(e)
+                        upload(e)
+                        }}/>:""
+                }
+                {parentState.initialValues.tipeDokumen == "Tipe Gambar" ? 
+                
+                <input type="file" accept="image/*" className="custom-file-input" 
+                    id="addDocExample" value={values.file} name="file"  onChange={(e)=>{
+                      handleChange(e)
+                      upload(e)
+                      }}/>:""
+              }
+                    
+                    <label className="custom-file-label" for="addDocExample">{values.file}</label>
+                  </div>
+                  <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100" style={{width:progress+"%"}}>{progress}</div>
+
               </div>
             </Modal.Body>
           <Modal.Footer>
-              {/* <button variant="secondary" onClick={handleClose}>
-                Close
-              </button> */}
-              <button >
-                Save Changes
+                <button type="submit"  className="btn btn-block btn-primary" >
+                Simpan Dokumen
               </button>
           </Modal.Footer>
           </form>
@@ -342,8 +350,10 @@ function ModalForm (props) {
 
 function onSubmit (values, closed) {
   let data = {
-    file: values.origin
+    file: values.origin,
+    link: values.link
   }
+
   var headers = {
     'Content-Type': 'application/json',
     'Authorization': cookie.get('token')

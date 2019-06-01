@@ -22,6 +22,9 @@ const DepartementOrder = db.define('departement_orders', {
       file:{
         type: Sequelize.STRING
       },
+      link:{
+        type: Sequelize.STRING
+      },
       status:{
         type: Sequelize.STRING,
         defaultValue: "Ditempatkan"

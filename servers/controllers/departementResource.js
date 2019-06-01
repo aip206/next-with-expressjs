@@ -173,9 +173,9 @@ exports.changePassword = (req, res) => {
                         const departementId = data.id
                         DepartementPic
                         .create({nama:nama,phone:phone,departementId:departementId})
-                        .then(()=>{
+                        .then((pic)=>{
                             ResetPassword.create(resetPassword).then((data)=>{
-                                sendEmailPassword(data);
+                                sendEmailPassword(data,pic,name);
                             })
                         })
                 })
@@ -195,11 +195,27 @@ exports.changePassword = (req, res) => {
     }
 }
 
-function sendEmailPassword (data) {
+function sendEmailPassword (data, pic, name) {
     let link =  config.url+"/reset-password?token="+data.token+"&id="+data.email
     const output = `
-    <p>Silahkan Klik Link di bawah untuk berpindah kehalaman Ubah Sandi</p>
-    <a href=${link}>Click Here</a>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Order Management System</title>
+    </head>
+    <body>
+        <h1 style="margin-bottom: 1rem;">Setel Ulang Sandi</h1>
+        <hr>
+        
+        <p>${pic.nama} - ${name}</p>
+    
+        <p style="margin-bottom: 1rem"><a href=${link}>Klik disini</a> untuk setel ulang sandi.</p>
+    
+        <p>Terima kasih.</p>
+    
+    </body>
+    
+    </html>
   `;
 
   // create reusable transporter object using the default SMTP transport
@@ -220,8 +236,7 @@ function sendEmailPassword (data) {
   let mailOptions = {
       from: 'Order Management System', // sender address
       to: data.email, // list of receivers
-      subject: 'Reset Password', // Subject line
-      text: 'Pergantian Sandi', // plain text body
+      subject: 'Pergantian Sandi', // Subject line
       html: output // html body
   };
 

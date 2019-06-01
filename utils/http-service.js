@@ -22,7 +22,6 @@ const instance = axios.create({
 
   // Add a response interceptor
   instance.interceptors.response.use(function (response) {
-    console.log("sanguan")
     return response;
   }, function (error, b, c) {
     var err = error.message;

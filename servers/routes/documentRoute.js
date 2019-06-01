@@ -9,9 +9,9 @@ module.exports = (app) =>{
     .post(passport.authenticate('jwt', { session: false }),document.create)
     
     app.route('/api/v1/document/:id').get(passport.authenticate('jwt', { session: false }),document.getById)
-    .delete(document.delete)
-    .put(document.update);
-    app.route('/api/v1/document-lookup').get(document.getDokumenMatrix)
+    .delete(passport.authenticate('jwt', { session: false }),document.delete)
+    .put(passport.authenticate('jwt', { session: false }),document.update);
+    app.route('/api/v1/document-lookup').get(passport.authenticate('jwt', { session: false }),document.getDokumenMatrix)
     // passport.authenticate('jwt', { session: false }),
     app.route('/api/v1/document-files').post(passport.authenticate('jwt', { session: false }),docFile.create);
 }

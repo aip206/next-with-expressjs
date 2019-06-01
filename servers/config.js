@@ -34,8 +34,8 @@ var config = {
     },
     mail : {
       host: "smtp.gmail.com",
-      port:"465",
-      tls:true,
+      port:"587",
+      tls:false,
       username:"oms.butternut1@gmail.com",
       password:"hajiabun14"
     },

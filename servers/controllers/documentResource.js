@@ -71,13 +71,14 @@ exports.getById = (req, res) => {
 }
 
 exports.create = (req,res) => {
-    let { dokumen_name, dokumen_type, description, departements, file } = req.body;
+    let { dokumen_name, dokumen_type, description, departements, file, link } = req.body;
     
     Document.create({
         dokumen_name: dokumen_name,
         dokumen_type: dokumen_type,
         description : description,
-        path: file
+        path: file,
+        link:link
     }).then(data=>{
         console.log(data);
         if(departements.length > 0){
@@ -91,12 +92,13 @@ exports.create = (req,res) => {
         })
 }
 exports.update = (req,res) => {
-    let { dokumen_name, dokumen_type, description, departements, file } = req.body;  
+    let { dokumen_name, dokumen_type, description, departements, file,link } = req.body;  
     let data = {
         dokumen_name: dokumen_name,
         dokumen_type: dokumen_type,
         description : description,
-        path: file,id: req.params.id
+        path: file,id: req.params.id,
+        link:link
     } 
     updateOrCreate(Document, {id:req.params.id},data)
     .then(data=>{
@@ -109,22 +111,6 @@ exports.update = (req,res) => {
         res.status(400);
         res.json({ msg: err })
         }) 
-    // Document.create({
-    //     dokumen_name: dokumen_name,
-    //     dokumen_type: dokumen_type,
-    //     description : description,
-    //     path: file,id: req.params.id 
-    // }).then(data=>{
-    //     console.log(data);
-    //     // if(departements.length > 0){
-    //     //     data.setDepartements(departements);
-    //     // }        
-    //     res.json({data:req.body}) 
-    // }).catch(err => {
-    //     console.log(err)
-    //     res.status(400);
-    //     res.json({ msg: err })
-    //     })
 }
 
 function updateOrCreate (model, where, newItem) {

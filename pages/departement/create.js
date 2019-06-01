@@ -94,11 +94,11 @@ async function onSubmit (values,actions) {
     try{
         let rest = await http.post('/api/v1/departements',
                 values,
-                {
-                    'Content-Type': 'application/json',
-                    'Authorization': cookie.get('token')
-
-                }
+                {   
+                    headers: {
+                      'Authorization': cookie.get('token')
+                    } 
+                  }
             )
             if(rest.data.valid) {
                 swal({
@@ -118,13 +118,13 @@ async function onSubmit (values,actions) {
                 });
 
             }
-    } catch(e){
+    } catch(err){
         swal({
             title: "Error",
-            text: "Error => " + err.msg,
+            text: "Error => Email Sudah digunakan" ,
             icon: "error",
             button: "Ok",
-          });
+        });
     }
 }
   

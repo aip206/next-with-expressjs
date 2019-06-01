@@ -6,13 +6,13 @@ module.exports = (app) =>{
     const departementPic = require('../controllers/departementPicResource');
     app.route('/api/v1/departements')
     .get(passport.authenticate('jwt', { session: false }),departement.getAll)
-    .post(departement.create)
+    .post(passport.authenticate('jwt', { session: false }),departement.create)
     
     app.route('/api/v1/departement/:id').get(passport.authenticate('jwt', { session: false }),departement.getByIdWithPic)
     .delete(passport.authenticate('jwt', { session: false }),departement.delete)
     .put(passport.authenticate('jwt', { session: false }),departement.udpateByIdWithPic)
 
-    app.route('/api/v1/departements/by-search').get(passport.authenticate('jwt', { session: false }),departement.getBySearch)
+    app.route('/api/v1/departements/by-search').get(passport.authenticate('jwt', { session: false }),passport.authenticate('jwt', { session: false }),departement.getBySearch)
     
     app.route('/api/v1/departement-pic/:departemenId')
     .get(passport.authenticate('jwt', { session: false }),departementPic.getByDepartemenId)

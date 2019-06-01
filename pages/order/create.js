@@ -151,25 +151,29 @@ function CreateForm(props) {
             }
         
     }
-    const upload = e => {
+    const upload = (e, index) => {
             if (e.target.files[0]) {
-            const image = e.target.files[0];
-            const namaFile = moment().valueOf()+"_"+image.name
-            const uploadTask = storage.ref(`orders/${namaFile}`).put(image);
-                uploadTask.on('state_changed', 
-                (snapshot) => {
-                // progrss function ....
-                const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                setProgress(progress);
-                }, 
-                (error) => {
-                    // error function ....
-                }, 
-            () => {
-            });
-            return namaFile;
+                const image = e.target.files[0];
+                const namaFile = moment().valueOf()+"_"+image.name
+                const uploadTask = storage.ref(`orders/${namaFile}`).put(image);
+                    uploadTask.on('state_changed', 
+                    (snapshot) => {
+                    // progrss function ....
+                    const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    setProgress(progress);
+                    }, 
+                    (error) => {
+                        // error function ....
+                    }, 
+                () => {
+                    storage.ref('orders').child(namaFile).getDownloadURL().then(url => {
+                        values.dokuments[index].origin = namaFile,
+                        values.dokuments[index].link= url
+
+                    })
+                });
             }
-            return ""
+
         }
     return(
         <Layout title="Tambah Pemesanan">
@@ -219,7 +223,6 @@ function CreateForm(props) {
                                         kabupaten(e.value,this)
                                     }}
                                     />
-                                {/* <ErrorMessage name="customer_provinsi" name="error-message" component='div' /> */}
                                 {errors.customer_provinsi && touched.customer_provinsi ? <div className="error-message">{errors.customer_provinsi}</div> : null}
 
                             </div>
@@ -237,7 +240,6 @@ function CreateForm(props) {
                                         kecamatan(e.value,this)
                                     }}
                                     />
-                                {/* <ErrorMessage name="customer_kabupaten" name="error-message" component='div' /> */}
                                 {errors.customer_kabupaten && touched.customer_kabupaten ? <div className="error-message">{errors.customer_kabupaten}</div> : null}
 
                             </div>
@@ -255,7 +257,6 @@ function CreateForm(props) {
                                         
                                     }}
                                 />
-                                {/* <ErrorMessage name="customer_kecamatan" name="error-message" component='div' /> */}
                                 {errors.customer_kecamatan && touched.customer_kecamatan ? <div className="error-message">{errors.customer_kecamatan}</div> : null}
 
                             </div>
@@ -302,7 +303,7 @@ function CreateForm(props) {
                                 values.dokuments.map((friend, index) => (
                                     <Fragment key={index} >
                                     <div className="form-group row">
-                                    <label className="col-sm-2 col-form-label">Tambah Dokumen {index}</label>
+                                    <label className="col-sm-2 col-form-label">Tambah Dokumen</label>
                                         <div className="col-sm-4">
                                             <Select
                                             name={`dokuments[${index}].id`} 
@@ -330,22 +331,23 @@ function CreateForm(props) {
                                            
                                                  <input type="file" accept={selected} id={`addDocExample${index}`} value={values.dokuments[index].file} name={`dokuments[${index}].file`}  onChange={(e)=>{ 
                                                     handleChange(e)
-                                                    values.dokuments[index].origin = upload(e)
+                                                    values.dokuments[index].origin = e
                                                 }}/>
                                                 
-                                                <label className="custom-file-label" for={`addDocExample${index}`}>{values.dokuments[index].origin} {index} </label>
+                                                <label className="custom-file-label" for={`addDocExample${index}`}>{values.dokuments[index].file}</label>
                                             </div>
                                         </div>
 
                                         
-                                        {index == 0 ? (
+                                        {index == (values.dokuments.length-1) ? (
                                             <div className="col-sm-2">
                                                 <button type="button" className="btn btn-block btn-success" id="addNewDocField"
                                                 onClick={() => {
                                                     var data = {
                                                         id:"",
-                                                        file:null}      
-                                                        if(values.dokuments[index].id != ""){
+                                                        file:null} 
+                                                        if(values.dokuments[index].id != "" && values.dokuments[index].file != ""){
+                                                            upload(values.dokuments[index].origin,index)
                                                             arrayHelpers.push(data)
                                                             
                                                         }  
@@ -384,7 +386,7 @@ function CreateForm(props) {
                     </div>
                 </div>
                 <div className="card-footer">
-                    <button type="submit" disabled= {isSubmitting} className="btn btn-block btn-primary">Tambah Pesanan Baru</button>
+                    <button type="submit"  className="btn btn-block btn-primary">Tambah Pesanan Baru</button>
                 </div>
                 </form>
             </div>
@@ -397,7 +399,8 @@ function CreateForm(props) {
 function onSubmit (values,actions) {
     
     let data = { ... values,
-        order_deadline : moment(values.order_deadline).format('YYYY-MM-DD')
+        order_deadline : moment(values.order_deadline).format('YYYY-MM-DD'),
+        dokuments: values.dokuments.filter((x)=>x.file != null)
     }
     var headers = {
         'Content-Type': 'application/json',

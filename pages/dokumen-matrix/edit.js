@@ -34,7 +34,7 @@ class DokumenMatrixEdit extends React.Component {
         this.state = {
             departements:[],
             url:"",
-            typeDokumen:[{label:"Tipe PNG",value:".png"},{label:"Tipe Dokumen",value:".doc"}, {label:"Tipe PDF",value:".pdf"}],
+             typeDokumen : [{label:"Tipe Gambar",value:"Tipe Gambar"},{label:"Tipe Dokumen",value:"Tipe Dokumen"}],
             image: null,
             initialValues : {
                 dokumen_name:undefined,
@@ -42,6 +42,7 @@ class DokumenMatrixEdit extends React.Component {
                 description:undefined,
                 documentFileId:undefined,
                 departements:[],
+                select:"",
                 file:""
                 
             },
@@ -93,6 +94,7 @@ class DokumenMatrixEdit extends React.Component {
                 dokumen_name:data.dokumen_name,
                 dokumen_type:{value:data.dokumen_type,label:data.dokumen_type},
                 description:data.description,
+                select:data.dokumen_type,
                 departements:renameKeys(data.departements,newKeys),
                 path:data.path
               } })
@@ -138,7 +140,7 @@ function EditForm(props) {
         isSubmitting,optional, typeDok,touched, setFieldValue} = props
     const [fileName, setFileName] = useState("");
     const [progress, setProgress] = useState(0);
-    const [selected, setSelected] = useState("");
+    const [selected, setSelected] = useState(values.initialValues.select);
     const upload = e => {
         if (e.target.files[0]) {
             const image = e.target.files[0];
@@ -157,6 +159,7 @@ function EditForm(props) {
         () => {
             storage.ref('dokumen-matrix').child(namaFile).getDownloadURL().then(url => {
                 setFieldValue("initialValues.fileName",namaFile)
+                setFieldValue("initialValues.link",url)
             })
         });
         }
@@ -189,8 +192,9 @@ function EditForm(props) {
                                 defaultValue={values.initialValues.dokumen_type}
                                 onChange={(e) =>{
                                     values.initialValues.dokumen_type = e
+                                    setSelected(e.label)
+
                                 }}
-                                required
                             />
                             <ErrorMessage name="initialValues.dokumen_type" />
 						</div>
@@ -198,11 +202,8 @@ function EditForm(props) {
 							<label for="addDocExample">Contoh Dokumen </label>
                             
 							<div className="custom-file">
-                                <input type="file" accept={values.initialValues.dokumen_type} id="addDocExample" value={values.initialValues.file} name="initialValues.file"  onChange={(e)=>{                                     
-                                    handleChange(e)
-                                    upload(e)
-                                }}/>
-                                {selected == "Tipe PNG" ?  <input type="file" accept=".png" id="addDocExample" value={values.initialValues.file} name="initialValues.file"  onChange={(e)=>{ 
+
+                                {selected == "Tipe Gambar" ?  <input type="file" accept="image/*" id="addDocExample" value={values.initialValues.file} name="initialValues.file"  onChange={(e)=>{ 
                                     handleChange(e)
                                     upload(e)
                                 }}/> : ""}
@@ -210,11 +211,7 @@ function EditForm(props) {
                                     handleChange(e)
                                     upload(e)
                                 }}/> : ""}
-                                
-                                {selected == "Tipe PDF" ?  <input type="file" accept=".pdf" id="addDocExample" value={values.initialValues.file} name="initialValues.file"  onChange={(e)=>{ 
-                                    handleChange(e)
-                                    upload(e)
-                                }}/> : ""}
+                               
 								<label className="custom-file-label" for="addDocExample">{values.initialValues.path}</label>
                                 <input type="hidden" name={values.initialValues.file} name="initialValues.filename"/>
                                 <ErrorMessage name="file" />
@@ -264,7 +261,8 @@ function onSubmit (values,actions) {
             dokumen_name: values.initialValues.dokumen_name,
             dokumen_type: values.initialValues.dokumen_type.label,
             departements: values.initialValues.departements.map((x)=>x.value),
-            file:values.initialValues.fileName
+            file:values.initialValues.fileName,
+            link:values.initialValues.link
     }
     var headers = {
         'Content-Type': 'application/json',

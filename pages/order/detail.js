@@ -127,8 +127,10 @@ class OrderDetail extends React.Component {
 
     handleShow() {
       if(this.state.documents.length > 0){
-        this.filterDokumen(this.state.documentSelect, this.state.documents.map((x)=>x.id))
+        console.log("kadie??")
+        this.filterDokumen(this.state.documentSelect, this.state.documents.map((x)=>x.documentId))
       }else{
+        console.log("apa kadie??")
         this.setState({dokSelek:this.state.documentSelect})
       }
       
@@ -244,8 +246,9 @@ class OrderDetail extends React.Component {
             return response.data.data
         })
         .then(data =>{ 
+          console.log(data)
             this.setState({data})
-            this.setState({documents:data.documents})
+            this.setState({documents:data.document_orders})
             this.hitungProgres()
         })
         .catch(err => {

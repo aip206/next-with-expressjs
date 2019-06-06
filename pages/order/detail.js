@@ -244,7 +244,6 @@ class OrderDetail extends React.Component {
             return response.data.data
         })
         .then(data =>{ 
-          console.log(data)
             this.setState({data})
             this.setState({documents:data.document_orders})
             this.hitungProgres()
@@ -440,28 +439,33 @@ class OrderDetail extends React.Component {
       parentState, closed} = props
       const [selected, setSelected] = useState("");
       const [fileName, setFileName] = useState("");
+      const [progress, setProgress] = useState(0);
 
-      const upload = e => {
+      const upload = (e) => {
         if (e.target.files[0]) {
             const image = e.target.files[0];
-            const namaFile = moment().valueOf()+"_"+image.name;
+            const namaFile = moment().valueOf()+"_"+image.name
             const uploadTask = storage.ref(`orders/${namaFile}`).put(image);
-            uploadTask.on('state_changed', 
-            (snapshot) => {
-            // progrss function ....
-            const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-            }, 
-            (error) => {
-                // error function ....
-            console.log(error);
-            }, 
-        () => {
-            setFieldValue("fileName",namaFile)
-        });
-        return namaFile
+                uploadTask.on('state_changed', 
+                (snapshot) => {
+                // progrss function ....
+                const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                setProgress(progress);
+                }, 
+                (error) => {
+                    // error function ....
+                }, 
+            () => {
+                storage.ref('orders').child(namaFile).getDownloadURL().then(url => {
+                  
+                    setFieldValue("origin",namaFile)
+                    setFieldValue("link",url)
+
+                })
+            });
         }
-        return ""
-        }
+
+    }
     return(
       <Fragment>
         <form onSubmit={handleSubmit}>
@@ -491,20 +495,22 @@ class OrderDetail extends React.Component {
                   <label for="addDocExample">Contoh Dokumen</label>
                   <div className="custom-file">
                     {selected == "Tipe Gambar" ? 
-                     <input type="file" accept="image/*" className="custom-file-input" id="addDocExample" value={values.origin} name="origin"  onChange={(e)=>{
+                     <input type="file" accept="image/*" className="custom-file-input" id="addDocExample" value={values.file} name="file"  onChange={(e)=>{
                       handleChange(e)
-                      values.origin = upload(e)
+                      upload(e)
                       }}/>
                     : ""}
                     {selected == "Tipe Dokumen" ? 
-                    <input type="file" accept=".pdf,.csv, .doc,.docx,.xlsx, .xls,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" className="custom-file-input"  id="addDocExample" name="origin"  value={values.origin} onClick={(e)=>{
+                     <input type="file" accept=".pdf,.csv, .doc,.docx,.xlsx, .xls,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" className="custom-file-input" id="addDocExample" value={values.file} name="file"  onChange={(e)=>{
                       handleChange(e)
-                      values.origin =upload(e)
-                    }}/> : ""}                                                   
-                    <label className="custom-file-label" for="addDocExample">{values.origin}</label>
-                        <input type="hidden" name={values.file} name="filename"/>         
+                      upload(e)
+                      }}/>
+                    : ""}
+                    <label className="custom-file-label" for="addDocExample">{values.file}</label>
+                        
                   </div>
                 </div>
+                <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100" style={{width:progress+"%"}}>{progress}</div>
               </Modal.Body>
             <Modal.Footer>
                 {/* <button variant="secondary" onClick={handleClose}>
@@ -536,7 +542,8 @@ class OrderDetail extends React.Component {
     let data = {
       departements: values.departements,
       documentId: values.documentId,
-      origin: values.fileName
+      origin: values.origin,
+      link:values.link
     }
     var headers = {
       'Content-Type': 'application/json',

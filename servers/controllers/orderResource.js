@@ -182,28 +182,49 @@ exports.suksesOrder = (req,res) =>{
    
 }
 
-exports.addOrderDokumen =(req, res) => {
+exports.addOrderDokumen = async (req, res) => {
     let {documentId, origin, departements,link } = req.body;
-    DocOrder.create({
-        orderId : req.params.id,
-        documentId : documentId,
-        pathFile: origin,
-        link
-    })
-    .then(data => {
-        departements.forEach((xm)=>{
+    try {
+    let dokumeOrder = DocOrder.create({
+            orderId : req.params.id,
+            documentId : documentId,
+            pathFile: origin,
+            link
+        })    
+        departements.forEach(async (xm)=>{
             DepOrder.create({
-                documentOrderId: data.id,
+                documentOrderId: dokumeOrder.id,
                 departementId: xm.document_departements.departementId
             })           
+            let kirimEmail = await kirimEmailDepartement(link, xm.document_departements.departementId)
         })
         res.json({data:req.body})
-    })
-    .catch(err => {
-        console.log(err);
+    }catch(err) {
+        console.log(err)
         res.status(400);
         res.json({ msg: err })
-        })
+    }
+    // DocOrder.create({
+    //     orderId : req.params.id,
+    //     documentId : documentId,
+    //     pathFile: origin,
+    //     link
+    // })
+    // .then(data => {
+    //     departements.forEach(async (xm)=>{
+    //         DepOrder.create({
+    //             documentOrderId: data.id,
+    //             departementId: xm.document_departements.departementId
+    //         })           
+    //         let kirimEmail = await kirimEmailDepartement(link, xm.document_departements.departementId)
+    //     })
+    //     res.json({data:req.body})
+    // })
+    // .catch(err => {
+    //     console.log(err);
+    //     res.status(400);
+    //     res.json({ msg: err })
+    //     })
 }
 
 exports.checkProgress = (req,res) => {

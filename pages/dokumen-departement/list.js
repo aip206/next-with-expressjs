@@ -127,7 +127,7 @@ class DepartementOrder extends Component {
           swal({
               title: "Status Berubah",
               text: "Status Sudah Berubah Menjadi Sedang Proses " ,
-              icon: "error",
+              icon: "success",
               button: "Ok",
             })
     })

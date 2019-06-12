@@ -10,9 +10,11 @@ import axioss from 'axios';
 import cookie from 'js-cookie'
 
 const getYupValidationSchema =Yup.object({
-    password: Yup.string().required('Sandi tidak boleh kosong!'),
-    confirmpassword: Yup.string()
-       .oneOf([Yup.ref('password'), null], 'Konfirmasi Sandi Harus sama dengan Sandi!')
+    password: Yup.string()
+      .min(8, `Sandi minimal 8 karakter!`)  
+      .required('Sandi tidak boleh kosong!'),
+      confirmpassword: Yup.string()
+      .oneOf([Yup.ref('password'), null], 'Konfirmasi Sandi Harus sama dengan Sandi!')
   });
 
 class ResetPassword extends Component {
@@ -66,10 +68,11 @@ function CreateForm(props) {
                                        value={values.password}
                                        onChange={handleChange}
                                       />
-                                       <ErrorMessage name="password" />
+                                       <ErrorMessage name="password" className="error-message" 
+                                       component="div" />
                                   </div>
                                   <div className="form-group">
-                                      <label for="passwordConfirm">Ulangi Sandi</label>
+                                      <label for="passwordConfirm">Konfirmasi Sandi</label>
                                       <input 
                                       type='password'
                                       id='confirmpassword'
@@ -78,7 +81,8 @@ function CreateForm(props) {
                                       value={values.confirmpassword}
                                       onChange={handleChange}
                                       />
-                                       <ErrorMessage name="confirmpassword" />
+                                       <ErrorMessage name="confirmpassword" className="error-message" 
+                                       component="div" />
                                   </div>
                               </div>
                               <div className="card-footer bg-white d-flex justify-content-between">

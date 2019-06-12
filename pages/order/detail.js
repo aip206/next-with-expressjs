@@ -339,7 +339,10 @@ class OrderDetail extends React.Component {
 								<dt className="col-sm-4">Perkembangan</dt>
 								<dd className="col-sm-8 pb-lg-2">
 									<div className="progress">
-										<div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={this.state.progress} aria-valuemin="0" aria-valuemax="100" style={{width:this.state.progress+"%"}}>{this.state.progress}%</div>
+                  {this.state.progress == 100 ? <span className="badge badge-pill badge-success">Selesai</span> :
+                    <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={this.state.progress} aria-valuemin="0" aria-valuemax="100" style={{width:this.state.progress+"%"}}>{this.state.progress}%</div>
+                  }
+										
 									</div>
 								</dd>
 								<dt className="col-sm-12">Deskripsi</dt>
@@ -529,13 +532,17 @@ class OrderDetail extends React.Component {
   function ProgresDepOrder (props) {
    const dokumenlength = props.id.length 
       const persentase = props.id.filter((x)=>x.status == "Sudah Diproses").length
-      const progresTotal = (persentase / dokumenlength) * 100
-  return <div class="progress">
-            <div class="progress-bar progress-bar-striped progress-bar-animated" 
-            role="progressbar" aria-valuenow="100" 
-            aria-valuemin="0" aria-valuemax="100" 
-            style={{width:progresTotal+"%"}} >{progresTotal}%</div>
-      </div>
+      const progresTotal = (dokumenlength != 0) ? (persentase / dokumenlength) * 100 : 0
+      if(progresTotal == 100){
+        return <span className="badge badge-pill badge-success">Selesai</span>
+      } else {
+        return <div class="progress">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                  role="progressbar" aria-valuenow="100" 
+                  aria-valuemin="0" aria-valuemax="100" 
+                  style={{width:progresTotal+"%"}} >{progresTotal}%</div>
+            </div>
+      }
   }
   
   function onSubmit (values, closed) {

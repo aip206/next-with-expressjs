@@ -1,16 +1,17 @@
 const passport = require('passport');
+const permission = require('../security/permission')
 
 module.exports = (app) =>{
     require('../security/passport.js')(passport)
     const departement = require('../controllers/departementResource');
     const departementPic = require('../controllers/departementPicResource');
     app.route('/api/v1/departements')
-    .get(passport.authenticate('jwt', { session: false }),departement.getAll)
-    .post(passport.authenticate('jwt', { session: false }),departement.create)
+    .get([passport.authenticate('jwt', { session: false }),permission],departement.getAll)
+    .post([passport.authenticate('jwt', { session: false }),permission],departement.create)
     
     app.route('/api/v1/departement/:id').get(passport.authenticate('jwt', { session: false }),departement.getByIdWithPic)
     .delete(passport.authenticate('jwt', { session: false }),departement.delete)
-    .put(passport.authenticate('jwt', { session: false }),departement.udpateByIdWithPic)
+    .put([passport.authenticate('jwt', { session: false }),permission],departement.udpateByIdWithPic)
 
     app.route('/api/v1/departements/by-search').get(passport.authenticate('jwt', { session: false }),passport.authenticate('jwt', { session: false }),departement.getBySearch)
     

@@ -29,13 +29,16 @@ const instance = axios.create({
     if(401 === error.response.status) {
       swal({
         title: "Error",
-        text: "Error => " + err,
+        text: "Anda tidak Memiliki Hak Akses, apakah anda ingin Login Kembali ?",
         icon: "error",
-        button: "Ok",
-      }).then(()=>{
-        cookie.remove('token');
-        window.localStorage.removeItem('myData');
-        Router.push('/login')
+        buttons: true,
+      }).then((isDelete)=>{
+        if(isDelete){
+          cookie.remove('token');
+          window.localStorage.removeItem('myData');
+          Router.push('/login')
+        }
+       
       })
       return Promise.reject(error);
     }})

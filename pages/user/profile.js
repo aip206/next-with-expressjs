@@ -14,14 +14,14 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb';
 
 const getYupValidationSchema = Yup.object().shape({
     email: Yup.string()
-      .email('E-mail is not valid!')
-      .required('E-mail is required!'),
+      .email('Fornat Email salah!')
+      .required('Email tidak boleh kosong!'),
     name: Yup.string()
-      .required('Nama Departemen is required!'),
+      .required('Nama Departemen tidak boleh kosong!'),
     nama:  Yup.string()
-        .required('Nama Penanggung Jawab is required!'),
+        .required('Nama Penanggung Jawab tidak boleh kosong!'),
     phone:  Yup.string()
-        .required('No Telpon is required!')
+        .required('No Telpon tidak boleh kosong!')
   })
 
 

@@ -1,4 +1,5 @@
 const passport = require('passport');
+const permission = require('../security/permission')
 
 module.exports = (app) =>{
     require('../security/passport.js')(passport)
@@ -6,9 +7,10 @@ module.exports = (app) =>{
     const depOrder = require('../controllers/departementOrderResource');
     const utiliti = require('../controllers/utilitiResource');
     app.route('/api/v1/orders')
-    .get(passport.authenticate('jwt', { session: false }), document.getAll)
-    .post(passport.authenticate('jwt', { session: false }),document.create)
-    app.route('/api/v1/order/:id').get(passport.authenticate('jwt', { session: false }),document.getById).put(document.update)
+    .get([passport.authenticate('jwt', { session: false }),permission], document.getAll)
+    .post([passport.authenticate('jwt', { session: false }),permission],document.create)
+    app.route('/api/v1/order/:id')
+    .get([passport.authenticate('jwt', { session: false }),permission],document.getById).put(document.update)
     app.route('/api/v1/document-orders')
     .get(passport.authenticate('jwt', { session: false }),document.getDocOrder)
     app.route('/api/v1/order-delete-dokumen/:id').delete(passport.authenticate('jwt', { session: false }),document.batalDokumen)
@@ -23,7 +25,7 @@ module.exports = (app) =>{
     app.route('/api/v1/update-sukses-dokumen-order/:id').put(passport.authenticate('jwt', { session: false }),depOrder.updateStatusSudahProses)
     app.route('/api/v1/update-progress-dokumen-order/:id').get(passport.authenticate('jwt', { session: false }),depOrder.updateStatusDalamProses)
     app.route('/api/v1/update-sukses-order/:id').post(passport.authenticate('jwt', { session: false }),document.suksesOrder)
-    app.route('/api/v1/order/add-dokumen/:id').post(passport.authenticate('jwt', { session: false }),document.addOrderDokumen)
+    app.route('/api/v1/order/add-dokumen/:id').post([passport.authenticate('jwt', { session: false }),permission],document.addOrderDokumen)
     app.route('/api/vi/progres-dokumen-order/:id').get(passport.authenticate('jwt', { session: false }),depOrder.getProgresDepartementOrder)
     app.route('/api/v1/document-orders/:id')
     .get(passport.authenticate('jwt', { session: false }),document.getDocOrder)

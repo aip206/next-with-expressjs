@@ -10,7 +10,7 @@ import axioss from 'axios';
 import cookie from 'js-cookie'
 
 const getYupValidationSchema =Yup.object({
-    email: Yup.string().required('Email is required')
+    email: Yup.string().required('Email tidak boleh kosong!')
   });
 
 class ForgotPassword extends Component {

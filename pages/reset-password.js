@@ -10,9 +10,9 @@ import axioss from 'axios';
 import cookie from 'js-cookie'
 
 const getYupValidationSchema =Yup.object({
-    password: Yup.string().required('Password is required'),
+    password: Yup.string().required('Sandi tidak boleh kosong!'),
     confirmpassword: Yup.string()
-       .oneOf([Yup.ref('password'), null], 'Passwords must match')
+       .oneOf([Yup.ref('password'), null], 'Konfirmasi Sandi Harus sama dengan Sandi!')
   });
 
 class ResetPassword extends Component {

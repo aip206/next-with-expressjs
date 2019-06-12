@@ -30,10 +30,7 @@ class Login extends Component {
 
   componentDidMount(){
     if(cookie.get("token")){
-      console.log("sanguan  ")
       this.goBack();
-    }else{
-      console.log("euh waluh")
     }
   }
 

@@ -15,11 +15,11 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb'
 
 const getYupValidationSchema = Yup.object().shape({
     dokumen_name: Yup.string()
-      .required('Nama Dokumen required!'),
+      .required('Nama Dokumen tidak boleh kosong!'),
     dokumen_type: Yup.string()
-      .required('Tipe Dokumen required!'),
+      .required('Tipe Dokumen tidak boleh kosong!'),
     departements: Yup.string()
-      .required('Nama Departemen is required!')
+      .required('Nama Departemen tidak boleh kosong!')
   })
 const typeDokumen = [{label:"Tipe Gambar",value:"Tipe Gambar"},{label:"Tipe Dokumen",value:"Tipe Dokumen"}]
 const initialValues = {

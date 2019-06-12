@@ -18,20 +18,20 @@ import DatePicker from "react-datepicker";
 
 const getYupValidationSchema = Yup.object().shape({
     customer_name: Yup.string()
-      .required('Nama Pelanggan is required!'),
+      .required('Nama Pelanggan tidak boleh kosong!'),
       customer_email: Yup.string()
-      .email('Email Pelanggan tidak valid!')
-      .required('Email Pelanggan is required!'),
+      .email('Format Email Pelanggan salah!')
+      .required('Email Pelanggan tidak boleh kosong!'),
       customer_phone: Yup.string()
-      .required('Telepon Pelanggan is required!'),
+      .required('Telepon Pelanggan tidak boleh kosong!'),
       customer_kecamatan: Yup.string()
-      .required('Kecamatan is required!'),
+      .required('Kecamatan tidak boleh kosong!'),
       customer_kabupaten: Yup.string()
-      .required('Kabupaten is required!'),
+      .required('Kabupaten tidak boleh kosong!'),
       customer_provinsi: Yup.string()
-      .required('Provinsi is required!'),
+      .required('Provinsi tidak boleh kosong!'),
       order_deadline: Yup.date()
-      .required('Tanggal Batas Akhir is required!'),
+      .required('Tanggal Batas Akhir tidak boleh kosong!'),
   })
 const initialValues = { 
      order_invoice:"",

@@ -23,7 +23,9 @@ const getYupValidationSchema = Yup.object({
         .email('Format Email Pelanggan salah!')
         .required('Email Pelanggan tidak boleh kosong!'),
         customer_phone: Yup.string()
-        .required('Telepon Pelanggan tidak boleh kosong!'),
+        .required('Nomor Telepon Pelanggan tidak boleh kosong!'),
+        customer_address: Yup.string()
+        .required('Alamat Pelanggan tidak boleh kosong!'),
         customer_kecamatan: Yup.string()
         .required('Kecamatan tidak boleh kosong!'),
         customer_kabupaten: Yup.string()
@@ -281,12 +283,17 @@ function EditForm(props) {
                         <input type="text" className="form-control" value={values.initialValues.customer_name} id="addCustName" name="initialValues.customer_name"
                         onChange={handleChange}
                         />
-                        <ErrorMessage name="initialValues.customer_name" />
+                        <ErrorMessage className="error-message" name="initialValues.customer_name">
+                            {msg => <div className="error-message">{msg}</div>}
+                        </ErrorMessage>
                     </div>
                     <div className="form-group">
                         <label for="addCustEmail">Email</label>
                         <input onChange={handleChange} type="email" className="form-control" name="initialValues.customer_email" value={values.initialValues.customer_email} id="addCustEmail" />
-                        <ErrorMessage name="initialValues.customer_email" />
+                        <ErrorMessage className="error-message" name="initialValues.customer_email">
+                            {msg => <div className="error-message">{msg}</div>}
+
+                        </ErrorMessage>
                     </div>
                     <div className="form-group">
                         <label for="addCustPhone">Nomor Telepon</label>
@@ -295,13 +302,11 @@ function EditForm(props) {
                                 <span className="input-group-text">+62</span>
                             </div>
                             <input onChange={handleChange} type="text" className="form-control" name="initialValues.customer_phone" value={values.initialValues.customer_phone} id="addCustPhone" />
-                            <ErrorMessage name="initialValues.customer_phone" />
                         </div>
-                    </div>
-                    <div className="form-group">
-                        <label for="addCustAddress">Alamat</label>
-                        <textarea onChange={handleChange} className="form-control" id="addCustAddress" name="initialValues.customer_address" rows="2" value={values.initialValues.customer_address} ></textarea>
-                        <ErrorMessage name="initialValues.customer_address" />
+                        <ErrorMessage className="error-message" name="initialValues.customer_phone">
+                                                        {msg => <div className="error-message">{msg}</div>}
+
+                            </ErrorMessage>
                     </div>
                     <div className="row">
                         <div className="col-sm-4">
@@ -318,6 +323,10 @@ function EditForm(props) {
                                             getKabupaten(e.value)
                                         }}
                                     />
+                            <ErrorMessage className="error-message" name="initialValues.customer_provinsi">
+                                                    {msg => <div className="error-message">{msg}</div>}
+
+                                </ErrorMessage>
                             </div>
                         </div>
                         <div className="col-sm-4">
@@ -334,6 +343,11 @@ function EditForm(props) {
                                             getKecamatan(e.value)
                                         }}
                                     />
+                                    
+                            <ErrorMessage className="error-message" name="initialValues.customer_kabupaten">
+                                                    {msg => <div className="error-message">{msg}</div>}
+
+                                </ErrorMessage>
                             </div>
                         </div>
                         <div className="col-sm-4">
@@ -350,14 +364,27 @@ function EditForm(props) {
                                             
                                         }}
                                     />
+                                <ErrorMessage className="error-message" name="initialValues.customer_kecamatan">
+                                            {msg => <div className="error-message">{msg}</div>}
+
+                                </ErrorMessage>
                             </div>
                         </div>
+                    </div>
+                    
+                    <div className="form-group">
+                        <label for="addCustAddress">Alamat</label>
+                        <textarea onChange={handleChange} className="form-control" id="addCustAddress" name="initialValues.customer_address" rows="2" value={values.initialValues.customer_address} ></textarea>
+                        <ErrorMessage className="error-message" name="initialValues.customer_address">
+                                                    {msg => <div className="error-message">{msg}</div>}
+
+                        </ErrorMessage>
                     </div>
                     <p className="small font-weight-bold text-uppercase mb-0">Pesanan</p>
                     
                     <div className="form-group">
                         <label for="addOrderDesc">Deskripsi</label>
-                        <textarea onChange={handleChange} className="form-control" id="addOrderDesc" name="order_description" value={values.initialValues.order_description} rows="2" ></textarea>
+                        <textarea onChange={handleChange} className="form-control" id="addOrderDesc" name="initialValues.order_description" value={values.initialValues.order_description} rows="2" ></textarea>
                     </div>
                     <div className="form-group">
 							<label for="addOrderEndDate">Tanggal Batas Akhir</label><br></br>
@@ -375,6 +402,10 @@ function EditForm(props) {
                                     dateFormat="dd/MM/yyyy"
                                     
                                 />
+                                <ErrorMessage className="error-message" name="initialValues.order_deadline">
+                                            {msg => <div className="error-message">{msg}</div>}
+
+                                </ErrorMessage>
 						</div>
                     
                 </div>

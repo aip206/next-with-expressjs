@@ -14,6 +14,7 @@ import {storage} from '../../utils/firebase';
 import moment from 'moment';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import DatePicker from "react-datepicker";
+import http from '../../utils/http-service';
 
 
 const getYupValidationSchema = Yup.object().shape({
@@ -23,7 +24,9 @@ const getYupValidationSchema = Yup.object().shape({
       .email('Format Email Pelanggan salah!')
       .required('Email Pelanggan tidak boleh kosong!'),
       customer_phone: Yup.string()
-      .required('Telepon Pelanggan tidak boleh kosong!'),
+      .required('Nomor Telepon Pelanggan tidak boleh kosong!'),
+      customer_address: Yup.string()
+      .required('Alamat Pelanggan tidak boleh kosong!'),
       customer_kecamatan: Yup.string()
       .required('Kecamatan tidak boleh kosong!'),
       customer_kabupaten: Yup.string()
@@ -72,28 +75,28 @@ class OrderCreate extends React.Component {
     }
 
     getProvinsi(){
-        axioss.get('/api/v1/utiliti/provinsi').then(data => {
+        http.get('/api/v1/utiliti/provinsi').then(data => {
             const newKeys = ["value","label"];
             const renamedObj = renameKeys(data.data, newKeys);
             this.setState({provinsi: renamedObj})
         })
     }
     getKabupaten(id){
-        axioss.get('/api/v1/utiliti/kabupaten/'+id).then(data => {
+        http.get('/api/v1/utiliti/kabupaten/'+id).then(data => {
             const newKeys = ["value","label"];
             const renamedObj = renameKeys(data.data, newKeys);
             this.setState({kabupaten: renamedObj})
         })
     }
     getKecamatan(id){
-        axioss.get('/api/v1/utiliti/kecamatan/'+id).then(data => {
+        http.get('/api/v1/utiliti/kecamatan/'+id).then(data => {
             const newKeys = ["value","label"];
             const renamedObj = renameKeys(data.data, newKeys);
             this.setState({kecamatan: renamedObj})
         })
     }
     getKelurahan(id){
-        axioss.get('/api/v1/utiliti/keluarahan/'+id).then(data => {
+        http.get('/api/v1/utiliti/keluarahan/'+id).then(data => {
             const newKeys = ["value","label"];
             const renamedObj = renameKeys(data.data, newKeys);
             this.setState({kelurahan: renamedObj})
@@ -101,7 +104,7 @@ class OrderCreate extends React.Component {
     }
 
     lookUpDokumen(){
-        axioss.get('/api/v1/document-lookup',{   
+        http.get('/api/v1/document-lookup',{   
             headers: {
             'Authorization': cookie.get('token')
             }
@@ -206,8 +209,8 @@ function CreateForm(props) {
                                 <span className="input-group-text">+62</span>
                             </div>
                             <input onChange={handleChange} type="text" className="form-control" name="customer_phone" value={values.customer_phone} id="addCustPhone" />
-                            {errors.customer_phone && touched.customer_phone ? <div className="error-message">{errors.customer_phone}</div> : null}
                         </div>
+                        {errors.customer_phone && touched.customer_phone ? <div className="error-message">{errors.customer_phone}</div> : null}
                     </div>
                     <div className="row">
                         <div className="col-sm-4">
@@ -266,7 +269,7 @@ function CreateForm(props) {
                     <div className="form-group">
                         <label for="addCustAddress">Alamat</label>
                         <textarea onChange={handleChange} className="form-control" id="addCustAddress" name="customer_address" rows="2" value={values.customer_address} ></textarea>
-                        <ErrorMessage name="customer_address" name="error-message" component='div' />
+                        {errors.customer_address && touched.customer_address ? <div className="error-message">{errors.customer_address}</div> : null}
                     </div>
                     <p className="small font-weight-bold text-uppercase mb-0">Pesanan</p>
                   
@@ -406,7 +409,7 @@ function onSubmit (values,actions) {
         'Content-Type': 'application/json',
         'Authorization': cookie.get('token')
     }
-    axioss.post('/api/v1/orders',data,{'headers':headers})
+    http.post('/api/v1/orders',data,{'headers':headers})
     .then(response => {
         swal({
             title: "Tersimpan",
@@ -415,14 +418,6 @@ function onSubmit (values,actions) {
             button: "Ok",
           }).then(()=>{
             Router.push('/order/list')
-          });
-    })
-    .catch(err => {
-        swal({
-            title: "Error",
-            text: "Error => " + err.errors,
-            icon: "error",
-            button: "Ok",
           });
     })
 }

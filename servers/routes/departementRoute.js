@@ -9,7 +9,7 @@ module.exports = (app) =>{
     .get([passport.authenticate('jwt', { session: false }),permission],departement.getAll)
     .post([passport.authenticate('jwt', { session: false }),permission],departement.create)
     
-    app.route('/api/v1/departement/:id').get(passport.authenticate('jwt', { session: false }),departement.getByIdWithPic)
+    app.route('/api/v1/departement/:id').get([passport.authenticate('jwt', { session: false }),permission],departement.getByIdWithPic)
     .delete(passport.authenticate('jwt', { session: false }),departement.delete)
     .put([passport.authenticate('jwt', { session: false }),permission],departement.udpateByIdWithPic)
 

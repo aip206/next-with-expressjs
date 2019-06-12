@@ -4,6 +4,7 @@ import cookie from 'js-cookie'
 import fetch from 'isomorphic-unfetch';
 import Layout from '../../components/Layout';
 import { Formik, Field,ErrorMessage,withFormik } from 'formik';
+import http from '../../utils/http-service.js';
 
 import * as Yup from 'yup';
 import Router from 'next/router';
@@ -43,7 +44,7 @@ class ProfileDepartement extends React.Component {
     componentDidMount () {
         if(process.browser){
             let data = JSON.parse(window.localStorage.getItem("myData"))
-            axioss.get('/api/v1/departement/'+data.id,{
+            http.get('/api/v1/get-profile',{
                 headers: {
                   'Authorization': cookie.get('token')
                 } 
@@ -61,14 +62,6 @@ class ProfileDepartement extends React.Component {
                       id: data[0].id,
                       idpic:data[1].id
                   } })
-              })
-              .catch(err => {
-                swal({
-                  title: "Error",
-                  text: "Error => " + err,
-                  icon: "error",
-                  button: "Ok",
-                })
               })
         }
     }
@@ -139,7 +132,7 @@ function EditForm(props) {
 }
 
 function onSubmit (values,actions) {
-    fetch('/api/v1/departement/'+values.id,{
+    fetch('/api/v1/profile-user',{
         method: 'PUT', 
         body: JSON.stringify(values), 
         headers:{
@@ -153,9 +146,7 @@ function onSubmit (values,actions) {
             text: "Data Departemen Berhasil Diubah",
             icon: "success",
             button: "Ok",
-          }).then(()=>{
-            Router.push('/departement/list')
-          });
+          })
     })
     .catch(err => {
         swal({

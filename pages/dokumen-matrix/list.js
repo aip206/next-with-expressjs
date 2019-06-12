@@ -84,7 +84,7 @@ class DokumenMatrix extends Component {
         formatter: (cell, row, rowIndex, extraData) => {
          return   <Fragment>
               <div className="btn-group btn-group-sm">
-								<Link href={`/dokumen-matrix/edit?id=${row.id}`}><a href="department-edit.html" className="btn btn-outline-primary" >Ubah</a></Link>
+								<Link href={`/dokumen-matrix/edit?id=${row.id}`}><a className="btn btn-outline-primary" >Ubah</a></Link>
                 <button class="btn btn-sm btn-success" onClick={this.download.bind(this,row)}> <i class="fas fa-download mr-2"></i>Dokumen </button>
               </div>
             </Fragment>

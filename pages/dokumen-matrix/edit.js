@@ -5,6 +5,7 @@ import Select from 'react-select';
 import cookie from 'js-cookie';
 import http from '../../utils/http-service';
 import Layout from '../../components/Layout';
+import Link from 'next/link';
 import { Formik, Field,ErrorMessage,withFormik } from 'formik';
 import * as Yup from 'yup';
 import Router from 'next/router';
@@ -96,7 +97,8 @@ class DokumenMatrixEdit extends React.Component {
                 description:data.description,
                 select:data.dokumen_type,
                 departements:renameKeys(data.departements,newKeys),
-                path:data.path
+                path:data.path,
+                link:data.link
               } })
           })
           .catch(err => {
@@ -178,8 +180,9 @@ function EditForm(props) {
                         <div className="form-group">
 							<label for="addDeptName">Nama Dokumen</label>
 							<input type="text" className="form-control" value={values.initialValues.dokumen_name}  onChange={handleChange} name="initialValues.dokumen_name" id="addDeptName"/>
-                            <ErrorMessage name="initialValues.dokumen_name" />
-                            {/* {errors.dokumen_name && touched.dokumen_name ? <div className="error-message">{errors.dokumen_name}</div> : null} */}
+                            <ErrorMessage name="initialValues.dokumen_name" >
+                            {msg => <div className="error-message">{msg}</div>}
+                            </ErrorMessage>
 
 						</div>
                 
@@ -196,13 +199,15 @@ function EditForm(props) {
 
                                 }}
                             />
-                            <ErrorMessage name="initialValues.dokumen_type" />
+                            <ErrorMessage name="initialValues.dokumen_type" >
+                            {msg => <div className="error-message">{msg}</div>}
+                            </ErrorMessage>
 						</div>
                         <div className="form-group">
 							<label for="addDocExample">Contoh Dokumen </label>
-                            
+                            <div className="row">
+                            <div className="col-sm-10">
 							<div className="custom-file">
-
                                 {selected == "Tipe Gambar" ?  <input type="file" accept="image/*" id="addDocExample" value={values.initialValues.file} name="initialValues.file"  onChange={(e)=>{ 
                                     handleChange(e)
                                     upload(e)
@@ -214,12 +219,20 @@ function EditForm(props) {
                                
 								<label className="custom-file-label" for="addDocExample">{values.initialValues.path}</label>
                                 <input type="hidden" name={values.initialValues.file} name="initialValues.filename"/>
-                                <ErrorMessage name="file" />
+                                <ErrorMessage name="file" >
+                                {msg => <div className="error-message">{msg}</div>}
+                                </ErrorMessage>
 							</div>
-						</div>
-                        <div class="progress">
+                            <div class="progress">
                             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100" style={{width:progress+"%"}}>{progress}</div>
-                        </div>
+                            </div>
+                            </div>
+                            <div className="col-sm-2">
+                            <a href={`${values.initialValues.link}`} target="_blank" className="btn btn-outline-primary" >Download</a>
+                            </div>
+                            </div>
+						</div>
+                       
                         <div className="form-group">
 							<label for="addDeptName">Nama Departemen</label>
                             <CreatableSelect
@@ -234,14 +247,18 @@ function EditForm(props) {
                                 options={values.departements}
                                 required
                             />
-                            <ErrorMessage name="initialValues.departements" />
+                            <ErrorMessage name="initialValues.departements" >
+                            {msg => <div className="error-message">{msg}</div>}
+                            </ErrorMessage>
 						</div>
                         
                         <div className="form-group">
                             <label for="addDeptdescription">Deskripsi</label>
 							<textarea type="text" className="form-control" value={values.initialValues.description} onChange={handleChange} name="initialValues.description" id="addDeptdescription" />
                             
-                            <ErrorMessage name="initialValues.description" />
+                            <ErrorMessage name="initialValues.description" >
+                            {msg => <div className="error-message">{msg}</div>}
+                            </ErrorMessage>
 						</div>
                     </div>
                     <div className="card-footer">

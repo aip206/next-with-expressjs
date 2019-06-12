@@ -42,6 +42,49 @@ exports.changePassword = (req,res) => {
   })
 }
 
+
+exports.getProfile = (req,res) => {
+  const user_profile = Departement
+    .findOne({
+        where:{
+            id:req.user.id
+        },attributes: ['id','name','email']
+    })
+    const pic = DepartementPic.findOne({where:{departementId:req.user.id}})
+    Promise
+
+        .all([user_profile, pic])
+        .then(responses => {
+        res.json(responses)
+    })
+    .catch(err => {
+        res.status(400);
+        res.json({ msg: err })
+    });
+}
+
+
+exports.profiles = (req,res) => {
+  const {name, email, nama, phone, idpic} = req.body
+  try {
+      Departement
+          .update({
+              name:name,
+              email:email
+          },{where:{id:req.user.id}})
+          DepartementPic.update({
+              nama:nama,
+              phone:phone
+          },{
+              where:{id:idpic}
+          })
+          res.json(req.body)
+  }catch(err){
+      res.status(400);
+      res.json({ msg: err })
+  }
+}
+
 exports.forgotPassword = async (req,res) => {
   const {email} = req.body;
   const password = crypto.randomBytes(20).toString('hex');

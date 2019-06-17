@@ -294,6 +294,7 @@ function ModalForm (props) {
 
     const upload = (e) => {
       values.fileName = e
+      values.nameOfFile= e.target.files[0].name
       values.idDepOrder = parentState.initialValues.idDepOrder
   }
   return(
@@ -326,9 +327,8 @@ function ModalForm (props) {
                       }}/>:""
               }
                     
-                    <label className="custom-file-label" for="addDocExample">{values.file}</label>
+                    <label className="custom-file-label" for="addDocExample">{values.nameOfFile}</label>
                   </div>
-                  <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100" style={{width:progress+"%"}}>{progress}</div>
 
               </div>
             </Modal.Body>

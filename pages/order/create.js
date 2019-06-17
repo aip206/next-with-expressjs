@@ -207,7 +207,7 @@ function CreateForm(props) {
                             <div className="input-group-prepend">
                                 <span className="input-group-text">+62</span>
                             </div>
-                            <input onChange={handleChange} type="text" className="form-control" name="customer_phone" value={values.customer_phone} id="addCustPhone" />
+                            <input onChange={handleChange} type="number" className="form-control" name="customer_phone" value={values.customer_phone} id="addCustPhone" />
                         </div>
                         {errors.customer_phone && touched.customer_phone ? <div className="error-message">{errors.customer_phone}</div> : null}
                     </div>

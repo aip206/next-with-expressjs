@@ -93,7 +93,7 @@ class DetailDokumen extends Component {
 
   download (data) {
     
-    var starsRef = storage.ref('departemen-order').child(data);
+    var starsRef = storage.ref('orders-departement').child(data);
 
     // Get the download URL
     starsRef.getDownloadURL().then(function(url) {

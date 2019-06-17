@@ -21,6 +21,23 @@ const config = require('../config').get(process.env.NODE_ENV)
   Promise = require('bluebird');
 const EmailTemplate = require('email-templates').EmailTemplate;
 
+exports.dashboardOrderFinis = (req,res) => {
+    db.query("Select (SELECT count(*) FROM `departement_orders` where isDelete = 0 ) as total , \
+        (SELECT count(*) FROM `departement_orders` where isDelete = 0 and `status` = 'Sudah Diproses') as finish"
+    ,
+    {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+        if(data){
+            res.json({ data: data }) 
+        }else{
+            res.json({ data: [] })
+        }
+    }).catch((err)=>{
+        console.log(err)
+        res.status(400);
+        res.json({ msg: err })
+    })
+}
+
 exports.getAll = (req,res) => {
    db.query("SELECT dorders.id,dorders.status, docor.orderId, o.createdAt, o.order_invoice, o.customer_name, dp.`name`, docor.pathFile, dorders.file, documen.dokumen_type FROM `departement_orders` as dorders \
     INNER JOIN departements dp on dp.id = dorders.departementId \

@@ -71,6 +71,22 @@ class DepartementOrder extends Component {
         headerAlign: 'center',
         text: 'Nama Pelanggan',
       },
+      {
+        dataField: 'status',
+        headerAlign: 'center',
+        sort: true,
+        text: 'Status',
+        formatter: (cell, row, rowIndex, extraData) => {
+          if(row.status == "Ditempatkan"){
+            return <span className="badge badge-pill badge-secondary">Ditempatkan</span>
+          }else if(row.status == "Dalam Proses"){
+            return <span className="badge badge-pill badge-warning">Dalam Proses</span>
+          }else if (row.status == "Sudah Diproses"){
+            return <span className="badge badge-pill badge-success">Sudah Diproses</span>
+          }
+          
+       },
+      },
          
       {
         dataField: 'no',

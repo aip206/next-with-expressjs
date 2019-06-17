@@ -28,6 +28,10 @@ const DepartementOrder = db.define('departement_orders', {
       status:{
         type: Sequelize.STRING,
         defaultValue: "Ditempatkan"
+      },
+      isDelete: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       }
     });
 module.exports = DepartementOrder;

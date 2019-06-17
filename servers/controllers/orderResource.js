@@ -25,6 +25,23 @@ const nodemailer = require('nodemailer'),
 
 const EmailTemplate = require('email-templates').EmailTemplate;
 
+exports.dashboardOrderFinis = (req,res) => {
+    db.query("Select (SELECT count(*) FROM `orders` where isDelete = 0 ) as total , \
+    (SELECT count(*) FROM `orders` where isDelete = 0 and order_status = 'Finish') as finish "
+    ,
+    {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+        if(data){
+            res.json({ data: data }) 
+        }else{
+            res.json({ data: [] })
+        }
+    }).catch((err)=>{
+        console.log(err)
+        res.status(400);
+        res.json({ msg: err })
+    })
+}
+
 exports.getAll = (req,res) => {
     Order.findAndCountAll({
         where:{
@@ -192,10 +209,9 @@ exports.update = async (req, res) => {
 }
 
 exports.batalDokumen = (req,res) =>{
-    DepOrder.destroy({where: {"documentOrderId":req.params.id}})
+    DepOrder.update({isDelete: true},{where: {"documentOrderId":req.params.id}})
     DocOrder
-    .destroy({where:{id:req.params.id}}).then((data)=>{
-        
+    .update({isDelete: true},{where:{id:req.params.id}}).then((data)=>{
         res.json({data:true})
     }).catch((e)=>{
         res.status(400);

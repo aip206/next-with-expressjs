@@ -28,6 +28,9 @@ const DocOrder = db.define('document_orders', {
       status:{
         type: Sequelize.STRING,
         defaultValue: "DELIVER"
+      }, isDelete: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       }
     });
 

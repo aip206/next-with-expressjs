@@ -4,7 +4,7 @@ const Customer = require('../models/customer');
 exports.getAllBySearch = (req,res) => {
     Customer.find({
         where:{
-            email:req.params.email
+            isDelete:false
         }
     }).then((data)=>{
         res.json({data:data})

@@ -62,6 +62,21 @@ exports.getById =(req,res) =>{
         res.json({ msg: err })})
 }
 
+exports.delete = (req,res ) => {
+    Order.update({isDelete: true},{
+        where:{
+            id:req.params.id
+        }}).then(result =>
+             res.json({data:result})
+          )
+          .catch(err =>
+            {
+                res.status(400);
+                res.json({ msg: err })
+            }
+          )
+}
+
 exports.create = async (req,res) => {
     let { customer_address,customer_email,
         customer_kabupaten,

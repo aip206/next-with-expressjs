@@ -24,6 +24,8 @@ const parameter = {
 class Order extends Component {
   constructor(props) {
     super(props);
+    this.deleteRow = this.deleteRow.bind(this);
+
     this.state = {
       data: [],
       defaultSorted : [{
@@ -100,6 +102,7 @@ class Order extends Component {
 								<Link href={`/order/detail?id=${row.id}`}>
                 <a  className="btn btn-sm btn-outline-primary"><i className="fas fa-eye fa-fw mr-1"></i>Detail</a>
                 </Link>
+                <button type="button" onClick={this.deleteRow.bind(this,row)} className="btn btn-outline-danger btn-delete">Hapus</button>
               </div>
             </Fragment>
         ),
@@ -110,6 +113,39 @@ class Order extends Component {
     
     
   }
+
+  
+  async deleteRow(e) {
+    swal({
+      title: "Apakah Anda yakin akan menghapus data ini?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    })
+    .then(async (willDelete) => {
+      if (willDelete) {
+        try{
+          let getDelete = await http.delete('/api/v1/order/'+e.id,{   
+            headers: {
+              'Authorization': cookie.get('token')
+            } 
+          })
+          swal("Menghapus Data Berhasil", {
+            icon: "success",
+          }).then(()=>{
+            this.refreshData();
+          })
+        }catch(err){
+          swal({
+            title: "Error",
+            text: "Error => " + err,
+            icon: "error",
+            button: "Ok",
+          })
+        }
+      } 
+    });  }
+
  
 
   async refreshData(){

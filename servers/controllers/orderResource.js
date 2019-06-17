@@ -3,6 +3,7 @@ const DocOrder = require('../models/document_order');
 const Departement = require('../models/departement');
 const DepOrder = require('../models/departement_order');
 const Document = require('../models/documents');
+const Customer = require('../models/customer');
 const Sequelize = require('sequelize');
 const db = require('../db/config');
 const config = require('../config').get(process.env.NODE_ENV)
@@ -37,7 +38,8 @@ exports.getAll = (req,res) => {
 exports.getDocOrder = (req,res) => {
     DocOrder.findAll({
         where:{
-            orderId:req.params.id
+            orderId:req.params.id,
+            isDelete:false
         },
         include: [DepOrder,Document]
     }).then(data => res.json({data:data})).catch(err => {
@@ -78,6 +80,19 @@ exports.create = async (req,res) => {
     const month = ((date.getMonth()+1) < 10 ? '0' : '') + (date.getMonth()+1)
     const day = (date.getDate() < 10 ? '0' : '') + date.getDate()
     try{
+        const dataCustomer = {
+            address: customer_address,
+            email: customer_email,
+            phone: customer_phone,
+            first_name:customer_name, 
+            provinsi:customer_provinsi,
+            kabupaten:customer_kabupaten,
+            kecamatan: customer_kecamatan,
+            id_kabupaten: id_kabupaten,
+            id_provinsi: id_provinsi,
+            id_kecamatan: id_kecamatan
+        }
+        let customer = await updateOrCreate(Customer, {email:customer_email},dataCustomer)
         let linkFirebase=[];
         let c  = await db.query("select count(*) as number from orders where DATE(createdAt) = CURDATE()",{ raw: true,type: Sequelize.QueryTypes.SELECT})
         let order_invoice = "OMS-"+tahun+month+day+counter(c)
@@ -111,7 +126,7 @@ exports.create = async (req,res) => {
     }
 
 
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
     let { customer_address,customer_email,
         customer_kabupaten,
         customer_kecamatan,
@@ -123,6 +138,19 @@ exports.update = (req, res) => {
         id_kabupaten,
         id_kecamatan,
         id_provinsi } = req.body;
+    const dataCustomer = {
+        address: customer_address,
+        email: customer_email,
+        phone: customer_phone,
+        name:customer_name, 
+        provinsi:customer_provinsi,
+        kabupaten:customer_kabupaten,
+        kecamatan: customer_kecamatan,
+        id_kabupaten: id_kabupaten,
+        id_provinsi: id_provinsi,
+        id_kecamatan: id_kecamatan
+    }
+    let customer = await updateOrCreate(Customer, {email:customer_email},dataCustomer)
     Order.update({
             order_description: order_description,
             order_deadline : order_deadline,
@@ -164,8 +192,10 @@ exports.batalDokumen = (req,res) =>{
 exports.suksesOrder = (req,res) =>{
     let {order_invoice, customer_email} = req.body
     const newInvoice = order_invoice.replace("OMS", "DO")
-    Order.update({order_status: "Finish",
-    order_invoice: newInvoice
+    Order.update({
+        order_status: "Finish",
+        order_invoice: newInvoice,
+        date_succses: new Date()
         },{
         where:{
             id:req.params.id
@@ -185,7 +215,7 @@ exports.suksesOrder = (req,res) =>{
 exports.addOrderDokumen = async (req, res) => {
     let {documentId, origin, departements,link } = req.body;
     try {
-    let dokumeOrder = DocOrder.create({
+    let dokumeOrder = await DocOrder.create({
             orderId : req.params.id,
             documentId : documentId,
             pathFile: origin,
@@ -250,6 +280,21 @@ exports.checkProgress = (req,res) => {
     })
 
 }
+
+function updateOrCreate (model, where, newItem) {
+    // First try to find the record
+    return model
+    .findOne({where: where})
+    .then(function (foundItem) {
+        if (!foundItem) {
+            // Item not found, create a new one
+            return model
+                .create(newItem)
+                .then(function (item) { return  {item: item, created: true}; })
+        }
+    })
+}
+
 
 async function kirimEmailCustomerFinish(nama, order){
    let data = await  db.query("SELECT depor.file,o.customer_email, depor.link FROM `departement_orders` depor\

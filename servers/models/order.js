@@ -67,6 +67,9 @@ const Order = db.define('orders', {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
+      date_succses:{
+        type: Sequelize.DATE
+      },
       createdAt:{
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW

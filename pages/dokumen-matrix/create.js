@@ -8,7 +8,8 @@ import Layout from '../../components/Layout';
 import { Formik, Field,ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import Router from 'next/router';
-import swal from 'sweetalert';
+// import swal from 'sweetalert';
+import swal from '@sweetalert/with-react';
 import {storage} from '../../utils/firebase';
 import moment from 'moment';
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
@@ -28,6 +29,7 @@ const initialValues = {
     description:undefined,
     documentFileId:undefined,
     departements:[],
+    fileTmp:undefined,
     file:undefined
 }
 
@@ -57,7 +59,7 @@ class DokumenMatrixCreate extends React.Component {
         <Formik
             initialValues={initialValues}
             validationSchema={getYupValidationSchema}
-            onSubmit={onSubmit}
+            onSubmit={upload}
             render={ props =>{
                return <CreateForm  {...props} optional ={this.state.departements} typeDok={typeDokumen}  />
             }}
@@ -75,27 +77,10 @@ function CreateForm(props) {
         const [selected, setSelected] = useState("");
 
         const upload = e => {
-            if (e.target.files[0]) {
-                const image = e.target.files[0];
-                const namaFile = moment().valueOf()+"_"+image.name;
-                const uploadTask = storage.ref(`dokumen-matrix/${namaFile}`).put(image);
-                uploadTask.on('state_changed', 
-                (snapshot) => {
-                // progrss function ....
-                const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                setProgress(progress)
-                }, 
-                (error) => {
-                    // error function ....
-                }, 
-            () => {
-                storage.ref('dokumen-matrix').child(namaFile).getDownloadURL().then(url => {
-                    
-                    setFieldValue("fileName",namaFile)
-                    setFieldValue("link",url)
-                })
-            });
-            }
+            
+            setFieldValue("fileName",e)
+            setFieldValue("nameOfFile",e.target.files[0].name)
+            
             }
     return(
         <Layout title="Tambah Matrix Dokumen">
@@ -106,7 +91,9 @@ function CreateForm(props) {
             </Breadcrumb>   
             <h3 className="title"><i className="far fa-building fa-fw mr-2"></i>Matriks Dokumen - Tambah</h3>
             <div className="card shadow">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={(e)=>{
+                handleSubmit(e)
+            }}>
 				<div className="card-body">
                         <div className="form-group">
 							<label for="addDeptName">Nama Dokumen</label>
@@ -128,26 +115,23 @@ function CreateForm(props) {
                             <ErrorMessage name="dokumen_type" className="error-message" component='div' />
 						</div>
                         <div className="form-group">
-							<label for="addDocExample">Contoh Dokumen <p>{values.dokumen_type}</p></label>
+							<label for="addDocExample">Contoh Dokumen</label>
 							<div className="custom-file">
-                                {selected == "Tipe Gambar" ?  <input type="file" accept="image/*" id="addDocExample" value={values.file} name="file"  onChange={(e)=>{ 
+                                {selected == "Tipe Gambar" ?  <input type="file" className="custom-file-input" accept="image/*" id="addDocExample" value={values.file} name="file"  onChange={(e)=>{ 
                                     handleChange(e)
                                     upload(e)
                                 }}/> : ""}
-                                {selected == "Tipe Dokumen" ?  <input type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" id="addDocExample" value={values.file} name="file"  onChange={(e)=>{ 
+                                {selected == "Tipe Dokumen" ?  <input type="file" className="custom-file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" id="addDocExample" value={values.file} name="file"  onChange={(e)=>{ 
                                     handleChange(e)
                                     upload(e)
                                 }}/> : ""}
-								<label className="custom-file-label" for="addDocExample">{values.file}</label>
+								<label className="custom-file-label" for="addDocExample">{values.nameOfFile}</label>
                                 
                                 <input type="hidden" name={values.file} name="filename"/>
                                 <ErrorMessage name="file" className="error-message" component='div'/>
 							</div>
 						</div>
                         
-                        <div class="progress">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100" style={{width:progress+"%"}}>{progress}</div>
-                        </div>
                         
                         <div className="form-group">
 							<label for="addDeptName">Nama Departemen</label>
@@ -179,13 +163,52 @@ function CreateForm(props) {
     )
 }
 
-function onSubmit (values,actions) {
-    var headers = {
-        'Content-Type': 'application/json',
-        'Authorization': cookie.get('token')
+function upload (values) {
+    let progress = 0
+    if (values.fileName.target.files[0]) {
+        const image = values.fileName.target.files[0];
+        const namaFile = moment().valueOf()+"_"+image.name;
+        const uploadTask = storage.ref(`dokumen-matrix/${namaFile}`).put(image);
+        const task =  uploadTask.on('state_changed', 
+        (snapshot) => {
+        // progrss function ....
+            progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+            
+            swal({
+                text: "Upload Progress",
+                content: (
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                        role="progressbar" aria-valuenow={progress} aria-valuemin="0" 
+                        aria-valuemax="100" style={{width:progress+"%"}}>{progress}</div>
+                    </div>
+                )
+            })
+        }, 
+        (error) => {
+            // error function ....
+        },
+        ()=>{
+            storage.ref('dokumen-matrix').child(namaFile).getDownloadURL().then(url => {
+                values.link = url
+                values.file = namaFile
+                values.fileName =""
+                setTimeout(()=>{
+                    swal.close()   
+                    onSubmit(values)
+                },3000)
+                
+            })
+        });
     }
-    values.file = values.fileName;
-    
+}
+
+function onSubmit (values) {
+    try{
+        var headers = {
+            'Content-Type': 'application/json',
+            'Authorization': cookie.get('token')
+        }
     http.post('/api/v1/documents',values,{'headers':headers})
     .then(response => {
         swal({
@@ -197,14 +220,15 @@ function onSubmit (values,actions) {
             Router.push('/dokumen-matrix/list')
           });
     })
-    .catch(err => {
+    }catch(e) {
         swal({
             title: "Error",
-            text: "Error => " + err.errors,
+            text: "Error => " + e,
             icon: "error",
             button: "Ok",
           });
-    })
+    }
+   
 }
 
 function renameKeys(arrayObject, newKeys, index = false) {

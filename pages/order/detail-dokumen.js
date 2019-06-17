@@ -76,7 +76,7 @@ class DetailDokumen extends Component {
           if(row.status == "Sudah Diproses") {
              return <div className="btn-group btn-group-sm">
                 <button type="button" onClick={this.download.bind(this,row.path)} className="btn btn-outline-success"><i className="fas fa-download mr-2"></i>Unduh</button>
-                <button type="button" onClick={this.batal.bind(this,row.id)} className="btn btn-outline-danger"><i className="fas fa-times mr-2"></i>Batal</button>
+                <button type="button" onClick={this.batal.bind(this,row.id)} className="btn btn-outline-danger"><i className="fas fa-times mr-2"></i>Progres Ulang</button>
               </div>
             }
           else {
@@ -124,6 +124,7 @@ class DetailDokumen extends Component {
     .then(response => response.data.data)
     .then(data =>{ 
       this.setState({ data : data})
+      this.refresh();
     })
     .catch(err => 
       swal({
@@ -136,6 +137,10 @@ class DetailDokumen extends Component {
   }
 
  componentDidMount () {
+   this.refresh();
+ }
+
+ refresh () {
   axioss.get('/api/v1/departement-order/by-dokumen-order-id',{
     params:this.state.parameter,   
     headers: {
@@ -153,7 +158,8 @@ class DetailDokumen extends Component {
       icon: "error",
       button: "Ok",
     })
-  )}
+  )
+ }
 
   onGridReady = params => {
     this.gridApi = params.api;

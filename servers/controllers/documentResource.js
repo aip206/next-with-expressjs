@@ -61,7 +61,8 @@ exports.getById = (req, res) => {
             through: 'document_departements'
           }],
         where:{
-        id:req.params.id
+        id:req.params.id,
+        isDelete:false
         }
     }).then(data => res.json({data:data}))
     .catch(err => { console.log(err) 
@@ -72,7 +73,7 @@ exports.getById = (req, res) => {
 
 exports.create = (req,res) => {
     let { dokumen_name, dokumen_type, description, departements, file, link } = req.body;
-    
+    console.log(dokumen_name);
     Document.create({
         dokumen_name: dokumen_name,
         dokumen_type: dokumen_type,

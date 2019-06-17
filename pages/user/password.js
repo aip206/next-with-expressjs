@@ -15,7 +15,8 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb';
 const getYupValidationSchema = Yup.object().shape({
     password: Yup.string()
     .min(8, `Sandi minimal 8 karakter!`)  
-    .required('Sandi tidak boleh kosong!'),
+    .required('Sandi tidak boleh kosong!')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/, "Sandi Minimal 1 Huruf Besar, 1 Huruf Kecil dan 1 angka"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref('password'), null], 'Konfirmasi Sandi Harus sama dengan Sandi!')
   })

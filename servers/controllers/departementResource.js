@@ -56,7 +56,8 @@ exports.getById = (req,res) => {
     Departement
     .findOne({
         where:{
-            id:req.params.id
+            id:req.params.id,
+            isDelete:false
         }
     })
     .then(data => res.json({data:data}))
@@ -70,7 +71,8 @@ exports.getByIdWithPic = (req,res) => {
     const user_profile = Departement
     .findOne({
         where:{
-            id:req.params.id
+            id:req.params.id,
+            isDelete:false
         },attributes: ['id','name','email']
     })
     const pic = DepartementPic.findOne({where:{departementId:req.params.id}})

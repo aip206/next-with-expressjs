@@ -27,7 +27,7 @@ exports.getAll = (req,res) => {
     INNER JOIN document_orders docor on docor.id = dorders.documentOrderId \
     INNER JOIN orders o on o.id = docor.orderId \
     INNER JOIN documents documen on documen.id = docor.documentId \
-    WHERE dorders.departementId = :id ",
+    WHERE dorders.departementId = :id and o.isDelete = 0",
     { replacements: { id: req.user.id },raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
         if(data){
             res.json({ data: data }) 

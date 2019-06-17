@@ -7,7 +7,7 @@ import { Formik, Field,ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import Router from 'next/router';
 import Link from 'next/link';
-import swal from 'sweetalert';
+import swal from '@sweetalert/with-react';
 import { withRouter } from 'next/router'
 import axioss from 'axios';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -19,6 +19,7 @@ import moment from 'moment';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import dateFormat from 'dateformat';
 
+import http from '../../utils/http-service';
 
 class OrderDetail extends React.Component {
     constructor(props){
@@ -34,7 +35,8 @@ class OrderDetail extends React.Component {
               orderId:this.props.router.query.id, 
               documentId:"", 
               origin:"",
-              departements:[]
+              departements:[],
+              fileName:""
             },
             documentSelect:[],
             documents:[],
@@ -62,15 +64,21 @@ class OrderDetail extends React.Component {
               {
                 dataField: 'no',
                 text: 'Action',
-                formatter: (cell, row, rowIndex, extraData) => (
-                    <Fragment>
+                formatter: (cell, row, rowIndex, extraData) => {
+                   return <Fragment>
                       <div className="btn-group btn-group-sm">
-                            <button type="button" onClick={this.download.bind(this,row)} className="btn btn-sm btn-outline-success"><i className="fas fa-download mr-2"></i>Unduh</button>
+                            {/* <button type="button" onClick={this.download.bind(this,row)} className="btn btn-sm btn-outline-success"><i className="fas fa-download mr-2"></i>Unduh</button> */}
+                            <a href={row.link} target="blank"className="btn  btn-success"><i className="fas fa-download mr-2"></i>Unduh</a>
                             <Link href={{pathname: '/order/detail-dokumen', query: {orderId:this.state.data.id ,dokOrderId: row.id,invoice:this.state.data.order_invoice}}}><a href="order-document-detail.html" className="btn btn-outline-primary"><i className="fas fa-eye mr-2"></i>Detail</a></Link>
-                            <button type="button" onClick={this.batal.bind(this,row.id)} className="btn btn-outline-danger btn-delete"><i className="fas fa-times mr-2"></i>Batal</button>
+                            { this.progresData(row.departement_orders)  ? 
+                              <button type="button" onClick={this.batal.bind(this,row.id)}
+                               className="btn btn-outline-danger btn-delete">
+                               <i className="fas fa-times mr-2"></i>Batal</button>
+                               :null}
                         </div>  
                     </Fragment>
-                ),
+                }
+          
               }
             ] 
         }
@@ -78,34 +86,9 @@ class OrderDetail extends React.Component {
         this.handleSelectDokumen = this.handleSelectDokumen.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleShow = this.handleShow.bind(this);
-        this.upload = this.upload.bind(this);
+        // this.upload = this.upload.bind(this);
         
     }
-
-    upload = e => {
-      if (e.target.files[0]) {
-          const image = e.target.files[0];
-          const namaFile = moment().valueOf()+"_"+image.name;
-          const uploadTask = storage.ref(`orders/${namaFile}`).put(image);
-    
-          this.setState({... this.state,
-            addDokumen:{ 
-              ... this.state.addDokumen,
-              origin :namaFile
-            }
-          })
-          uploadTask.on('state_changed', 
-          (snapshot) => {
-          // progrss function ....
-          const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-          // setProgress(progress)
-          }, 
-          (error) => {
-              // error function ....
-          console.log(error);
-          });
-        }
-      }
 
     filterDokumen(dokumen, data) {
       data.forEach((m) => {
@@ -138,6 +121,7 @@ class OrderDetail extends React.Component {
 
     handleClose() {
       this.setState({ show: false });
+      this.refresh()
     }
 
     batal (id) {
@@ -227,7 +211,7 @@ class OrderDetail extends React.Component {
         }).catch(function(error) {
            swal({
                 title: "Error",
-                text: "Error => " + error.code,
+                text: "Error => " + error,
                 icon: "error",
                 button: "Ok",
               })
@@ -235,29 +219,32 @@ class OrderDetail extends React.Component {
       }
       
     componentDidMount () {
-        axioss.get('/api/v1/order/'+this.props.router.query.id,{
-          headers: {
-            'Authorization': cookie.get('token')
-          } 
+       this.refresh()
+    }
+    refresh(){
+      axioss.get('/api/v1/order/'+this.props.router.query.id,{
+        headers: {
+          'Authorization': cookie.get('token')
+        } 
+      })
+      .then(response => {
+          return response.data.data
+      })
+      .then(data =>{ 
+          this.setState({data})
+          this.setState({documents:data.document_orders})
+          this.hitungProgres()
+      })
+      .catch(err => {
+        swal({
+          title: "Error",
+          text: "Error => " + err,
+          icon: "error",
+          button: "Ok",
         })
-        .then(response => {
-            return response.data.data
-        })
-        .then(data =>{ 
-            this.setState({data})
-            this.setState({documents:data.document_orders})
-            this.hitungProgres()
-        })
-        .catch(err => {
-          swal({
-            title: "Error",
-            text: "Error => " + err,
-            icon: "error",
-            button: "Ok",
-          })
-        })
-        this.lookUpDokumen();
-        this.lookUpDokumenOrder(this.props.router.query.id)
+      })
+      this.lookUpDokumen();
+      this.lookUpDokumenOrder(this.props.router.query.id)
     }
     lookUpDokumen(){
       axioss.get('/api/v1/document-lookup',{   
@@ -269,7 +256,7 @@ class OrderDetail extends React.Component {
               const newKeys = ["value","label","document_type","departements"];
               const renamedObj = renameKeys(data.data, newKeys);
               this.setState({documentSelect:renamedObj })
-          }).catch((e)=>{
+          }).catch((err)=>{
             swal({
               title: "Error",
               text: "Error => " + err,
@@ -313,6 +300,19 @@ class OrderDetail extends React.Component {
         })
 
     }
+
+    progresData (props) {
+      console.log(props)
+      const dokumenlength = props.length 
+         const persentase = props.filter((x)=>x.status == "Sudah Diproses").length
+         const progresTotal = (dokumenlength != 0) ? (persentase / dokumenlength) * 100 : 0
+         if(progresTotal == 100){
+           return false
+         } else {
+           return true
+         }
+      // return false
+     }
             
     render () {
         const { SearchBar } = Search;
@@ -338,13 +338,15 @@ class OrderDetail extends React.Component {
 								<dd className="col-sm-8">: {dateFormat(this.state.data.order_deadline,"dd/mm/yyyy")}</dd>
 								<dt className="col-sm-4">Perkembangan</dt>
 								<dd className="col-sm-8 pb-lg-2">
-									<div className="progress">
+									
                   {this.state.progress == 100 ? <span className="badge badge-pill badge-success">Selesai</span> :
-                    <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={this.state.progress} aria-valuemin="0" aria-valuemax="100" style={{width:this.state.progress+"%"}}>{this.state.progress}%</div>
-                  }
+                   <div className="progress"> <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={this.state.progress} aria-valuemin="0" aria-valuemax="100" style={{width:this.state.progress+"%"}}>{this.state.progress}%</div>
 										
-									</div>
+                   </div>
+                  }
 								</dd>
+                <dt className="col-sm-4">Tanggal Selesai</dt>
+                <dd className="col-sm-8">: {this.state.data.date_success != null ? dateFormat(this.state.data.date_success,"dd/mm/yyyy"): "-"}</dd>
 								<dt className="col-sm-12">Deskripsi</dt>
 								<dd className="col-sm-12 mb-lg-0">{this.state.data.order_description}</dd>
 							</dl>
@@ -389,7 +391,12 @@ class OrderDetail extends React.Component {
                         <div className="col">
                         <SearchBar { ...props.searchProps } />
                         </div>
-                        <div className="col"><button className="btn btn-block btn-success"  onClick={this.handleShow.bind(this)}>Tambah Dokumen</button></div>
+                        { this.state.progress != 100 ?  <div className="col">
+                          <button className="btn btn-block btn-success"  onClick={this.handleShow.bind(this)}>Tambah Dokumen</button>
+                        </div>
+                         : null 
+                        }
+                        
                         </div>
                         <hr />
                         <BootstrapTable
@@ -405,17 +412,24 @@ class OrderDetail extends React.Component {
             </div>
             </div>
             <div className="card-footer">
+            { this.state.progress != 100 ? 
 					<div className="row">
+          
 						<div className="col">
 							<button type="button" onClick={this.selesai.bind(this,this.props.router.query.id)} className="btn btn-block btn-outline-success" disabled={this.state.progress != 100} >Selesai</button>
 						</div>
-						<div className="col">
-                        <Link href={`/order/edit?id=${this.props.router.query.id}`}>
-							<a href="order-edit.html" className="btn btn-block btn-primary">Ubah</a>
+            
+              <div className="col">
+              <Link href={`/order/edit?id=${this.props.router.query.id}`}>
+              <a href="order-edit.html" className="btn btn-block btn-primary">Ubah</a>
                             </Link>
-						</div>
+            </div>
+            
 					</div>
-				</div>
+				
+                         : null 
+                        }
+				</div>		
         <Modal
           show={this.state.show}
           onHide={this.handleClose}
@@ -424,7 +438,7 @@ class OrderDetail extends React.Component {
         >
            <Formik
             initialValues={this.state.addDokumen}
-            onSubmit={(e)=>onSubmit(e, this.handleClose)}
+            onSubmit={(e)=>upload(e, this.handleClose)}
             render={ props =>{
                 return <ModalForm  {...props} parentState={this.state}
                 />
@@ -441,34 +455,9 @@ class OrderDetail extends React.Component {
     const { values,errors, handleChange, handleSubmit, setFieldValue,
       parentState, closed} = props
       const [selected, setSelected] = useState("");
-      const [fileName, setFileName] = useState("");
-      const [progress, setProgress] = useState(0);
-
       const upload = (e) => {
-        if (e.target.files[0]) {
-            const image = e.target.files[0];
-            const namaFile = moment().valueOf()+"_"+image.name
-            const uploadTask = storage.ref(`orders/${namaFile}`).put(image);
-                uploadTask.on('state_changed', 
-                (snapshot) => {
-                // progrss function ....
-                const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                setProgress(progress);
-                }, 
-                (error) => {
-                    // error function ....
-                }, 
-            () => {
-                storage.ref('orders').child(namaFile).getDownloadURL().then(url => {
-                  
-                    setFieldValue("origin",namaFile)
-                    setFieldValue("link",url)
-
-                })
-            });
-        }
-
-    }
+        setFieldValue("fileName",e)
+      }
     return(
       <Fragment>
         <form onSubmit={handleSubmit}>
@@ -504,7 +493,7 @@ class OrderDetail extends React.Component {
                       }}/>
                     : ""}
                     {selected == "Tipe Dokumen" ? 
-                     <input type="file" accept=".pdf,.csv, .doc,.docx,.xlsx, .xls,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" className="custom-file-input" id="addDocExample" value={values.file} name="file"  onChange={(e)=>{
+                     <input type="file" className="custom-file-input"  accept=".pdf,.csv, .doc,.docx,.xlsx, .xls,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" className="custom-file-input" id="addDocExample" value={values.file} name="file"  onChange={(e)=>{
                       handleChange(e)
                       upload(e)
                       }}/>
@@ -513,7 +502,6 @@ class OrderDetail extends React.Component {
                         
                   </div>
                 </div>
-                <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100" style={{width:progress+"%"}}>{progress}</div>
               </Modal.Body>
             <Modal.Footer>
                 {/* <button variant="secondary" onClick={handleClose}>
@@ -544,6 +532,45 @@ class OrderDetail extends React.Component {
             </div>
       }
   }
+
+  function upload (values,action) {
+    let progress = 0
+    if (values.fileName.target.files[0]) {
+        const image = values.fileName.target.files[0];
+        const namaFile = moment().valueOf()+"_"+image.name;
+        const uploadTask = storage.ref(`orders/${namaFile}`).put(image);
+        const task =  uploadTask.on('state_changed', 
+        (snapshot) => {
+        // progrss function ....
+            progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+            
+            swal({
+                text: "Upload Progress",
+                content: (
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                        role="progressbar" aria-valuenow={progress} aria-valuemin="0" 
+                        aria-valuemax="100" style={{width:progress+"%"}}>{progress}</div>
+                    </div>
+                )
+            })
+        }, 
+        (error) => {
+            // error function ....
+        },
+        ()=>{
+            storage.ref('orders').child(namaFile).getDownloadURL().then(url => {
+                values.link = url
+                values.origin = namaFile
+                values.fileName =""
+                setTimeout(()=>{
+                    onSubmit(values,action)
+                },3000)
+                
+            })
+        });
+    }
+  }
   
   function onSubmit (values, closed) {
     let data = {
@@ -556,7 +583,7 @@ class OrderDetail extends React.Component {
       'Content-Type': 'application/json',
       'Authorization': cookie.get('token')
   }
-  axioss.post('/api/v1/order/add-dokumen/'+values.orderId,data,{'headers':headers})
+  http.post('/api/v1/order/add-dokumen/'+values.orderId,data,{'headers':headers})
   .then(response => {
       swal({
           title: "Tersimpan",
@@ -566,14 +593,6 @@ class OrderDetail extends React.Component {
         }).then(()=>{
           closed();
           Router.push("/order/detail",{id:values.orderId})
-        });
-  })
-  .catch(err => {
-      swal({
-          title: "Error",
-          text: "Error => " + err.errors,
-          icon: "error",
-          button: "Ok",
         });
   })
   }

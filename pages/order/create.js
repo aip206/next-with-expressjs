@@ -15,6 +15,7 @@ import moment from 'moment';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import DatePicker from "react-datepicker";
 import http from '../../utils/http-service';
+import JSON from 'circular-json';
 
 
 const getYupValidationSchema = Yup.object().shape({
@@ -34,7 +35,7 @@ const getYupValidationSchema = Yup.object().shape({
       customer_provinsi: Yup.string()
       .required('Provinsi tidak boleh kosong!'),
       order_deadline: Yup.date()
-      .required('Tanggal Batas Akhir tidak boleh kosong!'),
+      .required('Tanggal Batas Akhir tidak boleh kosong!')
   })
 const initialValues = { 
      order_invoice:"",
@@ -47,6 +48,7 @@ const initialValues = {
      customer_kabupaten:"",
      customer_kecamatan:"",
      customer_provinsi:"",
+     arrFile: [],
      dokuments:[{
          id:"",
          file:"",
@@ -61,6 +63,7 @@ class OrderCreate extends React.Component {
         this.state = {
             image: null,
             dokuments:[],
+            dokumentTmp:[],
             provinsi:[],
             kecamatan:[],
             kelurahan:[],
@@ -113,6 +116,7 @@ class OrderCreate extends React.Component {
                 const newKeys = ["value","label","dokumen_type","departements"];
                 const renamedObj = renameKeys(data.data, newKeys);
                 this.setState({dokuments: renamedObj})
+                this.setState({dokumentTmp: renamedObj})
             })
     }
 
@@ -141,43 +145,38 @@ function CreateForm(props) {
     const { values,errors, touched,handleChange, handleSubmit, setFieldValue,
         isSubmitting, optional, provinsi, kabupaten, kecamatan} = props
     const [docOption, setDocOption] = useState([])
+    const [arrFile, setArrFiles] = useState([])
     const [selected, setSelected] = useState("")
     const [progress, setProgress] = useState(0);
-    const cekDokumen =()=> {
-       
-            if(docOption.length > 0){
-                docOption.forEach((doc)=>{
-                    optional.dokuments = optional.dokuments.filter((e)=>e.label != doc)
-            })
-            } else{
-                return optional.dokuments
-            }
-        
-    }
-    const upload = (e, index) => {
-            if (e.target.files[0]) {
-                const image = e.target.files[0];
-                const namaFile = moment().valueOf()+"_"+image.name
-                const uploadTask = storage.ref(`orders/${namaFile}`).put(image);
-                    uploadTask.on('state_changed', 
-                    (snapshot) => {
-                    // progrss function ....
-                    const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                    setProgress(progress);
-                    }, 
-                    (error) => {
-                        // error function ....
-                    }, 
-                () => {
-                    storage.ref('orders').child(namaFile).getDownloadURL().then(url => {
-                        values.dokuments[index].origin = namaFile,
-                        values.dokuments[index].link= url
 
-                    })
-                });
-            }
+    const upload = (e, index) => {
+            values.arrFile.push({
+                id:index,
+                file: e
+            })
+            optional.dokuments = optional.dokuments.reduce((prev,value) => {
+                var isDuplicate = false
+                for (var i = 0; i < values.dokuments.length; i++) {
+                  
+                    if (value.value == values.dokuments[i].id) {
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+                if (!isDuplicate) {
+                    prev.push(value);
+                }
+                   
+                return prev;
+                
+            },[])
+            values.dokuments[index].nameOfFile = e.target.files[0].name
 
         }
+    const remove = (index) => {
+        var opts = optional.dokumentTmp.filter(e => e.value == index.id)
+        optional.dokuments.push(opts)
+    }
     return(
         <Layout title="Tambah Pemesanan">
             <Breadcrumb>
@@ -313,12 +312,9 @@ function CreateForm(props) {
                                             id="addOrderDocName"
                                             options={optional.dokuments}
                                             onChange={(e) =>{
-                                                setDocOption([
-                                                    ... docOption,
-                                                    e.label
-                                                ])
                                                 values.dokuments[index].id = e.value
                                                 values.dokuments[index].departements = e.departements
+                                               
                                                 if(e.dokumen_type == "Tipe Dokumen"){
                                                     setSelected(".pdf,.csv, .doc,.docx,.xlsx, .xls,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                                                 }else{
@@ -332,28 +328,29 @@ function CreateForm(props) {
                                         <div className="col-sm-4">
                                             <div className="custom-file">
                                            
-                                                 <input type="file" accept={selected} id={`addDocExample${index}`} value={values.dokuments[index].file} name={`dokuments[${index}].file`}  onChange={(e)=>{ 
+                                                 <input type="file" className="custom-file-input" accept={selected} id={`addDocExample${index}`} value={values.dokuments[index].file} name={`dokuments[${index}].file`}  onChange={(e)=>{ 
                                                     handleChange(e)
                                                     values.dokuments[index].origin = e
+                                                    setDocOption([... docOption,
+                                                        values.dokuments[index]
+                                                    ])
+                                                    upload(values.dokuments[index].origin,index)
+                                                    
                                                 }}/>
                                                 
-                                                <label className="custom-file-label" for={`addDocExample${index}`}>{values.dokuments[index].file}</label>
+                                                <label className="custom-file-label" for={`addDocExample${index}`}>{values.dokuments[index].nameOfFile}</label>
                                             </div>
                                         </div>
 
                                         
-                                        {index == (values.dokuments.length-1) ? (
+                                        {index == 0? (
                                             <div className="col-sm-2">
                                                 <button type="button" className="btn btn-block btn-success" id="addNewDocField"
                                                 onClick={() => {
                                                     var data = {
                                                         id:"",
                                                         file:null} 
-                                                        if(values.dokuments[index].id != "" && values.dokuments[index].file != ""){
-                                                            upload(values.dokuments[index].origin,index)
-                                                            arrayHelpers.push(data)
-                                                            
-                                                        }  
+                                                        arrayHelpers.push(data)
                                                 }}
                                                 >Tambah</button>
                                             </div>
@@ -364,6 +361,7 @@ function CreateForm(props) {
                                                 className="btn btn-block btn-danger remove_field"
                                                 onClick={() =>{ 
                                                     if(values.dokuments.length > 1)
+                                                        remove(values.dokuments[index])
                                                         arrayHelpers.remove(index)}
                                                     } 
                                             >
@@ -399,27 +397,66 @@ function CreateForm(props) {
     )
 }
 
-function onSubmit (values,actions) {
+async function onSubmit (values,actions) {
+   
+        Promise.all(
+            values.arrFile.map( async (item,index) => {
+                await upload(values,item)
+            })
+        )
+        .then(async (url) => {
+            console.log(`All success`);
+           
+            setTimeout(()=>{
+                save(values)
+            },3000)
+        })
+          .catch((error) => {
+            console.log(`Some failed: `, error.message)
+        });
+      
     
-    let data = { ... values,
+  
+}
+
+ async function save(values ) {
+    delete values.arrFile;
+    let data = await { ... values,
         order_deadline : moment(values.order_deadline).format('YYYY-MM-DD'),
         dokuments: values.dokuments.filter((x)=>x.file != null)
     }
-    var headers = {
-        'Content-Type': 'application/json',
-        'Authorization': cookie.get('token')
-    }
-    http.post('/api/v1/orders',data,{'headers':headers})
-    .then(response => {
-        swal({
-            title: "Tersimpan",
-            text: "Data Dokumen Berhasil Tersimpan",
-            icon: "success",
-            button: "Ok",
-          }).then(()=>{
-            Router.push('/order/list')
-          });
-    })
+        var headers = {
+            'Content-Type': 'application/json',
+            'Authorization': cookie.get('token')
+        }
+        http.post('/api/v1/orders',JSON.stringify(data),{'headers':headers})
+        .then(response => {
+            swal({
+                title: "Tersimpan",
+                text: "Data Dokumen Berhasil Tersimpan",
+                icon: "success",
+                button: "Ok",
+              }).then(()=>{
+                Router.push('/order/list')
+              });
+        }).catch(e => console.log(e))
+}
+
+function upload(v,data){
+    let progress = [];
+    const image = data.file.target.files[0];
+    const namaFile = moment().valueOf()+"_"+image.name
+    return storage.ref(`orders/${namaFile}`).put(image).then(
+                (snapshot) => {
+                    storage.ref(`orders`).child(namaFile).getDownloadURL().then(url => {
+                         v.dokuments[data.id].origin = image.name,
+                         v.dokuments[data.id].link = url
+     
+                     })
+                }).
+                catch(error => {
+                    // error function ....
+                })
 }
 
 function renameKeys(arrayObject, newKeys, index = false) {

@@ -41,23 +41,53 @@ class Order extends Component {
       },
       {
         dataField: 'createdAt',
-        text: 'Tanggal',
+        text: 'Pembuatan',
         sort: true,
         headerAlign: 'center',
+        headerStyle: () => {
+          return { width: "20px" };
+        },
         formatter: (cell, row, rowIndex, extraData) => (
           dateFormat(row.createdAt,"dd/mm/yyyy")
+      )
+      },
+      {
+        dataField: 'order_deadline',
+        text: 'Deadline',
+        sort: true,
+        headerAlign: 'center',
+        headerStyle: () => {
+          return { width: "20px" };
+        },
+        formatter: (cell, row, rowIndex, extraData) => (
+          dateFormat(row.order_deadline,"dd/mm/yyyy")
       )
       },
       {
         dataField: 'order_invoice',
         text: 'Invoice',
         headerAlign: 'center',
-        sort: true
+        sort: true,
+        headerStyle: () => {
+          return { width: "15%" };
+        }
       },
       {
         dataField: 'customer_name',
         headerAlign: 'center',
         text: 'Nama Pelanggan',
+      },
+      {
+        dataField: 'status',
+        headerAlign: 'center',
+        text: 'Progress',
+        formatter:(cell, row, rowIndex, extraData) => {
+          if(row.progress == 100){
+            return  <span className="badge badge-pill badge-success">Selesai</span>
+          }else{
+            return <div className="progress"> <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={row.progress} aria-valuemin="0" aria-valuemax="100" style={{width:row.progress+"%"}}>{row.progress}%</div>       </div>
+          }
+        }
       },
          
       {
@@ -76,21 +106,44 @@ class Order extends Component {
       }
     ] 
     };
+
+    
     
   }
  
 
-  refreshData(){
-    http.get('/api/v1/orders',{
+  async refreshData(){
+    await http.get('/api/v1/orders',{
       params:parameter,   
       headers: {
         'Authorization': cookie.get('token')
       } 
     })
     .then(response => response.data.data)
-    .then(data =>{ 
-      this.setState({ data : data.rows})
+    .then(async data =>{ 
+      var d = await Promise.all(data.rows.map(async x => {x.progress = await this.HitungProgres(x.id); return x}))
+      
+      this.setState({ data : d})
+      // console.log(d)
     })
+  }
+
+  async HitungProgres(e) {
+    let progresTotal = 0
+    try{
+      let list = await axioss.get('/api/v1/order/check-progress/'+e,{   
+        headers: {
+        'Authorization': cookie.get('token')
+        }
+        })
+      if(list.data.data[0].total != 0){
+          progresTotal = (list.data.data[0].totalDepartement / list.data.data[0].total) * 100
+       }
+       
+    }catch (e) {
+      console.log(e)
+    }
+    return progresTotal
   }
 
  componentDidMount () {

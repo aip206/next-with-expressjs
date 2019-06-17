@@ -10,7 +10,8 @@ import { Formik, Field,ErrorMessage,withFormik } from 'formik';
 import * as Yup from 'yup';
 import Router from 'next/router';
 import {withRouter} from 'next/router';
-import swal from 'sweetalert';
+import swal from '@sweetalert/with-react'
+
 import {storage} from '../../utils/firebase';
 import moment from 'moment';
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
@@ -98,7 +99,8 @@ class DokumenMatrixEdit extends React.Component {
                 select:data.dokumen_type,
                 departements:renameKeys(data.departements,newKeys),
                 path:data.path,
-                link:data.link
+                link:data.link,
+                nameOfFile:data.path
               } })
           })
           .catch(err => {
@@ -126,7 +128,7 @@ class DokumenMatrixEdit extends React.Component {
         const MyEnhancedForm = withFormik({
             mapPropsToValues: () => (this.state),
             validationSchema:() =>(getYupValidationSchema) ,
-            handleSubmit: (values, { setSubmitting }) => {onSubmit(values)},
+            handleSubmit: (values, { setSubmitting }) => {upload(values)},
             displayName: 'EditForm',
           })(EditForm);
                     
@@ -144,27 +146,13 @@ function EditForm(props) {
     const [progress, setProgress] = useState(0);
     const [selected, setSelected] = useState(values.initialValues.select);
     const upload = e => {
-        if (e.target.files[0]) {
-            const image = e.target.files[0];
-            const namaFile = moment().valueOf()+"_"+image.name;
-            const uploadTask = storage.ref(`dokumen-matrix/${namaFile}`).put(image);
-            uploadTask.on('state_changed', 
-            (snapshot) => {
-            // progrss function ....
-            const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-            setProgress(progress)
-            }, 
-            (error) => {
-                // error function ....
-            console.log(error);
-            }, 
-        () => {
-            storage.ref('dokumen-matrix').child(namaFile).getDownloadURL().then(url => {
-                setFieldValue("initialValues.fileName",namaFile)
-                setFieldValue("initialValues.link",url)
-            })
-        });
-        }
+                setFieldValue("initialValues.fileName",e)
+                setFieldValue("initialValues.nameOfFile",e.target.files[0].name)
+
+        //         setFieldValue("initialValues.link",url)
+        //     })
+        // });
+        // }
         }
     return(
         <Layout title="Ubah Matrix Dokumen">
@@ -208,16 +196,16 @@ function EditForm(props) {
                             <div className="row">
                             <div className="col-sm-10">
 							<div className="custom-file">
-                                {selected == "Tipe Gambar" ?  <input type="file" accept="image/*" id="addDocExample" value={values.initialValues.file} name="initialValues.file"  onChange={(e)=>{ 
+                                {selected == "Tipe Gambar" ?  <input type="file" className="custom-file-input" accept="image/*" id="addDocExample" value={values.initialValues.file} name="initialValues.file"  onChange={(e)=>{ 
                                     handleChange(e)
                                     upload(e)
                                 }}/> : ""}
-                                {selected == "Tipe Dokumen" ?  <input type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" id="addDocExample" value={values.initialValues.file} name="initialValues.file"  onChange={(e)=>{ 
+                                {selected == "Tipe Dokumen" ?  <input type="file" className="custom-file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" id="addDocExample" value={values.initialValues.file} name="initialValues.file"  onChange={(e)=>{ 
                                     handleChange(e)
                                     upload(e)
                                 }}/> : ""}
                                
-								<label className="custom-file-label" for="addDocExample">{values.initialValues.path}</label>
+								<label className="custom-file-label" for="addDocExample">{values.initialValues.nameOfFile}</label>
                                 <input type="hidden" name={values.initialValues.file} name="initialValues.filename"/>
                                 <ErrorMessage name="file" >
                                 {msg => <div className="error-message">{msg}</div>}
@@ -272,7 +260,48 @@ function EditForm(props) {
     )
 }
 
-function onSubmit (values,actions) {
+function upload (values) {
+    if(values.initialValues.nameOfFile != values.initialValues.path){
+    let progress = 0
+        if (values.initialValues.fileName.target.files[0]) {
+            const image = values.initialValues.fileName.target.files[0];
+            const namaFile = moment().valueOf()+"_"+image.name;
+            const uploadTask = storage.ref(`dokumen-matrix/${namaFile}`).put(image);
+            const task =  uploadTask.on('state_changed', 
+            (snapshot) => {
+                progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                swal({
+                    text: "Upload Progress",
+                    content: (
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                            role="progressbar" aria-valuenow={progress} aria-valuemin="0" 
+                            aria-valuemax="100" style={{width:progress+"%"}}>{progress}</div>
+                        </div>
+                    )
+                })
+            }, 
+            (error) => {
+                // error function ....
+            },
+            ()=>{
+                storage.ref('dokumen-matrix').child(namaFile).getDownloadURL().then(url => {
+                    values.initialValues.link = url
+                    values.initialValues.fileName = namaFile
+                    setTimeout(()=>{
+                        swal.close()   
+                        onSubmit(values)
+                    },3000)
+                    
+                })
+            });
+        }
+    }else{
+        onSubmit(values)
+    }
+}
+
+function onSubmit (values) {
     const data = {
             description: values.initialValues.description,
             dokumen_name: values.initialValues.dokumen_name,

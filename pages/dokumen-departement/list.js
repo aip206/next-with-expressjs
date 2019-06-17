@@ -2,7 +2,7 @@ import { Component,Fragment ,  useState } from 'react';
 import { withAuthSync } from '../../utils/auth'
 import cookie from 'js-cookie'
 import Layout from '../../components/Layout';
-import swal from 'sweetalert';
+import swal from '@sweetalert/with-react';
 import Router from 'next/router';
 import { Formik, Field,ErrorMessage } from 'formik';
 import Link from 'next/link';
@@ -114,6 +114,7 @@ class DepartementOrder extends Component {
 
   handleClose() {
     this.setState({ show: false });
+    this.refreshData();
   }
 
   process (id) {
@@ -129,7 +130,7 @@ class DepartementOrder extends Component {
               text: "Status Sudah Berubah Menjadi Sedang Proses " ,
               icon: "success",
               button: "Ok",
-            })
+            }).then(()=>   this.refreshData() )
     })
     .catch(err => {
       swal({
@@ -258,7 +259,7 @@ render () {
       >
           <Formik
           initialValues={dataUpload}
-          onSubmit={(e)=>onSubmit(e, this.handleClose)}
+          onSubmit={(e)=>upload(e, this.handleClose)}
           render={ props =>{
               return <ModalForm  {...props} parentState={this.state}
               />
@@ -274,32 +275,10 @@ function ModalForm (props) {
   const { values,errors, handleChange, handleSubmit, setFieldValue,
     parentState} = props
     const [progress, setProgress] = useState(0);
-    const [fileName, setFileName] = useState("");
 
     const upload = (e) => {
-      if (e.target.files[0]) {
-          const image = e.target.files[0];
-          const namaFile = moment().valueOf()+"_"+image.name
-          const uploadTask = storage.ref(`orders-departement/${namaFile}`).put(image);
-              uploadTask.on('state_changed', 
-              (snapshot) => {
-              // progrss function ....
-              const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-              setProgress(progress);
-              }, 
-              (error) => {
-                  // error function ....
-              }, 
-          () => {
-              storage.ref('orders-departement').child(namaFile).getDownloadURL().then(url => {
-                  setFieldValue("origin",namaFile),
-                  setFieldValue("link",url)
-                  setFieldValue("idDepOrder", parentState.initialValues.idDepOrder)
-
-              })
-          });
-      }
-
+      values.fileName = e
+      values.idDepOrder = parentState.initialValues.idDepOrder
   }
   return(
     <Fragment>
@@ -345,6 +324,45 @@ function ModalForm (props) {
           </form>
       </Fragment>
   )
+}
+
+function upload (values,action) {
+  let progress = 0
+  if (values.fileName.target.files[0]) {
+      const image = values.fileName.target.files[0];
+      const namaFile = moment().valueOf()+"_"+image.name;
+      const uploadTask = storage.ref(`orders-departement/${namaFile}`).put(image);
+      const task =  uploadTask.on('state_changed', 
+      (snapshot) => {
+      // progrss function ....
+          progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+          
+          swal({
+              text: "Upload Progress",
+              content: (
+                  <div class="progress">
+                      <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                      role="progressbar" aria-valuenow={progress} aria-valuemin="0" 
+                      aria-valuemax="100" style={{width:progress+"%"}}>{progress}</div>
+                  </div>
+              )
+          })
+      }, 
+      (error) => {
+          // error function ....
+      },
+      ()=>{
+          storage.ref('orders-departement').child(namaFile).getDownloadURL().then(url => {
+              values.link = url
+              values.origin = namaFile
+              values.fileName =""
+              setTimeout(()=>{
+                  onSubmit(values,action)
+              },3000)
+              
+          })
+      });
+  }
 }
 
 

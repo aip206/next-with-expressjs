@@ -27,6 +27,24 @@ const Customer = db.define('customers', {
       address: {
         type: Sequelize.STRING,
       },
+      provinsi:{
+        type: Sequelize.STRING
+      },
+      kecamatan: {
+        type: Sequelize.STRING,
+      },
+      kabupaten: {
+        type: Sequelize.STRING,
+      },
+      id_provinsi: {
+        type: Sequelize.INTEGER,
+      },
+      id_kecamatan: {
+        type: Sequelize.INTEGER,
+      },
+      id_kabupaten: {
+        type: Sequelize.INTEGER,
+      },
       postal_code: {
         type: Sequelize.INTEGER,
       },

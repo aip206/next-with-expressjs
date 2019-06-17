@@ -84,6 +84,8 @@ class Departement extends Component {
         formatter: (cell, row, rowIndex, extraData) => (
             <Fragment><div className="btn-group btn-group-sm">
 								<Link href={`/departement/edit?id=${row.id}`}><a href="department-edit.html" className="btn btn-outline-primary" >Ubah</a></Link>
+                <button type="button" onClick={this.deleteRow.bind(this,row)} className="btn btn-outline-danger btn-delete">Hapus</button>
+
             </div>
             </Fragment>
         ),
@@ -103,7 +105,7 @@ class Departement extends Component {
     })
     .then((willDelete) => {
       if (willDelete) {
-        http.delete('/api/v1/departement/'+e.data.id,{   
+        http.delete('/api/v1/departement/'+e.id,{   
           headers: {
             'Authorization': cookie.get('token')
           } 
@@ -111,22 +113,28 @@ class Departement extends Component {
         .then(response =>{
           swal("Menghapus Data Berhasil", {
             icon: "success",
+          }).then(()=>{
+            this.reloadData();
           });
         })
       } 
     });  }
 
  componentDidMount () {
-  http.get('/api/v1/departements',{
-    params:parameter,   
-    headers: {
-      'Authorization': cookie.get('token')
-    } 
-  })
-  .then(response => response.data.data)
-  .then(data =>{ 
-    this.setState({ data : data.rows})
-  })
+  this.reloadData();
+  }
+
+  reloadData(){
+    http.get('/api/v1/departements',{
+      params:parameter,   
+      headers: {
+        'Authorization': cookie.get('token')
+      } 
+    })
+    .then(response => response.data.data)
+    .then(data =>{ 
+      this.setState({ data : data.rows})
+    })
   }
 
   onGridReady = params => {

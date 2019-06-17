@@ -86,6 +86,8 @@ class DokumenMatrix extends Component {
               <div className="btn-group btn-group-sm">
 								<Link href={`/dokumen-matrix/edit?id=${row.id}`}><a className="btn btn-outline-primary" >Ubah</a></Link>
                 <button class="btn btn-sm btn-success" onClick={this.download.bind(this,row)}> <i class="fas fa-download mr-2"></i>Dokumen </button>
+                <button type="button" onClick={this.deleteRow.bind(this,row)} className="btn btn-outline-danger btn-delete">Hapus</button>
+
               </div>
             </Fragment>
         },
@@ -134,13 +136,15 @@ class DokumenMatrix extends Component {
     .then(async (willDelete) => {
       if (willDelete) {
         try{
-          let getDelete = await http.delete('/api/v1/document/'+e.data.id,{   
+          let getDelete = await http.delete('/api/v1/document/'+e.id,{   
             headers: {
               'Authorization': cookie.get('token')
             } 
           })
           swal("Menghapus Data Berhasil", {
             icon: "success",
+          }).then(()=>{
+            this.refreshData();
           })
         }catch(err){
           swal({

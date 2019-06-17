@@ -26,20 +26,30 @@ const instance = axios.create({
   }, function (error, b, c) {
     var err = error.message;
     var title = 'Warning';
-    if(401 === error.response.status) {
-      swal({
-        title: "Error",
-        text: "Anda tidak Memiliki Hak Akses, apakah anda ingin Login Kembali ?",
-        icon: "error",
-        buttons: true,
-      }).then((isDelete)=>{
-        if(isDelete){
-          cookie.remove('token');
-          window.localStorage.removeItem('myData');
-          Router.push('/login')
-        }
-       
-      })
+    if(error.response) {
+      if(error.response.status == 401){
+        swal({
+          title: "Error",
+          text: "Anda tidak Memiliki Hak Akses, apakah anda ingin Login Kembali ?",
+          icon: "error",
+          buttons: true,
+        }).then((isDelete)=>{
+          if(isDelete){
+            cookie.remove('token');
+            window.localStorage.removeItem('myData');
+            Router.push('/login')
+          }
+         
+        })  
+      }else{
+        swal({
+          title: "Error",
+          text: error,
+          icon: "error",
+          buttons: true,
+        })
+      }
+      
       return Promise.reject(error);
     }})
 

@@ -11,7 +11,7 @@ exports.authenticate = (req,res) =>{
     const { email, password } = req.body;
     if (email && password) {
       let user = Departement.findOne({
-        where: {email: email}
+        where: {email: email, isDelete:false}
       }).then(async (data) => {
           let valid = await data.comparePassword(password);
           if(valid){
@@ -47,7 +47,8 @@ exports.getProfile = (req,res) => {
   const user_profile = Departement
     .findOne({
         where:{
-            id:req.user.id
+            id:req.user.id,
+            isDelete:false
         },attributes: ['id','name','email']
     })
     const pic = DepartementPic.findOne({where:{departementId:req.user.id}})
@@ -71,7 +72,7 @@ exports.profiles = (req,res) => {
           .update({
               name:name,
               email:email
-          },{where:{id:req.user.id}})
+          },{where:{id:req.user.id,isDelete:false}})
           DepartementPic.update({
               nama:nama,
               phone:phone
@@ -94,7 +95,8 @@ exports.forgotPassword = async (req,res) => {
   }
   try{
     let dep = await Departement.findOne({where:{
-            email:email
+            email:email,
+            isDelete:false
         },attributes: ['id','name','email']
         })
     let pic = await DepartementPic.findOne({where:{departementId:dep.id}}) 

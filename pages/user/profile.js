@@ -96,13 +96,13 @@ function EditForm(props) {
 				<div className="card-body">
                         <div className="form-group">
 							<label for="addDeptName">Nama Departemen</label>
-							<input type="text" className="form-control" value={values.name} onChange={handleChange} name="name" id="addDeptName" />
+							<input type="text" disabled className="form-control" value={values.name} onChange={handleChange} name="name" id="addDeptName" />
                             {errors.name && touched.name ? <div className="error-message">{errors.name}</div> : null}
 
 						</div>
                         <div className="form-group">
 							<label for="addEmail">Email</label>
-							<input type="email" className="form-control" value={values.email} onChange={handleChange} name="email" id="addEmail" />
+							<input type="email" disabled className="form-control" value={values.email} onChange={handleChange} name="email" id="addEmail" />
                             {errors.email && touched.email ? <div className="error-message">{errors.email}</div> : null}
 						</div>
                         <div className="form-group">

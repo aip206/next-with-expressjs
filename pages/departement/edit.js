@@ -116,7 +116,7 @@ function EditForm(props) {
 						</div>
                         <div className="form-group">
 							<label for="addEmail">Email</label>
-							<input type="email" className="form-control" value={values.email} onChange={handleChange} name="email" id="addEmail" />
+							<input type="email" className="form-control" value={values.email} onChange={handleChange} disabled name="email" id="addEmail" />
                             <ErrorMessage name="email" className="error-message" component='div'/>
 						</div>
                         <div className="form-group">

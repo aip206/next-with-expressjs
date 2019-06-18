@@ -181,7 +181,7 @@ render () {
           <Breadcrumb.Item href="/">Dashboard</Breadcrumb.Item>
           <Breadcrumb.Item active >Matriks Dokumen</Breadcrumb.Item>
       </Breadcrumb>   
-      <h3 className="title"><i className="far fa-file fa-fw mr-2"></i>DokumenMatrix</h3>
+      <h3 className="title"><i className="far fa-file fa-fw mr-2"></i>Matriks Dokumen</h3>
       <ToolkitProvider
           
           keyField='id' 

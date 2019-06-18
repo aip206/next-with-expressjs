@@ -87,7 +87,7 @@ class Order extends Component {
           if(row.progress == 100){
             return  <span className="badge badge-pill badge-success d-block">Selesai</span>
           }else{
-            return <div className="progress"> <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={row.progress} aria-valuemin="0" aria-valuemax="100" style={{width:row.progress+"%", textAlign:'center'}}>{parseInt(row.progress)}%</div>       </div>
+            return <div className="progress"> <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={row.progress} aria-valuemin="0" aria-valuemax="100" style={{width:row.progress+"%", textAlign:'center'}}><span>{parseInt(row.progress)}%</span></div></div>
           }
         }
       },

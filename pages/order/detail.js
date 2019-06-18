@@ -20,7 +20,18 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import dateFormat from 'dateformat';
 
 import http from '../../utils/http-service';
-
+const getYupValidationSchema = Yup.object({
+  // addDokumen:Yup.object({
+    documentId: Yup.string()
+      .required('Dokumen tidak boleh kosong!'),
+    nameOfFile: Yup.string()
+    .required('Contoh Dokumen tidak boleh kosong!'),
+     
+      
+      
+  // })
+  
+})
 class OrderDetail extends React.Component {
     constructor(props){
         super(props)
@@ -454,6 +465,7 @@ class OrderDetail extends React.Component {
         >
            <Formik
             initialValues={this.state.addDokumen}
+            validationSchema={getYupValidationSchema}
             onSubmit={(e)=>upload(e, this.handleClose)}
             render={ props =>{
                 return <ModalForm  {...props} parentState={this.state}
@@ -472,8 +484,11 @@ class OrderDetail extends React.Component {
       parentState, closed} = props
       const [selected, setSelected] = useState("");
       const upload = (e) => {
-        setFieldValue("fileName",e)
-        setFieldValue("nameOfFile",e.target.files[0].name)
+        if(e.target.files[0]){
+          setFieldValue("fileName",e)
+          setFieldValue("nameOfFile",e.target.files[0].name)
+        }
+      
       }
     return(
       <Fragment>
@@ -496,8 +511,13 @@ class OrderDetail extends React.Component {
                         values.departements = e.departements
                         values.documentId = e.value
                         setSelected(e.document_type)
+                        setFieldValue("fileName",null)
+                        setFieldValue("nameOfFile","")
                       }}
                   />
+                  <ErrorMessage name="documentId" >
+                            {msg => <div className="error-message">{msg}</div>}
+                    </ErrorMessage>
                 </div>
                 
                 <div className="form-group">
@@ -516,7 +536,9 @@ class OrderDetail extends React.Component {
                       }}/>
                     : ""}
                     <label className="custom-file-label" for="addDocExample">{values.nameOfFile}</label>
-                        
+                    <ErrorMessage name="nameOfFile" >
+                            {msg => <div className="error-message">{msg}</div>}
+                        </ErrorMessage>
                   </div>
                 </div>
               </Modal.Body>
@@ -546,7 +568,7 @@ class OrderDetail extends React.Component {
                   <div class="progress-bar progress-bar-striped progress-bar-animated" 
                   role="progressbar" aria-valuenow="100" 
                   aria-valuemin="0" aria-valuemax="100" 
-                  style={{width:progresTotal+"%"}} >{progresTotal}%</div>
+                  style={{width:progresTotal+"%"}} ><span>{progresTotal}%</span></div>
             </div>
       }
   }

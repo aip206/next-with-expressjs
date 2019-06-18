@@ -90,9 +90,25 @@ class OrderDetail extends React.Component {
         
     }
 
-    filterDokumen(dokumen, data) {
+    async filterDokumen(dokumen, data) {
+        let dox = await dokumen.reduce((prev,value) => {
+          var isDuplicate = false
+          for (var i = 0; i < data.length; i++) {
+            
+              if (value.value == data[i]) {
+                  isDuplicate = true;
+                  break;
+              }
+          }
+          if (!isDuplicate) {
+              prev.push(value);
+          }
+            
+          return prev;
+          
+      },[])
       data.forEach((m) => {
-        this.setState({dokSelek:this.state.documentSelect.filter((x)=> x.value != m)})
+        this.setState({dokSelek:dox})
        })
     }
 
@@ -138,7 +154,7 @@ class OrderDetail extends React.Component {
                   text: "Batal Dokumen Berhasil dilakukan " ,
                   icon: "succsess",
                   button: "Ok",
-                })
+                }).then(e => this.refresh())
               }else{
                 swal({
                     title: "Batal Dokumen",
@@ -232,7 +248,7 @@ class OrderDetail extends React.Component {
       })
       .then(data =>{ 
           this.setState({data})
-          this.setState({documents:data.document_orders})
+          this.setState({documents:data.document_orders.filter(x=>!x.isDelete)})
           this.hitungProgres()
       })
       .catch(err => {
@@ -302,7 +318,6 @@ class OrderDetail extends React.Component {
     }
 
     progresData (props) {
-      console.log(props)
       const dokumenlength = props.length 
          const persentase = props.filter((x)=>x.status == "Sudah Diproses").length
          const progresTotal = (dokumenlength != 0) ? (persentase / dokumenlength) * 100 : 0
@@ -339,14 +354,14 @@ class OrderDetail extends React.Component {
 								<dt className="col-sm-4">Perkembangan</dt>
 								<dd className="col-sm-8 pb-lg-2">
 									
-                  {this.state.progress == 100 ? <span className="badge badge-pill badge-success">Selesai</span> :
-                   <div className="progress"> <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={this.state.progress} aria-valuemin="0" aria-valuemax="100" style={{width:this.state.progress+"%"}}>{this.state.progress}%</div>
+                  {this.state.progress == 100 ? <span className="badge badge-pill badge-success d-block">Selesai</span> :
+                   <div className="progress"> <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={this.state.progress} aria-valuemin="0" aria-valuemax="100" style={{width:this.state.progress+"%"}}>{parseInt(this.state.progress)}%</div>
 										
                    </div>
                   }
 								</dd>
                 <dt className="col-sm-4">Tanggal Selesai</dt>
-                <dd className="col-sm-8">: {this.state.data.date_success != null ? dateFormat(this.state.data.date_success,"dd/mm/yyyy"): "-"}</dd>
+                <dd className="col-sm-8">: {this.state.data.date_succses != null ? dateFormat(this.state.data.date_success,"dd/mm/yyyy"): "-"}</dd>
 								<dt className="col-sm-12">Deskripsi</dt>
 								<dd className="col-sm-12 mb-lg-0">{this.state.data.order_description}</dd>
 							</dl>
@@ -412,23 +427,24 @@ class OrderDetail extends React.Component {
             </div>
             </div>
             <div className="card-footer">
-            { this.state.progress != 100 ? 
+            
 					<div className="row">
-          
+          { this.state.data.date_succses == null ? 
 						<div className="col">
 							<button type="button" onClick={this.selesai.bind(this,this.props.router.query.id)} className="btn btn-block btn-outline-success" disabled={this.state.progress != 100} >Selesai</button>
-						</div>
-            
-              <div className="col">
-              <Link href={`/order/edit?id=${this.props.router.query.id}`}>
-              <a href="order-edit.html" className="btn btn-block btn-primary">Ubah</a>
-                            </Link>
-            </div>
-            
+						</div>: null
+          }
+            { this.state.progress != 100 ? 
+                <div className="col">
+                  <Link href={`/order/edit?id=${this.props.router.query.id}`}>
+                    <a href="order-edit.html" className="btn btn-block btn-primary">Ubah</a>
+                  </Link>
+                </div>
+              : null 
+            }
 					</div>
 				
-                         : null 
-                        }
+                         
 				</div>		
         <Modal
           show={this.state.show}
@@ -457,6 +473,7 @@ class OrderDetail extends React.Component {
       const [selected, setSelected] = useState("");
       const upload = (e) => {
         setFieldValue("fileName",e)
+        setFieldValue("nameOfFile",e.target.files[0].name)
       }
     return(
       <Fragment>
@@ -498,7 +515,7 @@ class OrderDetail extends React.Component {
                       upload(e)
                       }}/>
                     : ""}
-                    <label className="custom-file-label" for="addDocExample">{values.file}</label>
+                    <label className="custom-file-label" for="addDocExample">{values.nameOfFile}</label>
                         
                   </div>
                 </div>
@@ -522,7 +539,7 @@ class OrderDetail extends React.Component {
       const persentase = props.id.filter((x)=>x.status == "Sudah Diproses").length
       const progresTotal = (dokumenlength != 0) ? (persentase / dokumenlength) * 100 : 0
       if(progresTotal == 100){
-        return <span className="badge badge-pill badge-success">Selesai</span>
+        return <span className="badge badge-pill badge-success d-block">Selesai</span>
       } else {
         return <div class="progress">
                   <div class="progress-bar progress-bar-striped progress-bar-animated" 
@@ -546,6 +563,7 @@ class OrderDetail extends React.Component {
             
             swal({
                 text: "Upload Progress",
+                closeOnClickOutside: false,
                 content: (
                     <div class="progress">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" 
@@ -563,9 +581,7 @@ class OrderDetail extends React.Component {
                 values.link = url
                 values.origin = namaFile
                 values.fileName =""
-                setTimeout(()=>{
-                    onSubmit(values,action)
-                },3000)
+                onSubmit(values,action)
                 
             })
         });

@@ -29,7 +29,7 @@ var config = {
       host     : 'localhost',
       user     : 'root',
       password : '1234abcd',
-      database : 'temp',
+      database : 'omsdb',
       insecureAuth: true
     },
     mail : {

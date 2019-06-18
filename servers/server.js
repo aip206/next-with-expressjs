@@ -13,6 +13,7 @@ const departement = require('./routes/departementRoute')
 const auth = require('./routes/authenticateRoute')
 const document = require('./routes/documentRoute')
 const order = require('./routes/orderRoute')
+const dashboard = require('./routes/dashboardRoute')
 
 
 
@@ -33,6 +34,7 @@ app.prepare().then(() => {
     departement(server);
     auth(server);
     document(server);
+    dashboard(server);
     order(server);
     server.get('*', (req, res) => {
         return handle(req, res)

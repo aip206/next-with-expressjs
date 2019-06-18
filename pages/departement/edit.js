@@ -20,8 +20,10 @@ const getYupValidationSchema = Yup.object().shape({
       .required('Nama Penanggung Jawab tidak boleh kosong!'),
     name: Yup.string()
         .required('Nama Departemen tidak boleh kosong!'),
-    phone:  Yup.string()
-        .required('Nomor Telepon Penanggung Jawab  tidak boleh kosong!')
+    phone:  Yup
+    .number('Format Nomor Telepon Penanggung salah')
+    .positive('Format Nomor Telepon Penanggung salah')
+    .required('Nomor Telepon Penanggung Jawab tidak boleh kosong!')
   })
 
 

@@ -24,7 +24,8 @@ const getYupValidationSchema = Yup.object().shape({
       customer_email: Yup.string()
       .email('Format Email Pelanggan salah!')
       .required('Email Pelanggan tidak boleh kosong!'),
-      customer_phone: Yup.string()
+      customer_phone: Yup.number('Format Nomor Telepon salah')
+      .positive('Format Nomor Telepon salah')
       .required('Nomor Telepon Pelanggan tidak boleh kosong!'),
       customer_address: Yup.string()
       .required('Alamat Pelanggan tidak boleh kosong!'),
@@ -207,7 +208,7 @@ function CreateForm(props) {
                             <div className="input-group-prepend">
                                 <span className="input-group-text">+62</span>
                             </div>
-                            <input onChange={handleChange} type="number" className="form-control" name="customer_phone" value={values.customer_phone} id="addCustPhone" />
+                            <input onChange={handleChange} type="text" className="form-control" name="customer_phone" value={values.customer_phone} id="addCustPhone" />
                         </div>
                         {errors.customer_phone && touched.customer_phone ? <div className="error-message">{errors.customer_phone}</div> : null}
                     </div>
@@ -398,15 +399,18 @@ function CreateForm(props) {
 }
 
 async function onSubmit (values,actions) {
-   
+        
+        swal({
+            title: "Menunggu",
+            text: "Pesanan anda Sedang di Proses",
+            closeOnClickOutside: false
+          })
         Promise.all(
             values.arrFile.map( async (item,index) => {
                 await upload(values,item)
             })
         )
         .then(async (url) => {
-            console.log(`All success`);
-           
             setTimeout(()=>{
                 save(values)
             },3000)

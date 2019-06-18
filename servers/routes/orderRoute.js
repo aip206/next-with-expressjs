@@ -24,8 +24,8 @@ module.exports = (app) =>{
     app.route('/api/v1/utiliti/kecamatan/:id').get(utiliti.getKecamatan)
     app.route('/api/v1/utiliti/kelurahan/:id').get(utiliti.getKelurahan)
 
-    app.route('/api/v1/update-sukses-dokumen-order/:id').put(passport.authenticate('jwt', { session: false }),depOrder.updateStatusSudahProses)
-    app.route('/api/v1/update-progress-dokumen-order/:id').get(passport.authenticate('jwt', { session: false }),depOrder.updateStatusDalamProses)
+    app.route('/api/v1/update-sukses-dokumen-order/:id/:documentOrderId').put(passport.authenticate('jwt', { session: false }),depOrder.updateStatusSudahProses)
+    app.route('/api/v1/update-progress-dokumen-order/:id/:documentOrderId').get(passport.authenticate('jwt', { session: false }),depOrder.updateStatusDalamProses)
     app.route('/api/v1/update-sukses-order/:id').post(passport.authenticate('jwt', { session: false }),document.suksesOrder)
     app.route('/api/v1/order/add-dokumen/:id').post([passport.authenticate('jwt', { session: false }),permission],document.addOrderDokumen)
     app.route('/api/vi/progres-dokumen-order/:id').get(passport.authenticate('jwt', { session: false }),depOrder.getProgresDepartementOrder)

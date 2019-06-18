@@ -1,4 +1,5 @@
 const DepOrder = require('../models/departement_order');
+const DocOrder = require('../models/document_order');
 const Order = require('../models/order');
 const Departement = require('../models/departement');
 const Sequelize = require('sequelize');
@@ -21,6 +22,44 @@ const config = require('../config').get(process.env.NODE_ENV)
   Promise = require('bluebird');
 const EmailTemplate = require('email-templates').EmailTemplate;
 
+// dashboard perhari
+	
+// SELECT 
+// COUNT(*),
+// WEEKDAY(o.createdAt) AS Day_Name1
+// FROM orders o
+// INNER JOIN document_orders docor on docor.orderId = o.id
+// INNER JOIN departement_orders depder on depder.documentOrderId = docor.id
+// where depder.departementId = 23
+// GROUP BY Day_Name1;
+// ORDER BY Day_Name1 DESC;
+
+// dashboard selisih waktu selesai
+// select DATEDIFF(o.date_succses,o.createdAt) as selisih 
+// FROM orders o
+// INNER JOIN document_orders docor on docor.orderId = o.id
+// INNER JOIN departement_orders depder on depder.documentOrderId = docor.id
+// where o.order_status = 'Finish' and depder.departementId = 23
+
+exports.dashboardRanking = (req,res) => {
+    db.query("SELECT d.name as name, count(departementId) as total FROM departement_orders dor\
+    INNER JOIN departements d on d.id = dor.departementId\
+	where d.isDelete = 0\
+    GROUP BY departementId ORDER BY total DESC limit 5"
+    ,
+    {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+        if(data){
+            res.json({ data: data }) 
+        }else{
+            res.json({ data: [] })
+        }
+    }).catch((err)=>{
+        console.log(err)
+        res.status(400);
+        res.json({ msg: err })
+    })
+}
+
 exports.dashboardOrderFinis = (req,res) => {
     db.query("Select (SELECT count(*) FROM `departement_orders` where isDelete = 0 ) as total , \
         (SELECT count(*) FROM `departement_orders` where isDelete = 0 and `status` = 'Sudah Diproses') as finish"
@@ -39,7 +78,7 @@ exports.dashboardOrderFinis = (req,res) => {
 }
 
 exports.getAll = (req,res) => {
-   db.query("SELECT dorders.id,dorders.status, docor.orderId, o.createdAt, o.order_invoice, o.customer_name, dp.`name`, docor.pathFile, dorders.file, documen.dokumen_type FROM `departement_orders` as dorders \
+   db.query("SELECT dorders.id,dorders.status, docor.orderId, o.createdAt, o.order_invoice, o.customer_name, dp.`name`, docor.link, dorders.file, documen.dokumen_type,dorders.documentOrderId FROM `departement_orders` as dorders \
     INNER JOIN departements dp on dp.id = dorders.departementId \
     INNER JOIN document_orders docor on docor.id = dorders.documentOrderId \
     INNER JOIN orders o on o.id = docor.orderId \
@@ -59,7 +98,7 @@ exports.getAll = (req,res) => {
 }
 
 exports.getDetailOrder = (req,res) => {
-    db.query("SELECT dorders.id, dorders.status, o.order_invoice, doc.dokumen_name, doc.dokumen_type, dorders.departementId, docor.pathFile, dorders.file  FROM `departement_orders` as dorders \
+    db.query("SELECT dorders.id, dorders.status, o.order_invoice, doc.dokumen_name, doc.dokumen_type, dorders.departementId, docor.link, dorders.file  FROM `departement_orders` as dorders \
     INNER JOIN departements dp on dp.id = dorders.departementId \
     INNER JOIN document_orders docor on docor.id = dorders.documentOrderId \
     INNER JOIN documents doc on doc.id = docor.documentId \
@@ -84,7 +123,10 @@ exports.getAllByDocumenOrder = (req,res) =>{
             documentOrderId: req.query.orderId
         },include:[{
             model: Departement,
-            attributes: ['name']
+            attributes: ['name'],
+            where:{
+                isDelete: false
+            }
         }]
     }).then(data => res.json({data:data})).catch(err => {
         console.log(err);
@@ -92,11 +134,22 @@ exports.getAllByDocumenOrder = (req,res) =>{
 })
 }
 
-exports.updateStatusSudahProses = (req,res) =>{
+exports.updateStatusSudahProses = async (req,res) =>{
     try{
-        let update =DepOrder
+        let update = await DepOrder
         .update({status:"Sudah Diproses",file:req.body.file, link:req.body.link},{where:{id:req.params.id}})
         kirimKeDiriSendiri(req.user.email,req.body.link)
+        let docder =  await db.query("select (SELECT count(*) from departement_orders dor \
+        INNER JOIN departements d on d.id = dor.departementId \
+        where `status` = 'Sudah Diproses' and documentOrderId = :documentOrderId  and d.isDelete = 0\
+        ) as finishs, (SELECT count(*) from departement_orders dor \
+        INNER JOIN departements d on d.id = dor.departementId \
+        where documentOrderId = :documentOrderId and d.isDelete = 0) as unfinish",
+        { replacements: { documentOrderId: req.params.documentOrderId},raw: true,type: Sequelize.QueryTypes.SELECT})
+        console.log(docder)
+        if(docder[0].finishs == docder[0].unfinish){
+            DocOrder.update({status : "FINISH"},{where:{id:req.params.documentOrderId}})
+        }
         res.json({data:req.body})
     }catch(e){
         console.log(e)
@@ -104,10 +157,25 @@ exports.updateStatusSudahProses = (req,res) =>{
     }
     
 }
-exports.updateStatusDalamProses = (req,res) =>{
-    DepOrder
-    .update({status:"Dalam Proses"},{where:{id:req.params.id}})
-    .then(data => res.json({data:data})).catch(err => res.json({ msg: err }))
+exports.updateStatusDalamProses = async (req,res) =>{
+    try{
+        let update = await  DepOrder
+        .update({status:"Dalam Proses"},{where:{id:req.params.id}})
+        let docder =  await db.query("select (SELECT count(*) from departement_orders dor \
+        INNER JOIN departements d on d.id = dor.departementId \
+        where `status` = 'Sudah Diproses' and documentOrderId = :documentOrderId  and d.isDelete = 0\
+        ) as finishs, (SELECT count(*) from departement_orders dor \
+        INNER JOIN departements d on d.id = dor.departementId \
+        where documentOrderId = :documentOrderId and d.isDelete = 0) as unfinish",
+        { replacements: { documentOrderId: req.params.documentOrderId},raw: true,type: Sequelize.QueryTypes.SELECT})
+
+        DocOrder.update({status : "DELIVER"},{where:{id:req.params.documentOrderId}})
+        
+        res.json({data:req.body})
+    }catch(e){
+        console.log(e)
+        res.json({ msg: e })
+    }
 }
 
 exports.getProgresDepartementOrder = (req,res) => {

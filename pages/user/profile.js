@@ -15,14 +15,16 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb';
 
 const getYupValidationSchema = Yup.object().shape({
     email: Yup.string()
-      .email('Fornat Email salah!')
+      .email('Format Email salah!')
       .required('Email tidak boleh kosong!'),
     name: Yup.string()
       .required('Nama Departemen tidak boleh kosong!'),
     nama:  Yup.string()
         .required('Nama Penanggung Jawab tidak boleh kosong!'),
-    phone:  Yup.string()
-        .required('No Telpon tidak boleh kosong!')
+    phone:  Yup
+    .number('Format No Telepon salah')
+    .positive('Format No Telepon salah')
+        .required('No Telepon tidak boleh kosong!')
   })
 
 
@@ -133,7 +135,7 @@ function EditForm(props) {
 
 function onSubmit (values,actions) {
     fetch('/api/v1/profile-user',{
-        method: 'PUT', 
+        method: 'POST', 
         body: JSON.stringify(values), 
         headers:{
             'Content-Type': 'application/json',

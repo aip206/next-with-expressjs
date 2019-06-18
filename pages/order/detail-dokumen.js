@@ -59,11 +59,11 @@ class DetailDokumen extends Component {
         sort: true,
         formatter: (cell, row, rowIndex, extraData) => {
           if(row.status == "Ditempatkan"){
-            return <span className="badge badge-pill badge-secondary">Ditempatkan</span>
+            return <span className="badge badge-pill badge-secondary d-block">Ditempatkan</span>
           }else if(row.status == "Dalam Proses"){
-            return <span className="badge badge-pill badge-warning">Dalam Proses</span>
+            return <span className="badge badge-pill badge-warning d-block">Dalam Proses</span>
           }else if (row.status == "Sudah Diproses"){
-            return <span className="badge badge-pill badge-success">Sudah Diproses</span>
+            return <span className="badge badge-pill badge-success d-block">Sudah Diproses</span>
           }
           
        },
@@ -75,7 +75,7 @@ class DetailDokumen extends Component {
         formatter: (cell, row, rowIndex, extraData) => {
           if(row.status == "Sudah Diproses") {
              return <div className="btn-group btn-group-sm">
-                <button type="button" onClick={this.download.bind(this,row.path)} className="btn btn-outline-success"><i className="fas fa-download mr-2"></i>Unduh</button>
+                <a href={row.link} target="blank" className="btn btn-outline-success"><i className="fas fa-download mr-2"></i>Unduh</a>
                 <button type="button" onClick={this.batal.bind(this,row.id)} className="btn btn-outline-danger"><i className="fas fa-times mr-2"></i>Progres Ulang</button>
               </div>
             }
@@ -115,8 +115,8 @@ class DetailDokumen extends Component {
     });
   }
 
-  batal = e =>{
-    axioss.get('/api/v1/update-progress-dokumen-order/'+e,{
+  batal = (e) =>{
+    axioss.get('/api/v1/update-progress-dokumen-order/'+e+'/'+this.props.router.query.dokOrderId,{
       headers: {
         'Authorization': cookie.get('token')
       } 

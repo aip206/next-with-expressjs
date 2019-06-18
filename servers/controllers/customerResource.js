@@ -2,7 +2,7 @@ const Customer = require('../models/customer');
 
 
 exports.getAllBySearch = (req,res) => {
-    Customer.find({
+    Customer.count({
         where:{
             isDelete:false
         }

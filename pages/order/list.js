@@ -85,9 +85,9 @@ class Order extends Component {
         text: 'Progress',
         formatter:(cell, row, rowIndex, extraData) => {
           if(row.progress == 100){
-            return  <span className="badge badge-pill badge-success">Selesai</span>
+            return  <span className="badge badge-pill badge-success d-block">Selesai</span>
           }else{
-            return <div className="progress"> <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={row.progress} aria-valuemin="0" aria-valuemax="100" style={{width:row.progress+"%"}}>{row.progress}%</div>       </div>
+            return <div className="progress"> <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={row.progress} aria-valuemin="0" aria-valuemax="100" style={{width:row.progress+"%", textAlign:'center'}}>{parseInt(row.progress)}%</div>       </div>
           }
         }
       },

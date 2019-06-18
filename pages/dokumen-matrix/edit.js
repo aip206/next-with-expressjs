@@ -272,6 +272,7 @@ function upload (values) {
                 progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
                 swal({
                     text: "Upload Progress",
+                    closeOnClickOutside: false,
                     content: (
                         <div class="progress">
                             <div class="progress-bar progress-bar-striped progress-bar-animated" 

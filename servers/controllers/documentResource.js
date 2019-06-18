@@ -11,7 +11,10 @@ exports.getAll = (req,res) => {
         include: [{
             model: Departement,
             as: 'departements', through: 'document_departements',
-            attributes: ['id','name']
+            attributes: ['id','name'],
+            where:{
+                isDelete :false
+            }
         }]
     }).then(data => res.json({data:data})).catch(err => {
         console.log(err)
@@ -28,7 +31,10 @@ exports.getDokumenMatrix  = (req,res) => {
         attributes: ['id','dokumen_name','dokumen_type'],
         include: [{
             model: Departement,
-            as: 'departements', through: 'document_departements'
+            as: 'departements', through: 'document_departements',
+            where:{
+                isDelete :false
+            }
         }],
     }).then(data => res.json({data:data})).catch(err => {
         console.log(err)
@@ -58,7 +64,10 @@ exports.getById = (req, res) => {
             as: 'departements',
             required: false,
             attributes: ['id','name'],
-            through: 'document_departements'
+            through: 'document_departements',
+            where:{
+                isDelete :false
+            }
           }],
         where:{
         id:req.params.id,

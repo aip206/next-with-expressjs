@@ -23,11 +23,12 @@ const divRight = {
 const parameter = {
   "sortBy":"createdAt","sort":"ASC","limit":"10","page":0
 }
-const dataUpload = {
+let dataUpload = {
   file:"",
   origin:"",
   link:"",
-  idDepOrder:0
+  idDepOrder:0,
+  nameOfFile:""
 }
 class DepartementOrder extends Component {
   constructor(props) {
@@ -94,7 +95,7 @@ class DepartementOrder extends Component {
         formatter: (cell, row, rowIndex, extraData) => (
             <Fragment>
               <div className="btn-group btn-group-sm">
-              <button type="button" onClick={this.downloadOrder.bind(this,row.pathFile)} className="btn btn-sm btn-outline-success"><i className="fas fa-download mr-2"></i>Unduh</button>
+              <a href={row.link} target="blank" className="btn btn-sm btn-outline-success"><i className="fas fa-download mr-2"></i>Unduh</a>
                   {row.status == "Ditempatkan" ?(                  
                   <button type="button"  onClick={this.process.bind(this,row.id)} class="btn btn-outline-warning"><i class="fas fa-check mr-2"></i>Proses</button>
                    ):""}
@@ -121,6 +122,7 @@ class DepartementOrder extends Component {
       initialValues:{
         ... this.state.initialValues,
         idDepOrder:id.id,
+        documentOrderId:id.documentOrderId,
         tipeDokumen:id.dokumen_type
       }
     })
@@ -129,6 +131,13 @@ class DepartementOrder extends Component {
   }
 
   handleClose() {
+    dataUpload = {
+      file:"",
+      origin:"",
+      link:"",
+      idDepOrder:0,
+      nameOfFile:""
+    }
     this.setState({ show: false });
     this.refreshData();
   }
@@ -214,6 +223,7 @@ class DepartementOrder extends Component {
     .then(response => response.data.data)
     .then(data =>{ 
       this.setState({ data : data})
+      console.log(data)
     })
   }
 
@@ -291,11 +301,11 @@ function ModalForm (props) {
   const { values,errors, handleChange, handleSubmit, setFieldValue,
     parentState} = props
     const [progress, setProgress] = useState(0);
-
     const upload = (e) => {
       values.fileName = e
       values.nameOfFile= e.target.files[0].name
       values.idDepOrder = parentState.initialValues.idDepOrder
+      values.documentOrderId = parentState.initialValues.documentOrderId
   }
   return(
     <Fragment>
@@ -355,6 +365,7 @@ function upload (values,action) {
           
           swal({
               text: "Upload Progress",
+              closeOnClickOutside: false,
               content: (
                   <div class="progress">
                       <div class="progress-bar progress-bar-striped progress-bar-animated" 
@@ -371,10 +382,8 @@ function upload (values,action) {
           storage.ref('orders-departement').child(namaFile).getDownloadURL().then(url => {
               values.link = url
               values.origin = namaFile
-              values.fileName =""
-              setTimeout(()=>{
-                  onSubmit(values,action)
-              },3000)
+              values.fileName ="";
+              onSubmit(values,action)
               
           })
       });
@@ -392,7 +401,7 @@ function onSubmit (values, closed) {
     'Content-Type': 'application/json',
     'Authorization': cookie.get('token')
 }
-http.put('/api/v1/update-sukses-dokumen-order/'+values.idDepOrder,data,{'headers':headers})
+http.put('/api/v1/update-sukses-dokumen-order/'+values.idDepOrder+'/'+values.documentOrderId,data,{'headers':headers})
 .then(response => {
     swal({
         title: "Tersimpan",

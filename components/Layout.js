@@ -40,6 +40,7 @@ const Layout = (props) => {
         </main>
         <script src="/static/vendors/jquery/jquery.min.js"></script>
         <script src="/static/vendors/fontawesome/js/all.min.js"/>
+        <script src="/static/vendors/chartjs/chart.js"/>
     </div>
 )}
 export default withRouter(Layout);

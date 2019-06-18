@@ -42,11 +42,11 @@ const EmailTemplate = require('email-templates').EmailTemplate;
 // where o.order_status = 'Finish' and depder.departementId = 23
 
 exports.dashboardRanking = (req,res) => {
-    db.query("SELECT d.name as name, count(departementId) as total FROM departement_orders dor\
-    INNER JOIN departements d on d.id = dor.departementId\
-    INNER JOIN document_orders docord on docord.orderId =  dor.documentOrderId\
-    INNER JOIN orders o on o.id =  docord.orderId\
-    where o.isDelete = 0 and d.isDelete = 0  and docord.isDelete = 0\
+    db.query("SELECT d.name as name, count(departementId) as total FROM departement_orders dor \
+    INNER JOIN departements d on d.id = dor.departementId \
+    INNER JOIN document_orders docord on docord.id =  dor.documentOrderId \
+    INNER JOIN orders o on o.id =  docord.orderId \
+    where o.isDelete = 0 and d.isDelete = 0  and docord.isDelete = 0 \
     GROUP BY departementId ORDER BY total DESC limit 5"
     ,
     {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{

@@ -25,7 +25,7 @@ const getYupValidationSchema = Yup.object({
         .required('Tipe Dokumen tidak boleh kosong!'),
         departements: Yup.string()
           .required('Nama Departemen tidak boleh kosong!'),
-        file : Yup.string()
+          nameOfFile : Yup.string()
         .required('Contoh Dokumen tidak boleh kosong!')
         
         
@@ -181,7 +181,7 @@ function EditForm(props) {
                 
                         <div className="form-group">
 							<label for="addDeptType">Tipe Dokumen</label>
-                            <CreatableSelect
+                            <Select
                                 id="addDeptType"
                                 name="initialValues.dokumen_type"
                                 options={values.typeDokumen}
@@ -189,7 +189,7 @@ function EditForm(props) {
                                 onChange={(e) =>{
                                     values.initialValues.dokumen_type = e
                                     setFieldValue("initialValues.fileName",null)
-                                    setFieldValue("initialValues.nameOfFile",null)
+                                    setFieldValue("initialValues.nameOfFile","")
                                     setSelected(e.label)
 
                                 }}
@@ -214,7 +214,7 @@ function EditForm(props) {
                                
 								<label className="custom-file-label" for="addDocExample">{values.initialValues.nameOfFile}</label>
                                 <input type="hidden" name={values.initialValues.file} name="initialValues.filename"/>
-                                <ErrorMessage name="initialValues.file" >
+                                <ErrorMessage name="initialValues.nameOfFile" >
                                 {msg => <div className="error-message">{msg}</div>}
                                 </ErrorMessage>
 							</div>
@@ -227,7 +227,7 @@ function EditForm(props) {
                        
                         <div className="form-group">
 							<label for="addDeptName">Nama Departemen</label>
-                            <CreatableSelect
+                            <Select
                                 isMulti
                                 name="initialValues.departements"
                                 onChange={(e)=>{

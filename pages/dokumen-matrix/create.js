@@ -22,7 +22,7 @@ const getYupValidationSchema = Yup.object().shape({
     departements: Yup.string()
       .required('Nama Departemen tidak boleh kosong!'),
       file :  Yup.string()
-      .required('File tidak boleh kosong!')
+      .required('Contoh Dokumen tidak boleh kosong!')
   })
 const typeDokumen = [{label:"Tipe Gambar",value:"Tipe Gambar"},{label:"Tipe Dokumen",value:"Tipe Dokumen"}]
 const initialValues = {
@@ -144,12 +144,15 @@ function CreateForm(props) {
                         
                         <div className="form-group">
 							<label for="addDeptName">Nama Departemen</label>
-                            <CreatableSelect
+                            <Select
                                 isMulti
                                 name="departements"
+                                isClearable={true}
+
                                 onChange={(e)=>{
                                     values.departements = e.map((x) => x.value)
                                 }}
+                                promptTextCreator={() => false}
                                 options={optional}
                             />
                             <ErrorMessage name="departements" className="error-message" component='div'/>

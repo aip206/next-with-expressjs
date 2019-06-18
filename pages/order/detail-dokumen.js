@@ -123,7 +123,6 @@ class DetailDokumen extends Component {
     })
     .then(response => response.data.data)
     .then(data =>{ 
-      this.setState({ data : data})
       this.refresh();
     })
     .catch(err => 

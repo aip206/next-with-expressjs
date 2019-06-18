@@ -170,7 +170,14 @@ class Dashboard extends Component {
 					scales: {
 						yAxes: [{
 							ticks: {
-								beginAtZero: true
+								beginAtZero: true,
+								userCallback: function(label, index, labels) {
+									// when the floored value is the same as the value we have a whole number
+									if (Math.floor(label) === label) {
+											return label;
+									}
+
+							},
 							}
 						}]
 					},
@@ -250,7 +257,14 @@ class Dashboard extends Component {
 					scales: {
 						yAxes: [{
 							ticks: {
-								beginAtZero: true
+								beginAtZero: true,
+								userCallback: function(label, index, labels) {
+									// when the floored value is the same as the value we have a whole number
+									if (Math.floor(label) === label) {
+											return label;
+									}
+
+							},
 							}
 						}]
 					},

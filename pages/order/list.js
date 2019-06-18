@@ -84,7 +84,8 @@ class Order extends Component {
         headerAlign: 'center',
         text: 'Progress',
         formatter:(cell, row, rowIndex, extraData) => {
-          if(row.progress == 100){
+          console.log(row)
+          if(row.order_status == "Finish"){
             return  <span className="badge badge-pill badge-success d-block">Selesai</span>
           }else{
             return <div className="progress"> <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={row.progress} aria-valuemin="0" aria-valuemax="100" style={{width:row.progress+"%", textAlign:'center'}}><span>{parseInt(row.progress)}%</span></div></div>

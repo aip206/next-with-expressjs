@@ -276,6 +276,7 @@ class OrderDetail extends React.Component {
           button: "Ok",
         })
       })
+      this.hitungProgres();
       this.lookUpDokumen();
       this.lookUpDokumenOrder(this.props.router.query.id)
     }
@@ -371,7 +372,7 @@ class OrderDetail extends React.Component {
 								<dt className="col-sm-4">Perkembangan</dt>
 								<dd className="col-sm-8 pb-lg-2">
 									
-                  {this.state.progress == 100 ? <span className="badge badge-pill badge-success d-block">Selesai</span> :
+                  {this.state.data.order_status == 'Finish' ? <span className="badge badge-pill badge-success d-block">Selesai</span> :
                    <div className="progress"> 
                    <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={this.state.progress} aria-valuemin="0" aria-valuemax="100" style={{width:this.state.progress+"%"}}>
                    <span>{parseInt(this.state.progress)}%</span></div>
@@ -425,7 +426,7 @@ class OrderDetail extends React.Component {
                         <div className="col">
                         <SearchBar { ...props.searchProps } />
                         </div>
-                        { this.state.progress != 100 ?  <div className="col">
+                        { this.state.data.order_status != 'Finish' ?  <div className="col">
                           <button className="btn btn-block btn-success"  onClick={this.handleShow.bind(this)}>Tambah Dokumen</button>
                         </div>
                          : null 
@@ -448,12 +449,12 @@ class OrderDetail extends React.Component {
             <div className="card-footer">
             
 					<div className="row">
-          { this.state.data.date_succses == null ? 
+          { this.state.data.date_succses == null || this.state.data.order_status != 'Finish' ? 
 						<div className="col">
 							<button type="button" onClick={this.selesai.bind(this,this.props.router.query.id)} className="btn btn-block btn-outline-success" disabled={this.state.progress != 100} >Selesai</button>
 						</div>: null
           }
-            { this.state.progress != 100 ? 
+            { this.state.data.order_status != 'Finish' ? 
                 <div className="col">
                   <Link href={`/order/edit?id=${this.props.router.query.id}`}>
                     <a href="order-edit.html" className="btn btn-block btn-primary">Ubah</a>

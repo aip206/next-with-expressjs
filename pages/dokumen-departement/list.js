@@ -55,11 +55,42 @@ class DepartementOrder extends Component {
       {
         dataField: 'createdAt',
         headerAlign: 'center',
-        text: 'Tanggal',
+        text: 'Pembuatan',
+        headerStyle: () => {
+          return { width: "20px" };
+        },
         sort: true,
         formatter: (cell, row, rowIndex, extraData) => (
           dateFormat(row.createdAt,"dd/mm/yyyy")
       )
+      },
+      {
+        dataField: 'order_deadline',
+        headerAlign: 'center',
+        text: 'Deadline',
+        headerStyle: () => {
+          return { width: "20px" };
+        },
+        sort: true,
+        formatter: (cell, row, rowIndex, extraData) => (
+          dateFormat(row.order_deadline,"dd/mm/yyyy")
+      )
+      },
+      {
+        dataField: 'date_succses',
+        headerAlign: 'center',
+        text: 'Selesai',
+        headerStyle: () => {
+          return { width: "20px" };
+        },
+        sort: true,
+        formatter: (cell, row, rowIndex, extraData) => {
+          if(row.date_succses){
+            return dateFormat(row.date_succses,"dd/mm/yyyy")
+          }else{
+            return "-"
+          }
+        }
       },
       {
         dataField: 'order_invoice',
@@ -77,13 +108,16 @@ class DepartementOrder extends Component {
         headerAlign: 'center',
         sort: true,
         text: 'Status',
+        headerStyle: () => {
+          return { width: "20px" };
+        },
         formatter: (cell, row, rowIndex, extraData) => {
           if(row.status == "Ditempatkan"){
-            return <span className="badge badge-pill badge-secondary">Ditempatkan</span>
+            return <span className="badge badge-pill badge-secondary d-block">Ditempatkan</span>
           }else if(row.status == "Dalam Proses"){
-            return <span className="badge badge-pill badge-warning">Dalam Proses</span>
+            return <span className="badge badge-pill badge-warning d-block">Dalam Proses</span>
           }else if (row.status == "Sudah Diproses"){
-            return <span className="badge badge-pill badge-success">Sudah Diproses</span>
+            return <span className="badge badge-pill badge-success d-block">Sudah Diproses</span>
           }
           
        },

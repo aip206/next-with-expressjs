@@ -152,7 +152,7 @@ class OrderDetail extends React.Component {
                 swal({
                   title: "Batal Dokumen",
                   text: "Batal Dokumen Berhasil dilakukan " ,
-                  icon: "succsess",
+                  icon: "success",
                   button: "Ok",
                 }).then(e => this.refresh())
               }else{

@@ -78,7 +78,7 @@ exports.dashboardOrderFinis = (req,res) => {
 }
 
 exports.getAll = (req,res) => {
-   db.query("SELECT dorders.id,dorders.status, docor.orderId, o.createdAt, o.order_invoice, o.customer_name, dp.`name`, docor.link, dorders.file, documen.dokumen_type,dorders.documentOrderId FROM `departement_orders` as dorders \
+   db.query("SELECT dorders.id,dorders.status, o.order_deadline, o.date_succses, docor.orderId, o.createdAt, o.order_invoice, o.customer_name, dp.`name`, docor.link, dorders.file, documen.dokumen_type,dorders.documentOrderId FROM `departement_orders` as dorders \
     INNER JOIN departements dp on dp.id = dorders.departementId \
     INNER JOIN document_orders docor on docor.id = dorders.documentOrderId \
     INNER JOIN orders o on o.id = docor.orderId \

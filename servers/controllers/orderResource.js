@@ -171,7 +171,7 @@ exports.dashboardDayOfOrder = (req,res) => {
             FROM orders  o \
         INNER JOIN document_orders docord on docord.orderId =  o.id \
         INNER JOIN departement_orders depord on depord.documentOrderId = docord.id \
-            WHERE o.isDelete = 0 and depord.departementId = :id \
+            WHERE o.isDelete = 0 and depord.departementId = :id and docord.isDelete = 0 \
             GROUP BY hari; "
         ,
         {replacements: { id: req.user.id},raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
@@ -209,12 +209,12 @@ exports.dashboardOrderFinis = (req,res) => {
     db.query("Select (SELECT count(*) FROM `orders` o \
     INNER JOIN document_orders docord on docord.orderId =  o.id \
     INNER JOIN departement_orders depord on depord.documentOrderId = docord.id \
-    where o.isDelete = 0 and depord.departementId = :id \
+    where o.isDelete = 0 and depord.departementId = :id and docord.isDelete = 0 \
     ) as total , \
         (SELECT count(*) FROM `orders` o \
     INNER JOIN document_orders docord on docord.orderId =  o.id\
     INNER JOIN departement_orders depord on depord.documentOrderId = docord.id\
-    where o.isDelete = 0 and depord.departementId = :id and order_status = 'Finish') as finish"
+    where o.isDelete = 0 and depord.departementId = :id and order_status = 'Finish' and docord.isDelete = 0 ) as finish"
     ,
     {replacements: { id: req.user.id},raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
         if(data){

@@ -15,6 +15,7 @@ import dateFormat from 'dateformat';
 import Modal from 'react-bootstrap/Modal';
 import moment from 'moment';
 import http from '../../utils/http-service';
+import * as Yup from 'yup';
 
 const divRight = {
   position : "absolute",
@@ -30,6 +31,15 @@ let dataUpload = {
   idDepOrder:0,
   nameOfFile:""
 }
+
+
+const getYupValidationSchema =  Yup.object().shape({
+        nameOfFile : Yup.string()
+      .required('Contoh Dokumen tidak boleh kosong!')
+      
+      
+  })
+  
 class DepartementOrder extends Component {
   constructor(props) {
     super(props);
@@ -319,6 +329,7 @@ render () {
       >
           <Formik
           initialValues={dataUpload}
+          validationSchema={getYupValidationSchema}
           onSubmit={(e)=>upload(e, this.handleClose)}
           render={ props =>{
               return <ModalForm  {...props} parentState={this.state}
@@ -372,6 +383,8 @@ function ModalForm (props) {
               }
                     
                     <label className="custom-file-label" for="addDocExample">{values.nameOfFile}</label>
+                    <ErrorMessage name="nameOfFile" className="error-message" component='div'/>
+
                   </div>
 
               </div>

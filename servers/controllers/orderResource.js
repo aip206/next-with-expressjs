@@ -485,11 +485,11 @@ exports.checkProgress = (req,res) => {
         SELECT count(*) FROM `orders` o \
         INNER JOIN document_orders docder on docder.orderId = o.id\
         INNER JOIN departement_orders depder on depder.documentOrderId = docder.id\
-        where o.id = :orderId and depder.`status` = 'Sudah Diproses'\
+        where docder.isDelete = 0 and o.id = :orderId and depder.`status` = 'Sudah Diproses'\
         ) as totalDepartement FROM `orders` o \
         INNER JOIN document_orders docder on docder.orderId = o.id\
         INNER JOIN departement_orders depder on depder.documentOrderId = docder.id\
-        where o.id = :orderId",  
+        where docder.isDelete = 0 and o.id = :orderId",  
     {replacements: { orderId: req.params.id},raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
         if(data){
             res.json({ data: data }) 

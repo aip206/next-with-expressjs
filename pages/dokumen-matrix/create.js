@@ -78,8 +78,12 @@ function CreateForm(props) {
 
         const upload = e => {
             
-            setFieldValue("fileName",e)
-            setFieldValue("nameOfFile",e.target.files[0].name)
+            
+            if(e.target.files[0]){
+                setFieldValue("fileName",e)
+                setFieldValue("nameOfFile",e.target.files[0].name)
+            }
+            
             
             }
     return(
@@ -109,6 +113,9 @@ function CreateForm(props) {
                                 options={typeDok}
                                 onChange={(e) =>{
                                     values.dokumen_type = e.label
+                                    values.file = null
+                                    values.fileName = null
+                                    values.nameOfFile = null
                                     setSelected(e.label)
                                 }}
                             />

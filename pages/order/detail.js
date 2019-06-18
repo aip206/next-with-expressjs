@@ -535,8 +535,9 @@ class OrderDetail extends React.Component {
 
   
   function ProgresDepOrder (props) {
-   const dokumenlength = props.id.length 
-      const persentase = props.id.filter((x)=>x.status == "Sudah Diproses").length
+    console.log(props.id.filter((x)=>!x.departement.isDelete))
+   const dokumenlength = props.id.filter((x)=>!x.departement.isDelete).length 
+      const persentase = props.id.filter((x)=>!x.departement.isDelete && x.status == "Sudah Diproses").length
       const progresTotal = (dokumenlength != 0) ? (persentase / dokumenlength) * 100 : 0
       if(progresTotal == 100){
         return <span className="badge badge-pill badge-success d-block">Selesai</span>

@@ -146,9 +146,11 @@ function EditForm(props) {
     const [progress, setProgress] = useState(0);
     const [selected, setSelected] = useState(values.initialValues.select);
     const upload = e => {
-                setFieldValue("initialValues.fileName",e)
-                setFieldValue("initialValues.nameOfFile",e.target.files[0].name)
-
+        if(e.target.files[0]){
+            setFieldValue("initialValues.fileName",e)
+            setFieldValue("initialValues.nameOfFile",e.target.files[0].name)
+        }
+               
         //         setFieldValue("initialValues.link",url)
         //     })
         // });
@@ -183,6 +185,8 @@ function EditForm(props) {
                                 defaultValue={values.initialValues.dokumen_type}
                                 onChange={(e) =>{
                                     values.initialValues.dokumen_type = e
+                                    setFieldValue("initialValues.fileName",null)
+                                    setFieldValue("initialValues.nameOfFile",null)
                                     setSelected(e.label)
 
                                 }}
@@ -211,9 +215,6 @@ function EditForm(props) {
                                 {msg => <div className="error-message">{msg}</div>}
                                 </ErrorMessage>
 							</div>
-                            <div class="progress">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100" style={{width:progress+"%"}}>{progress}</div>
-                            </div>
                             </div>
                             <div className="col-sm-2">
                             <a href={`${values.initialValues.link}`} target="_blank" className="btn btn-outline-primary" >Download</a>

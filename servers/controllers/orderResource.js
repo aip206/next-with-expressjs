@@ -246,7 +246,17 @@ exports.getDocOrder = (req,res) => {
             orderId:req.params.id,
             isDelete:false
         },
-        include: [DepOrder,Document]
+        include: [
+            {
+                model: DepOrder,
+                where:{
+                    isDelete: false
+                },include: [
+                    {
+                        model: Departement
+                    }]
+            },
+            Document]
     }).then(data => res.json({data:data})).catch(err => {
         console.log(err)
         res.json({ msg: err })})   

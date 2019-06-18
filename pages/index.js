@@ -9,6 +9,7 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
 		this.state = {
+			role:"",
 			customer:0,
 			orderFinish:{},
 			dokumenFinish:{},
@@ -17,6 +18,10 @@ class Dashboard extends Component {
 		}
   }
   componentDidMount () {
+		if(process.browser){
+			let data = JSON.parse(window.localStorage.getItem("myData"))
+			this.setState({role : data.role})
+		}
 		this.pemesananDokumen();
 		this.pemesananGrafik();
 		this.totalCustomer();
@@ -33,7 +38,6 @@ class Dashboard extends Component {
           'Authorization': cookie.get('token')
         } 
 			})
-			console.log(resp.data.data)
 			this.setState({ranking:resp.data.data})
 		}catch(e){
 			console.log(e)
@@ -275,13 +279,15 @@ class Dashboard extends Component {
         <div class="container-fluid">
           <h3 className="title"><i className="fas fa-home fa-fw mr-2"></i>Dashboard</h3>
           <div class="card-deck mb-3">
+					{this.state.role == 'admin'?
             <div class="card">
               <div class="card-body">
                 <small class="d-block text-uppercase font-weight-bold border-bottom">Pelanggan</small>
                 <h1 class="text-primary mt-3">{this.state.customer}</h1>
                 <small class="text-muted">Jumlah pelanggan terdaftar.</small>
               </div>
-            </div>
+						</div> : null
+						}
             <div class="card">
               <div class="card-body">
                 <small class="d-block text-uppercase font-weight-bold border-bottom">Pemesanan</small>
@@ -319,18 +325,20 @@ class Dashboard extends Component {
                 </div>
               </div>
             </div>
+						{this.state.role == 'admin'?
 						<div class="col-lg-4">
-					<div class="card">
-						<div class="card-body">
-							<small class="d-block text-uppercase font-weight-bold border-bottom">Departemen</small>
-							<RangkingDepartemen prop={this.state.ranking}/>
-							
-							<small class="text-muted">Departemen dengan pemesanan terbanyak.</small>
+							<div class="card">
+							<div class="card-body">
+								<small class="d-block text-uppercase font-weight-bold border-bottom">Departemen</small>
+								<RangkingDepartemen prop={this.state.ranking}/>
+								
+								<small class="text-muted">Departemen dengan pemesanan terbanyak.</small>
+							</div>
 						</div>
-					</div>
-				</div>
+					</div>:null}
         </div>
         </div>
+				
       </Layout>
       )
   }

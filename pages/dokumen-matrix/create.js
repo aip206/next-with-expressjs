@@ -176,7 +176,9 @@ function upload (values) {
             
             swal({
                 text: "Upload Progress",
+                button: false,
                 closeOnClickOutside: false,
+                showConfirmButton: false,
                 content: (
                     <div class="progress">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" 

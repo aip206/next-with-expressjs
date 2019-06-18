@@ -8,6 +8,10 @@ import * as Yup from 'yup';
 import Router from 'next/router';
 import swal from 'sweetalert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb'
+
+const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+
+
 const getYupValidationSchema = Yup.object().shape({
     email: Yup.string()
       .email('Format Email salah!')
@@ -17,10 +21,12 @@ const getYupValidationSchema = Yup.object().shape({
     nama:  Yup.string()
         .required('Nama Penanggung Jawab tidak boleh kosong!'),
     phone: 
-        Yup
-        .number('Format Nomor Telepon Penanggung Jawab salah')
-        .positive('Format Nomor Telepon Penanggung Jawab salah')
+        Yup.string()
         .required('Nomor Telepon Penanggung Jawab tidak boleh kosong!')
+        .matches(phoneRegExp, 'Nomor Telepon Penanggung Jawab tidak valid')
+
+        
+        
   })
 const initialValues = {
     name:undefined,

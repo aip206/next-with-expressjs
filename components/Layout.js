@@ -5,6 +5,7 @@ import Header from './Header';
 import { withRouter } from 'next/router';
 import Breadcrumb from './Breadcrumb';
 import DocumentTitle from 'react-document-title';
+import '../static/vendors/chartjs/chart.js';
 const Layout = (props) => {
     const [yes, setYes] = useState(true)
     const [show, setShow] = useState("show")

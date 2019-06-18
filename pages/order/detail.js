@@ -564,6 +564,9 @@ class OrderDetail extends React.Component {
             swal({
                 text: "Upload Progress",
                 closeOnClickOutside: false,
+                button: false,
+                closeOnClickOutside: false,
+                showConfirmButton: false,
                 content: (
                     <div class="progress">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" 

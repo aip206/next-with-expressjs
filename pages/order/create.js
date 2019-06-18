@@ -17,6 +17,7 @@ import DatePicker from "react-datepicker";
 import http from '../../utils/http-service';
 import JSON from 'circular-json';
 
+const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
 const getYupValidationSchema = Yup.object().shape({
     customer_name: Yup.string()
@@ -24,9 +25,8 @@ const getYupValidationSchema = Yup.object().shape({
       customer_email: Yup.string()
       .email('Format Email Pelanggan salah!')
       .required('Email Pelanggan tidak boleh kosong!'),
-      customer_phone: Yup.number('Format Nomor Telepon salah')
-      .positive('Format Nomor Telepon salah')
-      .required('Nomor Telepon Pelanggan tidak boleh kosong!'),
+      customer_phone: Yup.string().required('Nomor Telepon Pelanggan tidak boleh kosong!')
+      .matches(phoneRegExp, 'Nomor Telepon Pelanggan tidak valid'),
       customer_address: Yup.string()
       .required('Alamat Pelanggan tidak boleh kosong!'),
       customer_kecamatan: Yup.string()
@@ -403,7 +403,10 @@ async function onSubmit (values,actions) {
         swal({
             title: "Menunggu",
             text: "Pesanan anda Sedang di Proses",
-            closeOnClickOutside: false
+            closeOnClickOutside: false,
+            button: false,
+            closeOnClickOutside: false,
+            showConfirmButton: false,
           })
         Promise.all(
             values.arrFile.map( async (item,index) => {

@@ -14,6 +14,7 @@ import moment from 'moment';
 import {withRouter} from 'next/router';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import DatePicker from "react-datepicker";
+const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
 const getYupValidationSchema = Yup.object({
     initialValues:Yup.object({
@@ -23,7 +24,8 @@ const getYupValidationSchema = Yup.object({
         .email('Format Email Pelanggan salah!')
         .required('Email Pelanggan tidak boleh kosong!'),
         customer_phone: Yup.string()
-        .required('Nomor Telepon Pelanggan tidak boleh kosong!'),
+        .required('Nomor Telepon Pelanggan tidak boleh kosong!')
+         .matches(phoneRegExp, 'Nomor Telepon Pelanggan tidak valid'),
         customer_address: Yup.string()
         .required('Alamat Pelanggan tidak boleh kosong!'),
         customer_kecamatan: Yup.string()

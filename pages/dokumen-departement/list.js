@@ -97,7 +97,7 @@ class DepartementOrder extends Component {
               <div className="btn-group btn-group-sm">
               <a href={row.link} target="blank" className="btn btn-sm btn-outline-success"><i className="fas fa-download mr-2"></i>Unduh</a>
                   {row.status == "Ditempatkan" ?(                  
-                  <button type="button"  onClick={this.process.bind(this,row.id)} class="btn btn-outline-warning"><i class="fas fa-check mr-2"></i>Proses</button>
+                  <button type="button"  onClick={this.process.bind(this,row)} class="btn btn-outline-warning"><i class="fas fa-check mr-2"></i>Proses</button>
                    ):""}
                   {row.status == "Dalam Proses" ?(
                   <button type="button" onClick={this.handleShow.bind(this, row)} class="btn btn-outline-secondary"><i class="fas fa-upload mr-2"></i>Unggah</button>
@@ -143,7 +143,7 @@ class DepartementOrder extends Component {
   }
 
   process (id) {
-    http.get('/api/v1/update-progress-dokumen-order/'+id,{
+    http.get('/api/v1/update-progress-dokumen-order/'+id.id+'/'+id.documentOrderId,{
       headers: {
         'Authorization': cookie.get('token')
       } 
@@ -366,6 +366,9 @@ function upload (values,action) {
           swal({
               text: "Upload Progress",
               closeOnClickOutside: false,
+              button: false,
+              closeOnClickOutside: false,
+              showConfirmButton: false,
               content: (
                   <div class="progress">
                       <div class="progress-bar progress-bar-striped progress-bar-animated" 

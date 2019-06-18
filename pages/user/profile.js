@@ -22,9 +22,9 @@ const getYupValidationSchema = Yup.object().shape({
     nama:  Yup.string()
         .required('Nama Penanggung Jawab tidak boleh kosong!'),
     phone:  Yup
-    .number('Format No Telepon salah')
-    .positive('Format No Telepon salah')
-        .required('No Telepon tidak boleh kosong!')
+    .string()
+        .required('Nomor Telepon Penanggung Jawab tidak boleh kosong!')
+        .matches(phoneRegExp, 'Nomor Telepon Penanggung Jawab tidak valid')
   })
 
 

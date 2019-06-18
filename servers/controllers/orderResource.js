@@ -27,85 +27,196 @@ const EmailTemplate = require('email-templates').EmailTemplate;
 
 
 exports.dashboardDokumenFinis = (req,res) => {
-    db.query("Select (SELECT count(*) FROM `document_orders` where isDelete = 0 ) as total , \
-    (SELECT count(*) FROM `document_orders` where isDelete = 0 and status = 'FINISH') as finish  "
-    ,
-    {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
-        if(data){
-            res.json({ data: data }) 
-        }else{
-            res.json({ data: [] })
-        }
-    }).catch((err)=>{
-        console.log(err)
-        res.status(400);
-        res.json({ msg: err })
-    })
+    if(req.user.role == 'admin'){
+        db.query("Select (SELECT count(*) FROM `document_orders` where isDelete = 0 ) as total , \
+        (SELECT count(*) FROM `document_orders` where isDelete = 0 and status = 'FINISH') as finish  "
+        ,
+        {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+            if(data){
+                res.json({ data: data }) 
+            }else{
+                res.json({ data: [] })
+            }
+        }).catch((err)=>{
+            console.log(err)
+            res.status(400);
+            res.json({ msg: err })
+        })
+    }
+    else{
+        db.query("Select (SELECT count(*) FROM `document_orders` docord \
+        INNER JOIN departement_orders depord on depord.documentOrderId = docord.id \
+        where docord.isDelete = 0 and depord.departementId = :id ) as total ,  \
+            (SELECT count(*) FROM `document_orders` docord \
+                INNER JOIN departement_orders depord on depord.documentOrderId = docord.id \
+                where docord.isDelete = 0 and docord.status = 'FINISH' and depord.departementId = :id ) as finish "
+        ,
+        {replacements: { id: req.user.id},raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+            if(data){
+                res.json({ data: data }) 
+            }else{
+                res.json({ data: [] })
+            }
+        }).catch((err)=>{
+            console.log(err)
+            res.status(400);
+            res.json({ msg: err })
+        })
+    }
 }
 
 exports.dashboardDateSelisih = (req,res) => {
-    db.query("select DATEDIFF(date_succses,createdAt) as selisih from orders\
-    where order_status = 'Finish' and isDelete = 0 "
-    ,
-    {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
-        if(data){
-            res.json({ data: data }) 
-        }else{
-            res.json({ data: [] })
-        }
-    }).catch((err)=>{
-        console.log(err)
-        res.status(400);
-        res.json({ msg: err })
-    })
+    if(req.user.role == 'admin'){
+        db.query("select DATEDIFF(date_succses,createdAt) as selisih from orders\
+        where order_status = 'Finish' and isDelete = 0 "
+        ,
+        {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+            if(data){
+                res.json({ data: data }) 
+            }else{
+                res.json({ data: [] })
+            }
+        }).catch((err)=>{
+            console.log(err)
+            res.status(400);
+            res.json({ msg: err })
+        })
+    }else{
+        db.query("select DATEDIFF(date_succses,o.createdAt) as selisih from orders o \
+        INNER JOIN document_orders docord on docord.orderId =  o.id \
+        INNER JOIN departement_orders depord on depord.documentOrderId = docord.id \
+        where order_status = 'Finish' and o.isDelete = 0 and depord.departementId = :id"
+        ,
+        {replacements: { id: req.user.id},raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+            if(data){
+                res.json({ data: data }) 
+            }else{
+                res.json({ data: [] })
+            }
+        }).catch((err)=>{
+            console.log(err)
+            res.status(400);
+            res.json({ msg: err })
+        })
+    }
 }
 exports.dashboardDayOfDokumen = (req,res) => {
-    db.query("SELECT \
-    COUNT(*) as total, \
-    WEEKDAY(createdAt) AS hari \
-    FROM document_orders  \
-    WHERE isDelete = 0\
-    GROUP BY hari; "
-    ,
-    {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
-        if(data){
-            res.json({ data: data }) 
-        }else{
-            res.json({ data: [] })
-        }
-    }).catch((err)=>{
-        console.log(err)
-        res.status(400);
-        res.json({ msg: err })
-    })
+    if(req.user.role == 'admin'){
+        db.query("SELECT \
+        COUNT(*) as total, \
+        WEEKDAY(createdAt) AS hari \
+        FROM document_orders  \
+        WHERE isDelete = 0\
+        GROUP BY hari; "
+        ,
+        {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+            if(data){
+                res.json({ data: data }) 
+            }else{
+                res.json({ data: [] })
+            }
+        }).catch((err)=>{
+            console.log(err)
+            res.status(400);
+            res.json({ msg: err })
+        })
+    }else{
+        db.query("SELECT  \
+        COUNT(*) as total,  \
+        WEEKDAY(docord.createdAt) AS hari  \
+        FROM document_orders  docord  \
+				INNER JOIN departement_orders depord on depord.documentOrderId = docord.id \
+        WHERE docord.isDelete = 0 and depord.departementId = :id \
+        GROUP BY hari;"
+        ,
+        {replacements: { id: req.user.id},raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+            if(data){
+                res.json({ data: data }) 
+            }else{
+                res.json({ data: [] })
+            }
+        }).catch((err)=>{
+            console.log(err)
+            res.status(400);
+            res.json({ msg: err })
+        })
+    }
 }
 
 exports.dashboardDayOfOrder = (req,res) => {
-    db.query("SELECT \
-    COUNT(*) as total, \
-    WEEKDAY(createdAt) AS hari \
-    FROM orders  \
-    WHERE isDelete = 0\
-    GROUP BY hari; "
-    ,
-    {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
-        if(data){
-            res.json({ data: data }) 
-        }else{
-            res.json({ data: [] })
-        }
-    }).catch((err)=>{
-        console.log(err)
-        res.status(400);
-        res.json({ msg: err })
-    })
+    if(req.user.role == 'admin'){
+        db.query("SELECT \
+        COUNT(*) as total, \
+        WEEKDAY(createdAt) AS hari \
+        FROM orders  \
+        WHERE isDelete = 0\
+        GROUP BY hari; "
+        ,
+        {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+            if(data){
+                res.json({ data: data }) 
+            }else{
+                res.json({ data: [] })
+            }
+        }).catch((err)=>{
+            console.log(err)
+            res.status(400);
+            res.json({ msg: err })
+        })
+    }else{
+        db.query("\
+        SELECT \
+            COUNT(*) as total,  \
+            WEEKDAY(o.createdAt) AS hari  \
+            FROM orders  o \
+        INNER JOIN document_orders docord on docord.orderId =  o.id \
+        INNER JOIN departement_orders depord on depord.documentOrderId = docord.id \
+            WHERE o.isDelete = 0 and depord.departementId = :id \
+            GROUP BY hari; "
+        ,
+        {replacements: { id: req.user.id},raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+            if(data){
+                res.json({ data: data }) 
+            }else{
+                res.json({ data: [] })
+            }
+        }).catch((err)=>{
+            console.log(err)
+            res.status(400);
+            res.json({ msg: err })
+        })
+    }
 }
 
 exports.dashboardOrderFinis = (req,res) => {
-    db.query("Select (SELECT count(*) FROM `orders` where isDelete = 0 ) as total , \
-    (SELECT count(*) FROM `orders` where isDelete = 0 and order_status = 'Finish') as finish "
+    if(req.user.role == 'admin'){
+        db.query("Select (SELECT count(*) FROM `orders` where isDelete = 0 ) as total , \
+        (SELECT count(*) FROM `orders` where isDelete = 0 and order_status = 'Finish') as finish "
+        ,
+        {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+            if(data){
+                res.json({ data: data }) 
+            }else{
+                res.json({ data: [] })
+            }
+        }).catch((err)=>{
+            console.log(err)
+            res.status(400);
+            res.json({ msg: err })
+        })
+    }else{
+        
+    db.query("Select (SELECT count(*) FROM `orders` o \
+    INNER JOIN document_orders docord on docord.orderId =  o.id \
+    INNER JOIN departement_orders depord on depord.documentOrderId = docord.id \
+    where o.isDelete = 0 and depord.departementId = :id \
+    ) as total , \
+        (SELECT count(*) FROM `orders` o \
+    INNER JOIN document_orders docord on docord.orderId =  o.id\
+    INNER JOIN departement_orders depord on depord.documentOrderId = docord.id\
+    where o.isDelete = 0 and depord.departementId = :id and order_status = 'Finish') as finish"
     ,
-    {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
+    {replacements: { id: req.user.id},raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{
         if(data){
             res.json({ data: data }) 
         }else{
@@ -116,6 +227,7 @@ exports.dashboardOrderFinis = (req,res) => {
         res.status(400);
         res.json({ msg: err })
     })
+    }
 }
 
 exports.getAll = (req,res) => {
@@ -156,18 +268,22 @@ exports.getById =(req,res) =>{
 }
 
 exports.delete = (req,res ) => {
-    Order.update({isDelete: true},{
-        where:{
-            id:req.params.id
-        }}).then(result =>
-             res.json({data:result})
-          )
-          .catch(err =>
-            {
-                res.status(400);
-                res.json({ msg: err })
+    try{
+        let order = Order.update({isDelete: true},{
+            where:{
+                id:req.params.id
+            }})
+        let docOrder = DocOrder.update({isDelete: true},{
+            where:{
+                orderId:req.params.id
             }
-          )
+        })
+        res.json({data:true})
+    }catch(err){
+        console.log(err)
+        res.json({ msg: err })
+    }
+    
 }
 
 exports.create = async (req,res) => {

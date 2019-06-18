@@ -87,7 +87,7 @@ class DepartementOrder extends Component {
       )
       },
       {
-        dataField: 'date_succses',
+        dataField: 'tgl_selesai',
         headerAlign: 'center',
         text: 'Selesai',
         headerStyle: () => {
@@ -95,8 +95,8 @@ class DepartementOrder extends Component {
         },
         sort: true,
         formatter: (cell, row, rowIndex, extraData) => {
-          if(row.date_succses){
-            return dateFormat(row.date_succses,"dd/mm/yyyy")
+          if(row.tgl_selesai){
+            return dateFormat(row.tgl_selesai,"dd/mm/yyyy")
           }else{
             return "-"
           }

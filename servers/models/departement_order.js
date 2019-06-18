@@ -29,6 +29,9 @@ const DepartementOrder = db.define('departement_orders', {
         type: Sequelize.STRING,
         defaultValue: "Ditempatkan"
       },
+      tgl_selesai:{
+        type: Sequelize.DATE
+      },
       isDelete: {
         type: Sequelize.BOOLEAN,
         defaultValue: false

@@ -78,7 +78,7 @@ exports.dashboardOrderFinis = (req,res) => {
 }
 
 exports.getAll = (req,res) => {
-   db.query("SELECT dorders.id,dorders.status, o.order_deadline, o.date_succses, docor.orderId, o.createdAt, o.order_invoice, o.customer_name, dp.`name`, docor.link, dorders.file, documen.dokumen_type,dorders.documentOrderId FROM `departement_orders` as dorders \
+   db.query("SELECT dorders.id,dorders.status, o.order_deadline, docor.orderId, o.createdAt, o.order_invoice, o.customer_name, dp.`name`, docor.link, dorders.file, dorders.tgl_selesai, documen.dokumen_type,dorders.documentOrderId FROM `departement_orders` as dorders \
     INNER JOIN departements dp on dp.id = dorders.departementId \
     INNER JOIN document_orders docor on docor.id = dorders.documentOrderId \
     INNER JOIN orders o on o.id = docor.orderId \
@@ -137,7 +137,7 @@ exports.getAllByDocumenOrder = (req,res) =>{
 exports.updateStatusSudahProses = async (req,res) =>{
     try{
         let update = await DepOrder
-        .update({status:"Sudah Diproses",file:req.body.file, link:req.body.link},{where:{id:req.params.id}})
+        .update({status:"Sudah Diproses",tgl_selesai:new Date(),file:req.body.file, link:req.body.link},{where:{id:req.params.id}})
         kirimKeDiriSendiri(req.user.email,req.body.link)
         let docder =  await db.query("select (SELECT count(*) from departement_orders dor \
         INNER JOIN departements d on d.id = dor.departementId \
@@ -160,7 +160,7 @@ exports.updateStatusSudahProses = async (req,res) =>{
 exports.updateStatusDalamProses = async (req,res) =>{
     try{
         let update = await  DepOrder
-        .update({status:"Dalam Proses"},{where:{id:req.params.id}})
+        .update({status:"Dalam Proses",tgl_selesai:null},{where:{id:req.params.id}})
         let docder =  await db.query("select (SELECT count(*) from departement_orders dor \
         INNER JOIN departements d on d.id = dor.departementId \
         where `status` = 'Sudah Diproses' and documentOrderId = :documentOrderId  and d.isDelete = 0\

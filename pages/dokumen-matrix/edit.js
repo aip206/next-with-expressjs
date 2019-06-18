@@ -24,7 +24,10 @@ const getYupValidationSchema = Yup.object({
         dokumen_type: Yup.string()
         .required('Tipe Dokumen tidak boleh kosong!'),
         departements: Yup.string()
-          .required('Nama Departemen tidak boleh kosong!')
+          .required('Nama Departemen tidak boleh kosong!'),
+        file : Yup.string()
+        .required('Contoh Dokumen tidak boleh kosong!')
+        
         
     })
     
@@ -211,7 +214,7 @@ function EditForm(props) {
                                
 								<label className="custom-file-label" for="addDocExample">{values.initialValues.nameOfFile}</label>
                                 <input type="hidden" name={values.initialValues.file} name="initialValues.filename"/>
-                                <ErrorMessage name="file" >
+                                <ErrorMessage name="initialValues.file" >
                                 {msg => <div className="error-message">{msg}</div>}
                                 </ErrorMessage>
 							</div>

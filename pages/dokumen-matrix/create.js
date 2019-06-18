@@ -20,7 +20,9 @@ const getYupValidationSchema = Yup.object().shape({
     dokumen_type: Yup.string()
       .required('Tipe Dokumen tidak boleh kosong!'),
     departements: Yup.string()
-      .required('Nama Departemen tidak boleh kosong!')
+      .required('Nama Departemen tidak boleh kosong!'),
+      file :  Yup.string()
+      .required('File tidak boleh kosong!')
   })
 const typeDokumen = [{label:"Tipe Gambar",value:"Tipe Gambar"},{label:"Tipe Dokumen",value:"Tipe Dokumen"}]
 const initialValues = {
@@ -30,7 +32,7 @@ const initialValues = {
     documentFileId:undefined,
     departements:[],
     fileTmp:undefined,
-    file:undefined
+    file:""
 }
 
 class DokumenMatrixCreate extends React.Component {
@@ -113,7 +115,7 @@ function CreateForm(props) {
                                 options={typeDok}
                                 onChange={(e) =>{
                                     values.dokumen_type = e.label
-                                    values.file = null
+                                    values.file = ""
                                     values.fileName = null
                                     values.nameOfFile = null
                                     setSelected(e.label)

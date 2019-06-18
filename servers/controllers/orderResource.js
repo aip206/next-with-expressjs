@@ -82,7 +82,7 @@ exports.dashboardDateSelisih = (req,res) => {
             res.json({ msg: err })
         })
     }else{
-        db.query("select DATEDIFF(date_succses,o.createdAt) as selisih from orders o \
+        db.query("select DATEDIFF(tgl_selesai,o.createdAt) as selisih from orders o \
         INNER JOIN document_orders docord on docord.orderId =  o.id \
         INNER JOIN departement_orders depord on depord.documentOrderId = docord.id \
         where order_status = 'Finish' and o.isDelete = 0 and depord.departementId = :id"

@@ -284,7 +284,7 @@ class Dashboard extends Component {
               <div class="card-body">
                 <small class="d-block text-uppercase font-weight-bold border-bottom">Pelanggan</small>
                 <h1 class="text-primary mt-3">{this.state.customer}</h1>
-                <small class="text-muted">Jumlah pelanggan terdaftar.</small>
+                <small class="text-muted">Jumlah pelanggan terdaftar</small>
               </div>
 						</div> : null
 						}
@@ -292,14 +292,14 @@ class Dashboard extends Component {
               <div class="card-body">
                 <small class="d-block text-uppercase font-weight-bold border-bottom">Pemesanan</small>
                 <h1 class="text-primary mt-3 mb-0">{this.state.orderFinish.finish}<span class="text-muted">/ {this.state.orderFinish.total}</span></h1>
-                <small class="text-muted">Jumlah pesanan selesai per total pesanan berjalan.</small>
+                <small class="text-muted">Jumlah pesanan selesai per total pesanan </small>
               </div>
             </div>
             <div class="card">
               <div class="card-body">
                 <small class="d-block text-uppercase font-weight-bold border-bottom">Dokumen</small>
                 <h1 class="text-primary mt-3 mb-0">{this.state.dokumenFinish.finish} <span class="text-muted">/ {this.state.dokumenFinish.total}</span></h1>
-                <small class="text-muted">Jumlah dokumen selesai per total dokumen berjalan.</small>
+                <small class="text-muted">Jumlah dokumen selesai per total dokumen </small>
               </div>
             </div>
             <div class="card">

@@ -44,7 +44,9 @@ const EmailTemplate = require('email-templates').EmailTemplate;
 exports.dashboardRanking = (req,res) => {
     db.query("SELECT d.name as name, count(departementId) as total FROM departement_orders dor\
     INNER JOIN departements d on d.id = dor.departementId\
-	where d.isDelete = 0\
+    INNER JOIN document_orders docord on docord.orderId =  dor.documentOrderId\
+    INNER JOIN orders o on o.id =  docord.orderId\
+    where o.isDelete = 0 and d.isDelete = 0  and docord.isDelete = 0\
     GROUP BY departementId ORDER BY total DESC limit 5"
     ,
     {raw: true,type: Sequelize.QueryTypes.SELECT}).then((data)=>{

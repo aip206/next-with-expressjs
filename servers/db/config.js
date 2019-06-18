@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const config = require('../config.js').get(process.env.NODE_ENV)
+const config = require('../config.js').get('production')
 
 module.exports =  new Sequelize(config.database.database, config.database.user, config.database.password, {
   host: 'localhost',

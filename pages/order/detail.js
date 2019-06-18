@@ -512,6 +512,7 @@ class OrderDetail extends React.Component {
                         values.documentId = e.value
                         setSelected(e.document_type)
                         setFieldValue("fileName",null)
+                        setFieldValue("file",null)
                         setFieldValue("nameOfFile","")
                       }}
                   />

@@ -36,6 +36,7 @@ class OrderDetail extends React.Component {
     constructor(props){
         super(props)
         this.state = {
+          id:this.props.router.query.id,
             show: false,
             data:{},
             doc_order:[],
@@ -82,7 +83,7 @@ class OrderDetail extends React.Component {
                             <a href={row.link} target="blank"className="btn  btn-success"><i className="fas fa-download mr-2"></i>Unduh</a>
                             <Link href={{pathname: '/order/detail-dokumen', query: {orderId:this.state.data.id ,dokOrderId: row.id,invoice:this.state.data.order_invoice}}}><a href="order-document-detail.html" className="btn btn-outline-primary"><i className="fas fa-eye mr-2"></i>Detail</a></Link>
                             { this.progresData(row.departement_orders)  ? 
-                              <button type="button" onClick={this.batal.bind(this,row.id)}
+                              <button type="button" onClick={this.batal.bind(this,row.id,this.state.id)}
                                className="btn btn-outline-danger btn-delete">
                                <i className="fas fa-times mr-2"></i>Batal</button>
                                :null}
@@ -151,7 +152,7 @@ class OrderDetail extends React.Component {
       this.refresh()
     }
 
-    batal (id) {
+    batal (id, orderId) {
       
         axioss.delete('/api/v1/order-delete-dokumen/'+id,{
             headers: {
@@ -165,7 +166,11 @@ class OrderDetail extends React.Component {
                   text: "Batal Dokumen Berhasil dilakukan " ,
                   icon: "success",
                   button: "Ok",
-                }).then(e => this.refresh())
+                }).then(e => {
+                  this.hitungProgres()
+                  this.lookUpDokumenOrder(orderId)
+                  this.lookUpDokumen();
+                })
               }else{
                 swal({
                     title: "Batal Dokumen",
@@ -249,7 +254,7 @@ class OrderDetail extends React.Component {
        this.refresh()
     }
     refresh(){
-      axioss.get('/api/v1/order/'+this.props.router.query.id,{
+      axioss.get('/api/v1/order/'+this.state.id,{
         headers: {
           'Authorization': cookie.get('token')
         } 
@@ -258,9 +263,10 @@ class OrderDetail extends React.Component {
           return response.data.data
       })
       .then(data =>{ 
+        this.setState({id:data.id})
           this.setState({data})
           this.setState({documents:data.document_orders.filter(x=>!x.isDelete)})
-          this.hitungProgres()
+          
       })
       .catch(err => {
         swal({
@@ -366,7 +372,9 @@ class OrderDetail extends React.Component {
 								<dd className="col-sm-8 pb-lg-2">
 									
                   {this.state.progress == 100 ? <span className="badge badge-pill badge-success d-block">Selesai</span> :
-                   <div className="progress"> <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={this.state.progress} aria-valuemin="0" aria-valuemax="100" style={{width:this.state.progress+"%"}}>{parseInt(this.state.progress)}%</div>
+                   <div className="progress"> 
+                   <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow={this.state.progress} aria-valuemin="0" aria-valuemax="100" style={{width:this.state.progress+"%"}}>
+                   <span>{parseInt(this.state.progress)}%</span></div>
 										
                    </div>
                   }
@@ -558,7 +566,6 @@ class OrderDetail extends React.Component {
 
   
   function ProgresDepOrder (props) {
-    console.log(props.id.filter((x)=>!x.departement.isDelete))
    const dokumenlength = props.id.filter((x)=>!x.departement.isDelete).length 
       const persentase = props.id.filter((x)=>!x.departement.isDelete && x.status == "Sudah Diproses").length
       const progresTotal = (dokumenlength != 0) ? (persentase / dokumenlength) * 100 : 0

@@ -33,6 +33,12 @@ const getYupValidationSchema = Yup.object({
   
 })
 class OrderDetail extends React.Component {
+    static getInitialProps(something) {
+      return {
+        pageLog: "sanguan",
+      }
+    }
+
     constructor(props){
         super(props)
         this.state = {
@@ -147,9 +153,11 @@ class OrderDetail extends React.Component {
       
     }
 
-    handleClose() {
+    handleClose(params) {
+      // console.log(params)
       this.setState({ show: false });
-      this.refresh()
+      this.refresh();
+      
     }
 
     batal (id, orderId) {
@@ -167,9 +175,8 @@ class OrderDetail extends React.Component {
                   icon: "success",
                   button: "Ok",
                 }).then(e => {
-                  this.hitungProgres()
-                  this.lookUpDokumenOrder(orderId)
-                  this.lookUpDokumen();
+                  Router.push('/order/detail?id='+orderId)
+                  this.refresh();
                 })
               }else{
                 swal({
@@ -251,7 +258,10 @@ class OrderDetail extends React.Component {
       }
       
     componentDidMount () {
+      console.log(this.props)
+      if(process.browser){
        this.refresh()
+      }
     }
     refresh(){
       axioss.get('/api/v1/order/'+this.state.id,{
@@ -642,8 +652,8 @@ class OrderDetail extends React.Component {
           icon: "success",
           button: "Ok",
         }).then(()=>{
-          closed();
-          Router.push("/order/detail",{id:values.orderId})
+          Router.push("/order/detail?id="+values.orderId)
+          closed(values.orderId);
         });
   })
   }

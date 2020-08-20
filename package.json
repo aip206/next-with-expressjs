@@ -18,7 +18,7 @@
     "@sweetalert/with-react": "^0.1.1",
     "@zeit/next-css": "^1.0.1",
     "axios": "^0.18.0",
-    "bcrypt": "^3.0.0",
+    "bcrypt": "^5.0.0",
     "bluebird": "^3.5.5",
     "bootstrap": "^4.3.1",
     "circular-json": "^0.5.9",
